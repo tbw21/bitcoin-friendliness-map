@@ -422,10 +422,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     // Selected country goes last so its outline is not covered by neighbours
     const selectedPath = paths.find((path) => path.classList.contains("selected-country"));
     if (selectedPath) svg.appendChild(selectedPath);
-
-    // The grid lines drawn over the land stay on top of every country
-    const overlay = svg.querySelector(".chart-over");
-    if (overlay) svg.appendChild(overlay);
   }, [selectedLegendScores, highlightOnlyCode, selectedCode, svgMarkup]);
 
 

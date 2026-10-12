@@ -484,22 +484,12 @@
 /* Graticule */
 .map-container svg .chart-grid {
   fill: none;
-  stroke: rgba(242, 238, 230, 0.18);
+  stroke: rgba(242, 238, 230, 0.13);
   stroke-width: calc(0.5 / var(--map-zoom, 1));
 }
 
 .map-container svg .chart-grid-major {
-  stroke: rgba(242, 238, 230, 0.32);
-}
-
-/* The same grid drawn over the countries: a dark line, which shows on the land colours and all
-   but disappears over the sea, where the light line underneath does the work */
-.map-container svg .chart-over .chart-grid {
-  stroke: rgba(6, 32, 58, 0.3);
-}
-
-.map-container svg .chart-over .chart-grid-major {
-  stroke: rgba(6, 32, 58, 0.45);
+  stroke: rgba(242, 238, 230, 0.24);
 }
 
 .map-container svg .chart-grid-dash {

@@ -76,9 +76,6 @@ for lat in (-30, 30, 60):
 grid.append('<polyline class="chart-grid chart-grid-major" points="%s"/>' % pts(parallel(0)))
 for lat in (-23.44, 23.44, 66.56):  # tropics and Arctic Circle
     grid.append('<polyline class="chart-grid chart-grid-dash" points="%s"/>' % pts(parallel(lat)))
-# Drawn twice: here under the countries, in the light line that shows on the sea, and again on
-# top of the countries (the chart-over group at the end of the file) in a dark line that shows
-# on the land, so the grid runs across the whole chart as on a printed map.
 out += grid
 
 # ---- compass ring with the brand logo, wordmark and rhumb lines (South Pacific, clear of land)
@@ -174,9 +171,5 @@ group += '  <g class="hit-areas" aria-hidden="true">\n    ' + "\n    ".join(hit)
 i = svg.index("  <path ")
 svg = svg[:i] + group + svg[i:]
 svg = svg.replace("<!-- Equal Earth projection", "<!-- Nautical chart edition (scripts/make-nautical-map.py). Equal Earth projection", 1)
-# ---- the grid again, on top of the countries
-over = '  <g class="chart chart-over" aria-hidden="true">\n    ' + "\n    ".join(grid) + "\n  </g>\n"
-i = svg.rindex("</svg>")
-svg = svg[:i] + over + svg[i:]
 open(dst, "w", encoding="utf-8").write(svg)
 print("wrote", dst, "with", len(out), "chart elements,", len(hit), "tap areas; compass at", f(cx), f(cy), "wordmark bottom", f(WORDMARK_BOTTOM), "of", H)
