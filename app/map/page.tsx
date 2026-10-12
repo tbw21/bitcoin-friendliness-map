@@ -88,7 +88,7 @@ export default function MapPage() {
         ["--ui-grain-opacity" as string]: GRAIN_STRENGTH,
       }}
     >
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="map-stage flex flex-1 flex-col overflow-hidden">
         <WorldMap
           selectedCode={selectedCode}
           onSelectCountry={handleSelectCountry}

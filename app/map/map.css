@@ -23,7 +23,7 @@
   max-height: none !important;
   /* Ensure transform is not overridden */
   transform-origin: 0 0 !important;
-  /* Draw past the SVG's own box into the container's 16px padding, so a zoomed-in map reaches
+  /* Draw past the SVG's own box into the container's padding, so a zoomed-in map reaches
      the screen edges (the container still clips it) */
   overflow: visible !important;
 }
@@ -368,6 +368,25 @@
   font-family: "Kepler Caption Italic", "Kepler Std", Georgia, serif;
 }
 
+/* Margin around the chart. The chart's outer frame line is drawn --chart-frame map units outside
+   the map itself (see FRAME in make-nautical-map.py), so the map is given enough padding to keep
+   that line --chart-margin away from the screen edge when zoomed right out: the same distance
+   as the search bar, buttons and legends keep. The map is 1000 x 452.41 units and scales to fit
+   the width or the height, whichever is tighter; the two terms below are those two cases.
+   (cqw/cqh are 1% of the width/height of the map's parent, .map-stage.) */
+.map-stage {
+  container-type: size;
+}
+
+.map-container {
+  --chart-frame: 12;
+  --chart-margin: 16px;
+  padding: min(
+    calc((var(--chart-margin) + var(--chart-frame) * 0.1cqw) / (1 + var(--chart-frame) * 0.002)),
+    calc((var(--chart-margin) + var(--chart-frame) * 0.221038cqh) / (1 + var(--chart-frame) * 0.00442077))
+  );
+}
+
 /* Sea: slightly lighter mid-ocean falling off to the brand navy at the edges */
 .map-container {
   background: radial-gradient(120% 95% at 50% 45%, #0a2b46 0%, #06203a 45%, #021625 80%, var(--map-bg) 100%);
@@ -510,7 +529,7 @@
 }
 
 .map-container svg .chart-degree {
-  font-size: 5.5px;
+  font-size: 4.6px;
   font-style: italic;
   fill: rgba(242, 238, 230, 0.42);
 }

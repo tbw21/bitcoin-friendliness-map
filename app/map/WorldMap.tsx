@@ -1457,7 +1457,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
       <div
         ref={containerRef}
-        className={`map-container relative min-h-0 w-full flex-1 p-4 ${
+        className={`map-container relative min-h-0 w-full flex-1 ${
           selectedLegendScores.length > 0 || highlightOnlyCode !== null ? "legend-filter-active" : ""
         }`}
       />

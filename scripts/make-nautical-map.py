@@ -66,7 +66,7 @@ logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
 
 cx, cy = project(-128, -30)
 R = 19.0         # radius of the compass ring (the pale circle with degree ticks)
-LOGO_FILL = 0.66 # logo diameter as a share of the ring's diameter; sized independently of the ring
+LOGO_FILL = 0.594 # logo diameter as a share of the ring's diameter; sized independently of the ring
 WORDMARK_W = 57  # width of the wordmark, sized independently of both
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []
@@ -100,17 +100,22 @@ out.append('<g class="chart-wordmark" transform="translate(%s %s) scale(%s) tran
 WORDMARK_BOTTOM = cy + R + 3.2 + 136 * word_scale
 
 # ---- neatline frame with degree labels
-out.append('<rect class="chart-frame" x="-9" y="-9" width="%s" height="%s"/>' % (f(W + 18), f(H + 18)))
+# The outer line is FRAME units outside the map. map.css sizes the margin around the map from the
+# same number (--chart-frame), so change both together. Degree labels sit in the band between
+# the two lines.
+FRAME = 12
+out.append('<rect class="chart-frame" x="-%d" y="-%d" width="%s" height="%s"/>' % (FRAME, FRAME, f(W + 2 * FRAME), f(H + 2 * FRAME)))
 out.append('<rect class="chart-frame chart-frame-inner" x="-4" y="-4" width="%s" height="%s"/>' % (f(W + 8), f(H + 8)))
 for lon in range(-150, 181, 30):
     x, _ = project(lon, LAT_S)
     real = ((lon + 180) % 360) - 180
     label = "0°" if real == 0 else ("180°" if abs(real) == 180 else "%d°%s" % (abs(real), "E" if real > 0 else "W"))
-    out.append('<text class="chart-degree" x="%s" y="%s" text-anchor="middle">%s</text>' % (f(x), f(H + 20), label))
+    out.append('<text class="chart-degree" x="%s" y="%s" text-anchor="middle">%s</text>' % (f(x), f(H + 9.6), label))
 for lat in (-30, 0, 30, 60):
     _, y = project(LON_W, lat)
     label = "0°" if lat == 0 else "%d°%s" % (abs(lat), "N" if lat > 0 else "S")
-    out.append('<text class="chart-degree" x="-13" y="%s" text-anchor="end">%s</text>' % (f(y + 2), label))
+    # reads upwards, as on a chart's side margin
+    out.append('<text class="chart-degree" transform="translate(-6.4 %s) rotate(-90)" text-anchor="middle">%s</text>' % (f(y), label))
 
 # ---- sea names (positions and sizes are fitted to open water by make-coast-rings.py)
 LABEL_FILE = __file__.rsplit("/", 1)[0] + "/assets/sea-labels.txt"
