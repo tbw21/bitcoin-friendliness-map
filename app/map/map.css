@@ -1,0 +1,274 @@
+/* Map-specific styles. These are intentionally simple and easy to tweak. */
+
+.map-container {
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.map-container:active {
+  cursor: grabbing;
+}
+
+.map-container svg {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  /* No transition on transform by default, so dragging, wheel and pinch track the pointer exactly.
+     Programmatic moves opt in via [data-animating] below. */
+  max-width: none !important;
+  max-height: none !important;
+  /* Ensure transform is not overridden */
+  transform-origin: 0 0 !important;
+}
+
+/* Default: all paths should have a fill (neutral gray for unrated) */
+.map-container svg path {
+  fill: #4a5568 !important; /* muted gray that works with dark background */
+  fill-opacity: 0.9 !important;
+}
+
+/* Base country shape styles - borders take the map background colour (--map-bg, set in page.tsx) */
+/* stroke-width divided by --map-zoom so borders stay constant in screen pixels when SVG is scaled */
+.map-container svg path.country-shape {
+  stroke: var(--map-bg) !important;
+  stroke-width: calc(0.5 / var(--map-zoom, 1)) !important;
+  transition: fill 220ms ease-out, fill-opacity 260ms ease-out, stroke 220ms ease-out !important;
+  fill-opacity: 0.95 !important;
+  outline: none !important;
+}
+
+.map-container svg path.country-shape.is-rated {
+  cursor: pointer;
+}
+
+/* Hover: NO stroke change, only brightness increase */
+.map-container svg path.country-shape.is-rated:hover {
+  /* Stroke stays the same - no change */
+}
+
+.map-container svg path.country-shape:focus {
+  outline: none !important;
+}
+
+/* White outline so the open country stands out on every score colour */
+.map-container svg path.country-shape.selected-country {
+  stroke: #ffffff !important;
+  stroke-width: calc(1.5 / var(--map-zoom, 1)) !important;
+}
+
+/* Bitcoin friendliness score colours come from the active palette (--score-N, set in page.tsx) */
+.map-container svg path.country-shape.score-1 {
+  fill: var(--score-1) !important;
+}
+
+.map-container svg path.country-shape.score-1.is-rated:hover {
+  fill: color-mix(in srgb, var(--score-1) 88%, black) !important; /* slightly darker */
+}
+
+.map-container svg path.country-shape.score-2 {
+  fill: var(--score-2) !important;
+}
+
+.map-container svg path.country-shape.score-2.is-rated:hover {
+  fill: color-mix(in srgb, var(--score-2) 88%, black) !important; /* slightly darker */
+}
+
+.map-container svg path.country-shape.score-3 {
+  fill: var(--score-3) !important;
+}
+
+.map-container svg path.country-shape.score-3.is-rated:hover {
+  fill: color-mix(in srgb, var(--score-3) 88%, black) !important; /* slightly darker */
+}
+
+.map-container svg path.country-shape.score-4 {
+  fill: var(--score-4) !important;
+}
+
+.map-container svg path.country-shape.score-4.is-rated:hover {
+  fill: color-mix(in srgb, var(--score-4) 88%, black) !important; /* slightly darker */
+}
+
+.map-container svg path.country-shape.score-5 {
+  fill: var(--score-5) !important;
+}
+
+.map-container svg path.country-shape.score-5.is-rated:hover {
+  fill: color-mix(in srgb, var(--score-5) 88%, black) !important; /* slightly darker */
+}
+
+/* Filtered out: countries outside the active filter keep their score colour but are dimmed,
+   so the geography stays readable */
+.map-container svg path.country-shape.filtered-out {
+  fill-opacity: 0.25 !important;
+  /* Dimming (e.g. the previously open country) runs at half the time of the fade back in */
+  transition: fill 220ms ease-out, fill-opacity 130ms ease-out, stroke 110ms ease-out !important;
+}
+
+/* Hover uses only filter; fill color comes from score classes above */
+
+/* Legend slide animations */
+.legend-expanding {
+  animation: slideUpFadeIn 0.1s ease-out forwards;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes slideUpFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.legend-content-slide {
+  animation: slideUpFadeIn 0.1s ease-out 0.05s both;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+/* ---- Motion ---- */
+
+/* Registered so the zoom factor can be interpolated: keeps border widths steady during animated zooms */
+@property --map-zoom {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+/* Programmatic moves (zoom buttons, reset, locate, double-click) glide instead of jumping */
+.map-container[data-animating="true"] {
+  transition: --map-zoom 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.map-container[data-animating="true"] svg {
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Map fades in once it has been drawn */
+.map-container svg {
+  animation: mapFadeIn 500ms ease-out both;
+}
+
+@keyframes mapFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Country panel: a bottom sheet that slides up from the bottom edge on small screens, and a panel
+   that slides in from the right when docked. Fill is "backwards" only, so once the entrance has
+   played the sheet's own transform (drag to dismiss) is free to take over. */
+.country-panel-enter {
+  animation: panelRiseIn 340ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@keyframes panelRiseIn {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@media (min-width: 768px) {
+  .country-panel-enter {
+    animation-name: panelSlideIn;
+    animation-duration: 320ms;
+  }
+}
+
+@keyframes panelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
+/* Zoom controls travel with the docked panel: identical slide-in when it opens, a plain fade back
+   to the window edge when it closes (the panel itself disappears without an exit animation) */
+@media (min-width: 768px) {
+  .map-controls-docked {
+    animation: panelSlideIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .map-controls-free {
+    animation: mapFadeIn 220ms ease-out both;
+  }
+}
+
+/* Panel content cross-fades when stepping to another country */
+.country-panel-content {
+  animation: contentFadeIn 220ms ease-out both;
+}
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+/* Stagger: children of a list or grid follow one another by 45ms, so groups arrive as a sequence */
+.stagger-children > * {
+  animation: contentFadeIn 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 40ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 85ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 130ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 175ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 220ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 265ms; }
+.stagger-children > *:nth-child(n + 7) { animation-delay: 310ms; }
+
+/* Block that follows a staggered group (the notes under the four score cards) */
+.stagger-last {
+  animation: contentFadeIn 280ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+}
+
+/* Search results drop in */
+.search-results-enter {
+  animation: dropIn 160ms ease-out both;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* Respect the system "reduce motion" setting: no movement, changes apply instantly */
+@media (prefers-reduced-motion: reduce) {
+  .map-container[data-animating="true"],
+  .map-container[data-animating="true"] svg {
+    transition: none;
+  }
+
+  .map-container svg,
+  .country-panel-enter,
+  .country-panel-content,
+  .search-results-enter,
+  .map-controls-docked,
+  .map-controls-free,
+  .stagger-children > *,
+  .stagger-last,
+  .legend-expanding,
+  .legend-content-slide {
+    animation: none;
+  }
+
+  .legend-expanding,
+  .legend-content-slide {
+    opacity: 1;
+    transform: none;
+  }
+
+  .map-container svg path.country-shape {
+    transition: none !important;
+  }
+}

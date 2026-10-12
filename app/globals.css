@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+#__next {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+* {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
