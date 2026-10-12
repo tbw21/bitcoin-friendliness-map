@@ -15,6 +15,8 @@ export interface WorldMapProps {
   onClearHighlightOnly?: () => void;
   /** Called when the empty map (not a country) is clicked while a country's details are open */
   onClearSelection?: () => void;
+  /** True while the phone bottom sheet is in its "peek" position (map visible above it) */
+  sheetPeek?: boolean;
 }
 
 function getCountryClasses(
@@ -75,12 +77,13 @@ function ScoreChip({ score, label }: { score: number; label: string }) {
 // How much one press of a zoom button (or +/-) changes the zoom
 const ZOOM_STEP = 1.5;
 
-// Zoom is a multiple of the map's on-screen size, so the same factor shows far less detail on a
-// phone than on a desktop. The limit therefore scales with the map's width: the deepest zoom
-// always magnifies to about the same physical size (10x on a ~1100px-wide map, ~30x on a phone).
+// Zooming in is only loosely limited: far enough that even the smallest shape on the map
+// (Vatican City, about 0.03 of the map's 1000 units) can fill a good part of the screen.
+// Zoom is a multiple of the map's on-screen size, so the limit scales with the map's width:
+// roughly 5,500x on a 1100px-wide map and 17,500x on a phone. Zooming out stops at 1 (whole world).
 function getMaxZoom(root: HTMLElement | null): number {
   const width = root?.querySelector("svg")?.clientWidth || root?.clientWidth || 1100;
-  return Math.max(10, 11000 / width);
+  return Math.max(10, 6_000_000 / width);
 }
 
 // Width (px) of the map hidden behind the country panel when it is docked to the right edge
@@ -91,6 +94,31 @@ function getRightInset(root: HTMLElement): number {
   const panelRect = panel.getBoundingClientRect();
   const isDocked = panelRect.height >= rootRect.height * 0.9 && panelRect.left > rootRect.left;
   return isDocked ? Math.max(0, rootRect.right - panelRect.left) : 0;
+}
+
+// Share of the screen height the phone bottom sheet covers in its "peek" position.
+// Keep in step with Modal.tsx and the peek rule in map.css.
+const SHEET_PEEK_FRACTION = 1 / 3;
+
+// Space at the top and bottom of the map that is covered on phones: the search bar above, and
+// below it the legends (taller when expanded) or the bottom sheet when it is peeking. The country panel reports its state in data-sheet-state.
+// (The sheet's own position is not measured because it may still be sliding into place.)
+function getVerticalInsets(root: HTMLElement): { top: number; bottom: number } {
+  if (window.matchMedia("(min-width: 768px)").matches) return { top: 0, bottom: 0 };
+  const rootRect = root.getBoundingClientRect();
+  // Pan and zoom are measured inside the map's padding, so take the padding off both insets
+  const padding = parseFloat(getComputedStyle(root).paddingTop) || 0;
+  const search = document.querySelector<HTMLElement>("[data-map-search]");
+  const top = search ? Math.max(0, search.getBoundingClientRect().bottom - rootRect.top - padding) : 0;
+  const panel = document.querySelector<HTMLElement>("[data-country-panel]");
+  const peeking = panel?.getAttribute("data-sheet-state") === "peek";
+  const sheet = peeking
+    ? Math.max(0, rootRect.bottom - window.innerHeight * (1 - SHEET_PEEK_FRACTION) - padding)
+    : 0;
+  // Open legends cover the bottom of the map too (they span the full width on phones)
+  const legendsEl = document.querySelector<HTMLElement>("[data-map-legends]");
+  const legends = legendsEl ? Math.max(0, rootRect.bottom - legendsEl.getBoundingClientRect().top - padding) : 0;
+  return { top, bottom: Math.max(sheet, legends) };
 }
 
 // Bounding box of a country's main landmass: rings smaller than a tenth of the largest
@@ -181,6 +209,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   highlightOnlyCode = null,
   onClearHighlightOnly,
   onClearSelection,
+  sheetPeek = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -208,6 +237,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const [topCountriesLegendOpen, setTopCountriesLegendOpen] = useState(true);
   const [topCountries, setTopCountries] = useState<Array<{ code: string; name: string; rank: number; score: number; scoreLabel: string }>>([]);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
+  // When the last touch happened: browsers follow a tap with made-up mouse events, which must not
+  // show the hover label (on a touch screen nothing would ever move away to hide it again)
+  const lastTouchTimeRef = useRef(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Array<{ code: string; name: string; score: number; scoreLabel: string }>>([]);
   const [selectedSearchIndex, setSelectedSearchIndex] = useState(-1);
@@ -233,6 +265,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   // Programmatic moves animate (see [data-animating] in map.css); direct manipulation must not,
   // so drag, wheel and pinch call stopAnimation() first.
   const animationTimerRef = useRef<number | null>(null);
+  // The map file's own viewBox size (map units), read once when the SVG is inserted
+  const baseViewBoxRef = useRef<{ width: number; height: number } | null>(null);
+  // Sharp rendering at any zoom: while the view is moving it is a CSS transform of the SVG (fast,
+  // but a stretched picture). Shortly after it settles, the view is "baked" into the SVG's viewBox
+  // and the transform reset, so the browser redraws the shapes crisply at that zoom.
+  const bakedViewRef = useRef({ zoom: 1, panX: 0, panY: 0 });
+  const bakeTimerRef = useRef<number | null>(null);
+  const bakeNowRef = useRef<(() => void) | null>(null);
   // Latest zoomToPath (defined further down), for the event listeners attached once
   const zoomToPathRef = useRef<((path: SVGPathElement) => void) | null>(null);
   // The view the last "zoom to country" produced; lets a second double-click zoom back out
@@ -382,6 +422,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         svg.setAttribute("width", "100%");
         svg.setAttribute("height", "100%");
         svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        const base = (svg.getAttribute("viewBox") || "").split(/\s+/).map(Number);
+        if (base.length === 4 && base[2] > 0 && base[3] > 0) {
+          baseViewBoxRef.current = { width: base[2], height: base[3] };
+        }
+        bakedViewRef.current = { zoom: 1, panX: 0, panY: 0 };
         // Reset listeners flag so they can be re-attached if needed
         listenersAttachedRef.current = false;
       }
@@ -430,6 +475,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         lastPanPointRef.current = { x: event.clientX, y: event.clientY };
         return;
       }
+
+      // Ignore the mouse events a browser fires right after a touch
+      if (Date.now() - lastTouchTimeRef.current < 1000) return;
 
       // Handle hover tooltip
       const target = event.target;
@@ -695,6 +743,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleTouchStart = (event: TouchEvent) => {
       stopAnimation();
+      lastTouchTimeRef.current = Date.now();
+      if (hoveredCountryRef.current !== null) setHoveredCountry(null);
+      if (tooltipRef.current) tooltipRef.current.style.visibility = "hidden";
       if (event.touches.length === 2) {
         // Two fingers: start combined pan + zoom
         event.preventDefault();
@@ -791,6 +842,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     };
 
     const handleTouchEnd = (event: TouchEvent) => {
+      // The made-up mouse events arrive after the finger lifts, so restart the window here too
+      lastTouchTimeRef.current = Date.now();
       if (event.touches.length < 2) {
         touchStartDistanceRef.current = null;
         // If going from two fingers to one, update lastPanPoint for single-touch pan
@@ -840,21 +893,20 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       // The country panel hides the right side of the map when docked, so the view is narrower
       const inset = containerRef.current ? getRightInset(containerRef.current) : 0;
       let contentX = 0, contentY = 0, contentW = w, contentH = h;
-      const viewBox = svgRef.current?.getAttribute("viewBox")?.split(/\s+/).map(Number);
-      if (viewBox && viewBox[2] > 0 && viewBox[3] > 0) {
-        const scale = Math.min(w / viewBox[2], h / viewBox[3]);
-        contentW = viewBox[2] * scale;
-        contentH = viewBox[3] * scale;
+      const base = baseViewBoxRef.current;
+      if (base) {
+        const scale = Math.min(w / base.width, h / base.height);
+        contentW = base.width * scale;
+        contentH = base.height * scale;
         contentX = (w - contentW) / 2;
         contentY = (h - contentH) / 2;
       }
-      const clampAxis = (pan: number, start: number, size: number, view: number) => {
-        const center = view / 2;
-        return Math.max(center - (start + size) * z, Math.min(center - start * z, pan));
-      };
+      const vertical = containerRef.current ? getVerticalInsets(containerRef.current) : { top: 0, bottom: 0 };
+      const clampAxis = (pan: number, start: number, size: number, center: number) =>
+        Math.max(center - (start + size) * z, Math.min(center - start * z, pan));
       return {
-        panX: clampAxis(px, contentX, contentW, w - inset),
-        panY: clampAxis(py, contentY, contentH, h),
+        panX: clampAxis(px, contentX, contentW, (w - inset) / 2),
+        panY: clampAxis(py, contentY, contentH, vertical.top + (h - vertical.top - vertical.bottom) / 2),
       };
     },
     []
@@ -879,7 +931,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     const h = svg.clientHeight > 0 ? svg.clientHeight : rootRect.height;
     const { panX: clampedPanX, panY: clampedPanY } = getClampedPan(w, h, zoom, panX, panY);
 
-    const transform = `translate(${clampedPanX}px, ${clampedPanY}px) scale(${zoom})`;
+    // Express the current view relative to the baked one (see bakedViewRef)
+    const baked = bakedViewRef.current;
+    const k = zoom / baked.zoom;
+    const tx = clampedPanX - k * baked.panX;
+    const ty = clampedPanY - k * baked.panY;
+    const transform = `translate(${tx}px, ${ty}px) scale(${k})`;
     svg.style.setProperty("transform", transform, "important");
     svg.style.setProperty("transform-origin", "0 0", "important");
     svg.style.setProperty("max-width", "none", "important");
@@ -890,7 +947,48 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       setPanY(clampedPanY);
     }
 
+    // Once the view has been still for a moment (and any glide has finished), bake it
+    const bake = () => {
+      bakeTimerRef.current = null;
+      const base = baseViewBoxRef.current;
+      if (!base || !svg.isConnected) return;
+      if (root.hasAttribute("data-animating")) {
+        bakeTimerRef.current = window.setTimeout(bake, 120);
+        return;
+      }
+      const boxW = svg.clientWidth;
+      const boxH = svg.clientHeight;
+      if (boxW <= 0 || boxH <= 0) return;
+      // Same mapping the transform used: screen = pan + zoom * (offset + mapUnit * scale)
+      const scale = Math.min(boxW / base.width, boxH / base.height);
+      const offsetX = (boxW - base.width * scale) / 2;
+      const offsetY = (boxH - base.height * scale) / 2;
+      const left = (-clampedPanX / zoom - offsetX) / scale;
+      const top = (-clampedPanY / zoom - offsetY) / scale;
+      svg.setAttribute("viewBox", `${left} ${top} ${boxW / (zoom * scale)} ${boxH / (zoom * scale)}`);
+      bakedViewRef.current = { zoom, panX: clampedPanX, panY: clampedPanY };
+      svg.style.setProperty("transform", "translate(0px, 0px) scale(1)", "important");
+    };
+    bakeNowRef.current = bake;
+    if (bakeTimerRef.current !== null) window.clearTimeout(bakeTimerRef.current);
+    const settled = Math.abs(k - 1) < 1e-6 && Math.abs(tx) < 0.01 && Math.abs(ty) < 0.01;
+    if (!settled) bakeTimerRef.current = window.setTimeout(bake, 200);
+
   }, [zoom, panX, panY, getClampedPan]);
+
+  // The baked viewBox is sized for the map's box, so redo it when the window size changes
+  useEffect(() => {
+    let timer: number | null = null;
+    const handleResize = () => {
+      if (timer !== null) window.clearTimeout(timer);
+      timer = window.setTimeout(() => bakeNowRef.current?.(), 150);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (timer !== null) window.clearTimeout(timer);
+    };
+  }, []);
 
   // Zoom and pan so a country's main landmass is centred in the visible part of the map
   const zoomToPath = useCallback(
@@ -904,34 +1002,34 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     const viewportH = svg.clientHeight > 0 ? svg.clientHeight : root.getBoundingClientRect().height;
     // Part of the viewport not covered by the docked country panel
     const visibleW = Math.max(viewportW - getRightInset(root), viewportW * 0.3);
+    // ...and, on phones, not covered by the search bar or the peeking bottom sheet
+    const vertical = getVerticalInsets(root);
+    const visibleH = Math.max(viewportH - vertical.top - vertical.bottom, viewportH * 0.3);
 
     const pathCenterX = pathBounds.x + pathBounds.width / 2;
     const pathCenterY = pathBounds.y + pathBounds.height / 2;
 
-    // SVG viewBox maps to viewport via scale + offset (xMidYMid meet). Path coords are in viewBox space.
-    const viewBoxStr = svg.getAttribute("viewBox");
+    // The map's own viewBox maps to the viewport via scale + offset (xMidYMid meet). Path coords are in map units.
+    const base = baseViewBoxRef.current;
     let scale = 1;
     let offsetX = 0;
     let offsetY = 0;
-    if (viewBoxStr) {
-      const [,, vbW, vbH] = viewBoxStr.split(/\s+/).map(Number);
-      if (vbW > 0 && vbH > 0) {
-        scale = Math.min(viewportW / vbW, viewportH / vbH);
-        offsetX = (viewportW - vbW * scale) / 2;
-        offsetY = (viewportH - vbH * scale) / 2;
-      }
+    if (base) {
+      scale = Math.min(viewportW / base.width, viewportH / base.height);
+      offsetX = (viewportW - base.width * scale) / 2;
+      offsetY = (viewportH - base.height * scale) / 2;
     }
 
     // Fit the country into the middle 60% of the visible area so it has room around it
     const fitZoom = Math.min(
       (visibleW * 0.6) / (pathBounds.width * scale),
-      (viewportH * 0.6) / (pathBounds.height * scale)
+      (visibleH * 0.6) / (pathBounds.height * scale)
     );
     const newZoom = Math.min(getMaxZoom(root), Math.max(1, fitZoom));
 
     // Center the country in the visible area: viewBox (pathCenterX, pathCenterY) -> viewport = pan + (offset + pathCenter*scale)*zoom
     const rawPanX = visibleW / 2 - (offsetX + pathCenterX * scale) * newZoom;
-    const rawPanY = viewportH / 2 - (offsetY + pathCenterY * scale) * newZoom;
+    const rawPanY = vertical.top + visibleH / 2 - (offsetY + pathCenterY * scale) * newZoom;
     const { panX: newPanX, panY: newPanY } = getClampedPan(viewportW, viewportH, newZoom, rawPanX, rawPanY);
 
     zoomedToRef.current = { code: path.id.toUpperCase(), zoom: newZoom, panX: newPanX, panY: newPanY };
@@ -1171,7 +1269,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   return (
     <>
       {/* Search bar */}
-      <div className="absolute top-4 left-4 right-4 z-20 sm:right-auto sm:w-full sm:max-w-[38ch]">
+      <div data-map-search className="absolute top-4 left-4 right-4 z-20 sm:right-auto sm:w-full sm:max-w-[38ch]">
         <div className="relative">
           <input
             ref={searchInputRef}
@@ -1279,7 +1377,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         key={selectedCode ? "docked" : "free"}
         className={`absolute top-20 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
-            ? "md:right-[25rem] lg:right-[29rem] map-controls-docked max-md:invisible max-md:opacity-0"
+            ? `md:right-[25rem] lg:right-[29rem] map-controls-docked ${
+                sheetPeek ? "" : "max-md:invisible max-md:opacity-0"
+              }`
             : "map-controls-free"
         }`}
       >
@@ -1321,6 +1421,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {/* Legends share one bottom row while there is room for both. Each has a minimum width (larger
           when expanded), so on a narrow screen they stack instead of squeezing their text. */}
       <div
+        data-map-legends
         className={`absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none sm:right-auto sm:flex-nowrap ${
           // Tablet widths with the panel docked leave room for only one legend column
           selectedCode ? "md:max-lg:flex-col md:max-lg:items-start" : ""
@@ -1531,7 +1632,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {hoveredCountryData && (
         <div
           ref={tooltipRef}
-          className="fixed pointer-events-none z-50 bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg"
+          className="map-tooltip fixed pointer-events-none z-50 bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg"
           style={{
             display: "inline-flex",
             flexDirection: "row",

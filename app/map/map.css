@@ -23,6 +23,9 @@
   max-height: none !important;
   /* Ensure transform is not overridden */
   transform-origin: 0 0 !important;
+  /* Draw past the SVG's own box into the container's 16px padding, so a zoomed-in map reaches
+     the screen edges (the container still clips it) */
+  overflow: visible !important;
 }
 
 /* Default: all paths should have a fill (neutral gray for unrated) */
@@ -140,6 +143,14 @@
   transform: translateY(4px);
 }
 
+/* The hover label is for pointers that can hover. On touch-only devices a tap would leave it
+   stuck on screen, so it is never shown there. */
+@media (hover: none) {
+  .map-tooltip {
+    display: none !important;
+  }
+}
+
 /* ---- Motion ---- */
 
 /* Registered so the zoom factor can be interpolated: keeps border widths steady during animated zooms */
@@ -194,6 +205,19 @@
   from {
     opacity: 0;
     transform: translateX(32px);
+  }
+}
+
+/* Bottom sheet resting positions (phones). "peek" leaves a third of the screen covered so the
+   map above stays visible; the fraction matches SHEET_PEEK_FRACTION in Modal.tsx / WorldMap.tsx.
+   Moving between positions is animated; dragging overrides this with an inline transform. */
+@media (max-width: 767px) {
+  [data-country-panel] {
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-country-panel][data-sheet-state="peek"] {
+    transform: translateY(calc(100% - 33.333dvh));
   }
 }
 
@@ -255,6 +279,10 @@
 @media (prefers-reduced-motion: reduce) {
   .map-container[data-animating="true"],
   .map-container[data-animating="true"] svg {
+    transition: none;
+  }
+
+  [data-country-panel] {
     transition: none;
   }
 

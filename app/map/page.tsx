@@ -10,6 +10,9 @@ export default function MapPage() {
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [zoomToCountryCode, setZoomToCountryCode] = useState<string | null>(null);
   const [highlightOnlyCode, setHighlightOnlyCode] = useState<string | null>(null);
+  // Phone bottom sheet: "full" covers the map; "peek" leaves the top two thirds of the screen free
+  // so the country can be seen on the map with its details still within reach.
+  const [sheetState, setSheetState] = useState<"full" | "peek">("full");
   // Deep link: open the country named in ?country=XX once the data has loaded
   const urlSyncReadyRef = useRef(false);
   useEffect(() => {
@@ -35,17 +38,16 @@ export default function MapPage() {
 
   const handleCloseModal = () => {
     setSelectedCode(null);
+    setSheetState("full");
   };
 
   const handleShowOnMap = () => {
     if (!selectedCode) return;
+    // Side panel (wide screens): details stay open, the country is centred beside the panel.
+    // Bottom sheet (phones): the sheet drops to its "peek" height and the country is centred
+    // in the free space above it.
+    if (!window.matchMedia("(min-width: 768px)").matches) setSheetState("peek");
     setZoomToCountryCode(selectedCode);
-    // With the side panel (wide screens) the details stay open and the country is centred beside it.
-    // On narrow screens the dialog covers the map, so close it and keep the country highlighted.
-    if (!window.matchMedia("(min-width: 768px)").matches) {
-      setHighlightOnlyCode(selectedCode);
-      setSelectedCode(null);
-    }
   };
 
   const handleSelectCountry = useCallback((code: string) => {
@@ -67,6 +69,7 @@ export default function MapPage() {
           highlightOnlyCode={highlightOnlyCode}
           onClearHighlightOnly={() => setHighlightOnlyCode(null)}
           onClearSelection={handleCloseModal}
+          sheetPeek={sheetState === "peek"}
         />
       </main>
 
@@ -93,6 +96,8 @@ export default function MapPage() {
           onClose={handleCloseModal}
           onShowOnMap={handleShowOnMap}
           onSelectCountry={setSelectedCode}
+          sheetState={sheetState}
+          onSheetStateChange={setSheetState}
         />
       )}
     </div>

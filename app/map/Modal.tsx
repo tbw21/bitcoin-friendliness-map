@@ -10,7 +10,14 @@ export interface ModalProps {
   onClose: () => void;
   onShowOnMap?: () => void;
   onSelectCountry?: (code: string) => void;
+  /** Bottom sheet position on phones; ignored by the docked side panel */
+  sheetState?: "full" | "peek";
+  onSheetStateChange?: (state: "full" | "peek") => void;
 }
+
+// Share of the screen height the sheet covers in its "peek" position. Keep in step with
+// the peek rule in map.css and SHEET_PEEK_FRACTION in WorldMap.tsx.
+const SHEET_PEEK_FRACTION = 1 / 3;
 
 // Tinted background + border in the score's palette colour (badge and dimension cards)
 function scoreTint(score: number): React.CSSProperties {
@@ -43,7 +50,14 @@ function formatCountryName(name: string): string {
   return name;
 }
 
-export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap, onSelectCountry }) => {
+export const Modal: React.FC<ModalProps> = ({
+  countryCode,
+  onClose,
+  onShowOnMap,
+  onSelectCountry,
+  sheetState = "full",
+  onSheetStateChange,
+}) => {
   const country = getCountry(countryCode);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const [flagError, setFlagError] = useState(false);
@@ -85,7 +99,7 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
   // be dragged down by its handle/header to close. From md up it is the docked side panel.
   const panelRef = useRef<HTMLDivElement | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
-  const dragRef = useRef<{ startY: number; startTime: number; dragging: boolean } | null>(null);
+  const dragRef = useRef<{ startY: number; startTime: number; dragging: boolean; base: number } | null>(null);
   const suppressClickRef = useRef(false);
   const isSheet = () => !window.matchMedia("(min-width: 768px)").matches;
 
@@ -102,9 +116,16 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
     window.setTimeout(onClose, 220);
   }, [onClose]);
 
+  // The sheet rests at one of three positions: full (0), peek, or closed (its own height).
+  // Resting positions come from CSS ([data-sheet-state] in map.css); while a finger is dragging,
+  // an inline transform follows it, and on release the inline style is dropped so the CSS
+  // position (and its transition) takes over.
   const handleDragStart = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isSheet() || (event.pointerType === "mouse" && event.button !== 0)) return;
-    dragRef.current = { startY: event.clientY, startTime: performance.now(), dragging: false };
+    const panel = panelRef.current;
+    if (!panel || !isSheet() || (event.pointerType === "mouse" && event.button !== 0)) return;
+    const restTop = window.innerHeight - panel.offsetHeight;
+    const base = Math.max(0, panel.getBoundingClientRect().top - restTop);
+    dragRef.current = { startY: event.clientY, startTime: performance.now(), dragging: false, base };
   };
 
   const handleDragMove = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -113,7 +134,7 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
     if (!drag || !panel) return;
     const deltaY = event.clientY - drag.startY;
     // A few pixels of slack so taps on the buttons in the header still register as taps
-    if (!drag.dragging && deltaY > 6) {
+    if (!drag.dragging && Math.abs(deltaY) > 6) {
       drag.dragging = true;
       panel.style.transition = "none";
       // Keep receiving the gesture even if the finger leaves the header; not fatal if unsupported
@@ -123,7 +144,7 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
         /* pointer already released */
       }
     }
-    if (drag.dragging) panel.style.transform = `translateY(${Math.max(0, deltaY)}px)`;
+    if (drag.dragging) panel.style.transform = `translateY(${Math.max(0, drag.base + deltaY)}px)`;
   };
 
   const handleDragEnd = (event: React.PointerEvent<HTMLDivElement>) => {
@@ -136,15 +157,36 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
     window.setTimeout(() => {
       suppressClickRef.current = false;
     }, 0);
+
+    const height = panel.offsetHeight;
+    const peek = Math.max(0, height - window.innerHeight * SHEET_PEEK_FRACTION);
     const deltaY = event.clientY - drag.startY;
-    const velocity = deltaY / Math.max(1, performance.now() - drag.startTime);
-    // Far enough or flicked fast enough: dismiss. Otherwise settle back into place.
-    if (deltaY > 110 || velocity > 0.6) {
+    const position = Math.min(height, Math.max(0, drag.base + deltaY));
+    const velocity = deltaY / Math.max(1, performance.now() - drag.startTime); // px per ms, + is down
+
+    let target: "full" | "peek" | "closed";
+    if (velocity > 1.5 && sheetState === "full") target = "closed"; // hard flick: all the way
+    else if (velocity > 0.6) target = sheetState === "full" ? "peek" : "closed"; // flick down: one step
+    else if (velocity < -0.6) target = "full"; // flick up
+    else if (position < peek / 2) target = "full";
+    else if (position < (peek + height) / 2) target = "peek";
+    else target = "closed";
+
+    if (target === "closed") {
       closeAnimated();
-    } else {
-      panel.style.transition = "transform 200ms cubic-bezier(0.22, 1, 0.36, 1)";
-      panel.style.transform = "";
+      return;
     }
+    // Hand back to CSS: it animates from where the finger let go to the resting position
+    panel.style.transition = "";
+    panel.style.transform = "";
+    if (target !== sheetState) onSheetStateChange?.(target);
+  };
+
+  // Tapping the handle: expands a peeking sheet, closes a full one
+  const handleHandleClick = () => {
+    if (suppressClickRef.current) return;
+    if (isSheet() && sheetState === "peek") onSheetStateChange?.("full");
+    else closeAnimated();
   };
 
   useEffect(() => {
@@ -172,12 +214,15 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
       aria-label={`Details for ${formattedName}`}
     >
       {/* Fixed height on small screens so the sheet's top edge stays put whatever the content length;
-          only the section under the header scrolls. */}
+          only the section under the header scrolls. The top edge sits 16px below the search bar,
+          the same gap the search bar has to the top of the screen: 16px + 46px bar + 16px = 78px
+          (4.875rem). Keep in step with the search bar's position and height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="flex flex-col w-full h-[80dvh] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className="flex flex-col w-full h-[calc(100dvh-4.875rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
         onClick={(event) => event.stopPropagation()}
         data-country-panel
+        data-sheet-state={sheetState}
       >
         {/* Header: stays in place; on the sheet it is also the drag area */}
         <div
@@ -192,12 +237,10 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
           <button
             ref={handleRef}
             type="button"
-            onClick={() => {
-              if (!suppressClickRef.current) closeAnimated();
-            }}
+            onClick={handleHandleClick}
             className="flex w-full items-center justify-center pt-2.5 pb-3 cursor-grab md:hidden"
-            aria-label="Close details"
-            title="Drag down or tap to close"
+            aria-label={sheetState === "peek" ? "Expand details" : "Close details"}
+            title={sheetState === "peek" ? "Drag up or tap to expand" : "Drag down or tap to close"}
           >
             <span className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
           </button>
