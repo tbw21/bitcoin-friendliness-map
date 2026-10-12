@@ -1,5 +1,6 @@
 """Add nautical-chart furniture to the Equal Earth map: graticule, neatline frame with degree
-labels, a compass rose with rhumb lines, and sea names. Everything goes in one group drawn
+labels, a compass ring holding the brand logo (with the wordmark below and rhumb lines fanning
+out), and sea names. Everything goes in one group drawn
 underneath the countries, so it only shows over water. Styling lives in app/map/map.css.
 
     python3 scripts/make-nautical-map.py public/world_equal_earth.svg public/world_equal_earth_nautical.svg
@@ -36,7 +37,10 @@ def meridian(lon):
     return [project(lon, LAT_S + (LAT_N - LAT_S) * i / 60) for i in range(61)]
 
 def parallel(lat):
-    return [project(LON_W + (LON_E - LON_W) * i / 90, lat) for i in range(91)]
+    # Parallels are straight in this projection. Run them the full width of the chart, edge to
+    # edge, rather than stopping at the map's curved sides, so they all have the same length.
+    y = project(LON0, lat)[1]
+    return [(0, y), (W, y)]
 
 for lon in range(-150, 181, 30):
     out.append('<polyline class="chart-grid" points="%s"/>' % pts(meridian(lon)))
@@ -46,9 +50,16 @@ out.append('<polyline class="chart-grid chart-grid-major" points="%s"/>' % pts(p
 for lat in (-23.44, 23.44, 66.56):  # tropics and Arctic Circle
     out.append('<polyline class="chart-grid chart-grid-dash" points="%s"/>' % pts(parallel(lat)))
 
-# ---- compass rose with rhumb lines (South Pacific, clear of land)
-cx, cy = project(-128, -36)
-R = 34.0
+# ---- compass ring with the brand logo, wordmark and rhumb lines (South Pacific, clear of land)
+LOGO_FILE = __file__.rsplit("/", 1)[0] + "/assets/tbw-wordmark-centered.svg"
+brand = open(LOGO_FILE, encoding="utf-8").read()
+brand_paths = re.findall(r"<path\b[^>]*?\bd=\"([^\"]+)\"[^>]*?/>", brand)
+# In the brand file the logo (wheel) is every path but the last; it sits in a 400x400 box
+# centred on (404, 200). The last path is the wordmark, spanning x 2..811, y 449..585.
+logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
+
+cx, cy = project(-128, -27)
+R = 38.0
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []
 for i in range(32):
@@ -57,31 +68,27 @@ for i in range(32):
         " chart-rhumb-major" if i % 4 == 0 else "", f(cx), f(cy), f(cx + 2200 * math.sin(a)), f(cy - 2200 * math.cos(a))))
 out.append('<g clip-path="url(#chart-clip)">%s</g>' % "".join(rh))
 
-rose = ['<circle class="chart-rose-ring" cx="%s" cy="%s" r="%s"/>' % (f(cx), f(cy), f(R * r)) for r in (1.0, 0.92, 0.5)]
-for i in range(72):  # degree ticks between the two outer rings
+rose = ['<circle class="chart-rose-backdrop" cx="%s" cy="%s" r="%s"/>' % (f(cx), f(cy), f(R))]
+rose += ['<circle class="chart-rose-ring" cx="%s" cy="%s" r="%s"/>' % (f(cx), f(cy), f(R * r)) for r in (1.0, 0.92)]
+for i in range(72):  # degree ticks between the two rings
     a = math.radians(i * 5)
     r0 = R * (0.86 if i % 2 == 0 else 0.89)
     rose.append('<line class="chart-rose-tick" x1="%s" y1="%s" x2="%s" y2="%s"/>' % (
         f(cx + r0 * math.sin(a)), f(cy - r0 * math.cos(a)), f(cx + R * 0.92 * math.sin(a)), f(cy - R * 0.92 * math.cos(a))))
-
-def point(angle_deg, length, half_width, cls_a, cls_b):
-    a = math.radians(angle_deg)
-    tip = (cx + length * math.sin(a), cy - length * math.cos(a))
-    l = (cx + half_width * math.sin(a - math.pi / 2), cy - half_width * math.cos(a - math.pi / 2))
-    r = (cx + half_width * math.sin(a + math.pi / 2), cy - half_width * math.cos(a + math.pi / 2))
-    return ('<polygon class="%s" points="%s"/>' % (cls_a, pts([tip, l, (cx, cy)])) +
-            '<polygon class="%s" points="%s"/>' % (cls_b, pts([tip, r, (cx, cy)])))
-
-for ang in (22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5):
-    rose.append(point(ang, R * 0.48, R * 0.045, "chart-rose-dark", "chart-rose-light"))
-for ang in (45, 135, 225, 315):
-    rose.append(point(ang, R * 0.68, R * 0.07, "chart-rose-dark", "chart-rose-light"))
-for ang in (90, 180, 270):
-    rose.append(point(ang, R * 0.84, R * 0.09, "chart-rose-dark", "chart-rose-light"))
-rose.append(point(0, R * 0.84, R * 0.09, "chart-rose-north", "chart-rose-light"))
-rose.append('<circle class="chart-rose-hub" cx="%s" cy="%s" r="%s"/>' % (f(cx), f(cy), f(R * 0.035)))
+# north marker on the ring, and the letter above it
+rose.append('<polygon class="chart-rose-north" points="%s"/>' % pts(
+    [(cx, cy - R * 1.0), (cx - R * 0.05, cy - R * 0.86), (cx + R * 0.05, cy - R * 0.86)]))
 rose.append('<text class="chart-rose-letter" x="%s" y="%s" text-anchor="middle">N</text>' % (f(cx), f(cy - R * 1.09)))
 out.append('<g class="chart-rose">%s</g>' % "".join(rose))
+
+logo_scale = (2 * R * 0.80) / 400
+out.append('<g class="chart-logo" transform="translate(%s %s) scale(%s) translate(-404 -200)">%s</g>' % (
+    f(cx), f(cy), "%.5f" % logo_scale,
+    "".join('<path fill-rule="evenodd" clip-rule="evenodd" d="%s"/>' % d for d in logo_paths)))
+word_scale = (2 * R * 1.5) / 809
+out.append('<g class="chart-wordmark" transform="translate(%s %s) scale(%s) translate(-406.8 -448.8)"><path d="%s"/></g>' % (
+    f(cx), f(cy + R * 1.2), "%.5f" % word_scale, wordmark_path))
+WORDMARK_BOTTOM = cy + R * 1.2 + 136 * word_scale
 
 # ---- neatline frame with degree labels
 out.append('<rect class="chart-frame" x="-9" y="-9" width="%s" height="%s"/>' % (f(W + 18), f(H + 18)))
@@ -119,4 +126,4 @@ i = svg.index("  <path ")
 svg = svg[:i] + group + svg[i:]
 svg = svg.replace("<!-- Equal Earth projection", "<!-- Nautical chart edition (scripts/make-nautical-map.py). Equal Earth projection", 1)
 open(dst, "w", encoding="utf-8").write(svg)
-print("wrote", dst, "with", len(out), "chart elements; rose at", f(cx), f(cy))
+print("wrote", dst, "with", len(out), "chart elements; compass at", f(cx), f(cy), "wordmark bottom", f(WORDMARK_BOTTOM), "of", H)
