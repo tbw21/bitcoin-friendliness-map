@@ -257,14 +257,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const isPanningRef = useRef(false);
   const lastPanPointRef = useRef({ x: 0, y: 0 });
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  const [legendOpen, setLegendOpen] = useState(true);
+  // Both legends start folded on every screen size, so the map gets the space
+  const [legendOpen, setLegendOpen] = useState(false);
   const [selectedLegendScores, setSelectedLegendScores] = useState<number[]>([]);
   const toggleLegendScore = useCallback((score: number) => {
     setSelectedLegendScores((prev) =>
       prev.includes(score) ? prev.filter((s) => s !== score) : [...prev, score]
     );
   }, []);
-  const [topCountriesLegendOpen, setTopCountriesLegendOpen] = useState(true);
+  const [topCountriesLegendOpen, setTopCountriesLegendOpen] = useState(false);
   const [topCountries, setTopCountries] = useState<Array<{ code: string; name: string; rank: number; score: number; scoreLabel: string }>>([]);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   // When the last touch happened: browsers follow a tap with made-up mouse events, which must not
@@ -281,16 +282,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const touchStartCenterRef = useRef({ x: 0, y: 0 });
   const touchStartCenterViewportRef = useRef({ x: 0, y: 0 });
   const lastDoubleClickTimeRef = useRef(0);
-
-  // On narrow screens start with both legends collapsed so the map gets the space
-  useEffect(() => {
-    if (window.innerWidth >= 640) return;
-    const rafId = requestAnimationFrame(() => {
-      setLegendOpen(false);
-      setTopCountriesLegendOpen(false);
-    });
-    return () => cancelAnimationFrame(rafId);
-  }, []);
 
   // Programmatic moves animate (see [data-animating] in map.css); direct manipulation must not,
   // so drag, wheel and pinch call stopAnimation() first.
