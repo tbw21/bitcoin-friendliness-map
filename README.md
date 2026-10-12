@@ -140,5 +140,5 @@ the height it is given, so the iframe needs an explicit height.
 ## Notes
 
 - Flag images are loaded from [flagcdn.com](https://flagcdn.com), a third-party service.
-- The root route (`/`) is still the default Next.js starter page; the app is at `/map`.
+- The root route (`/`) redirects to `/map`, where the app lives.
 - Built with Next.js 16, React 19, TypeScript and Tailwind CSS 4.
