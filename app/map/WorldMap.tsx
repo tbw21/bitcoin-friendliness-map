@@ -500,6 +500,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleMouseMove = (event: MouseEvent) => {
       if (isPanningRef.current) {
+        // Dragging the map: the flag-and-name label goes away until the mouse hovers again
+        if (hoveredCountryRef.current !== null) setHoveredCountry(null);
+        if (tooltipRef.current) tooltipRef.current.style.visibility = "hidden";
         const deltaX = event.clientX - lastPanPointRef.current.x;
         const deltaY = event.clientY - lastPanPointRef.current.y;
         // Limits are applied in the transform effect (getClampedPan)
