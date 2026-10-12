@@ -569,12 +569,12 @@
   letter-spacing: 0.34em;
   text-transform: uppercase;
   fill: rgba(242, 238, 230, 0.26);
-  opacity: clamp(0, calc(1.3 - var(--map-zoom, 1) / 5), 1);
+  opacity: clamp(0, calc(1.4 - var(--map-zoom, 1) / 8), 1);
 }
 
 .map-container svg .chart-sea-label-small {
   letter-spacing: 0.22em;
-  opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(1.8 - var(--map-zoom, 1) / 14)), 1);
+  opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(2 - var(--map-zoom, 1) / 25)), 1);
 }
 
 /* Film grain. Two separate layers, each with its own texture and strength (set in page.tsx):
