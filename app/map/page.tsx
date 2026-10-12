@@ -18,7 +18,7 @@ import { paletteVars } from "@/data/palettes";
 // The map and the interface each have their own grain: the map's is part of the map and moves
 // with it; the interface's sits on the panels and controls.
 type GrainKind = "mono" | "duo" | "multi";
-const DUO_DARK_GAIN = 3;
+const DUO_DARK_GAIN = 2;
 // gain: how much stronger than the strength setting the layer is drawn (the texture itself makes
 // up for it where needed)
 const GRAIN_KINDS: Record<GrainKind, { label: string; filter: string; gain: number }> = {
