@@ -1585,15 +1585,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </li>
             ))}
           </ul>
-          {/* Not a filter: explains the grey used for places without a score */}
-          <div className="mt-1 flex items-center gap-2 border-t border-zinc-200 px-1 pt-1.5 text-[0.8125rem] dark:border-zinc-700 legend-content-slide">
-            <span
-              className="h-2.5 w-2.5 shrink-0 rounded-full border border-zinc-400 dark:border-zinc-500"
-              style={{ backgroundColor: "var(--no-data)" }}
-              aria-hidden="true"
-            />
-            <span className="text-zinc-600 dark:text-zinc-400">No data</span>
-          </div>
         </div>
       ) : (
         <div
@@ -1610,7 +1601,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1px]">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1697,7 +1688,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1px]">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
