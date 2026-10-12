@@ -332,8 +332,20 @@
   pointer-events: none;
 }
 
+/* Country borders take the sea's own colour here. The base app uses the page background, which
+   is darker than this chart's sea and showed as a dark edge along every coast. */
+.map-container svg path.country-shape {
+  stroke: #06203a !important;
+}
+
+.map-container svg path.country-shape.selected-country {
+  stroke: #ffffff !important;
+}
+
 /* Water lining: three smooth rings following the coast, fading out to sea. They also make
-   small islands easier to spot. (They are <path>s, so fill must be switched off explicitly.) */
+   small islands easier to spot. (They are <path>s, so fill must be switched off explicitly.)
+   Zoomed right out the rings would sit less than a pixel apart and merge into a heavy band,
+   so only a faint first ring shows there; the other two fade in as you zoom in. */
 .map-container svg path.chart-coast {
   fill: none !important;
   stroke: #afbdce;
@@ -342,17 +354,17 @@
 }
 
 .map-container svg path.chart-coast-1 {
-  stroke-opacity: 0.42;
+  stroke-opacity: clamp(0.14, calc(0.11 * var(--map-zoom, 1)), 0.42);
   stroke-width: calc(0.5 / var(--map-zoom, 1));
 }
 
 .map-container svg path.chart-coast-2 {
-  stroke-opacity: 0.26;
+  stroke-opacity: clamp(0, calc(0.12 * (var(--map-zoom, 1) - 1.4)), 0.26);
   stroke-width: calc(0.45 / var(--map-zoom, 1));
 }
 
 .map-container svg path.chart-coast-3 {
-  stroke-opacity: 0.14;
+  stroke-opacity: clamp(0, calc(0.07 * (var(--map-zoom, 1) - 2)), 0.14);
   stroke-width: calc(0.4 / var(--map-zoom, 1));
 }
 
@@ -472,7 +484,7 @@
   inset: 0;
   z-index: 100;
   pointer-events: none;
-  opacity: 0.2;
+  opacity: 0.28;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.6' intercept='-0.15'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
   background-size: 240px 240px;

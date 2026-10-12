@@ -65,8 +65,9 @@ brand_paths = re.findall(r"<path\b[^>]*?\bd=\"([^\"]+)\"[^>]*?/>", brand)
 logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
 
 cx, cy = project(-128, -30)
-R = 9.5          # radius of the compass ring that holds the logo
-WORDMARK_W = 57  # width of the wordmark, sized independently of the ring
+R = 19.0         # radius of the compass ring (the pale circle with degree ticks)
+LOGO_FILL = 0.40 # logo diameter as a share of the ring's diameter; sized independently of the ring
+WORDMARK_W = 57  # width of the wordmark, sized independently of both
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []
 for i in range(32):
@@ -89,7 +90,7 @@ rose.append('<text class="chart-rose-letter" font-size="%s" x="%s" y="%s" text-a
     f(R * 0.21), f(cx), f(cy - R * 1.09)))
 out.append('<g class="chart-rose">%s</g>' % "".join(rose))
 
-logo_scale = (2 * R * 0.80) / 400
+logo_scale = (2 * R * LOGO_FILL) / 400
 out.append('<g class="chart-logo" transform="translate(%s %s) scale(%s) translate(-404 -200)">%s</g>' % (
     f(cx), f(cy), "%.5f" % logo_scale,
     "".join('<path fill-rule="evenodd" clip-rule="evenodd" d="%s"/>' % d for d in logo_paths)))
