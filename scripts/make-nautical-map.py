@@ -28,6 +28,26 @@ def project(lon, lat):
     return (x - MINX) * K, (y - MINY) * K
 
 
+def meridian_lean(x, y):
+    """Angle (degrees, for SVG skewX) by which the meridian through map point (x, y) leans away
+    from vertical. Found by inverting the projection: y gives the latitude, then x the longitude."""
+    yn = y / K + MINY
+    fy = lambda l: -l * (A1 + A2 * l * l + l ** 6 * (A3 + A4 * l * l))
+    lo, hi = -math.pi / 3, math.pi / 3      # fy falls as l rises
+    for _ in range(60):
+        mid = (lo + hi) / 2
+        if fy(mid) > yn:
+            lo = mid
+        else:
+            hi = mid
+    l = (lo + hi) / 2
+    fx = lambda lam, l: lam * math.cos(l) / (M * (A1 + 3 * A2 * l * l + l ** 6 * (7 * A3 + 9 * A4 * l * l)))
+    lam = (x / K + MINX) / fx(1.0, l)
+    e = 1e-4
+    lean = math.degrees(math.atan((fx(lam, l + e) - fx(lam, l - e)) / (fy(l + e) - fy(l - e))))
+    return max(-32.0, min(32.0, lean))
+
+
 f = lambda v: ("%.2f" % v).rstrip("0").rstrip(".")
 pts = lambda ps: " ".join(f(x) + "," + f(y) for x, y in ps)
 out = []
@@ -48,13 +68,18 @@ def parallel(lat):
     y = project(LON0, lat)[1]
     return [(0, y), (W, y)]
 
+grid = []
 for lon in range(-150, 181, 30):
-    out.append('<polyline class="chart-grid" points="%s"/>' % pts(meridian(lon)))
+    grid.append('<polyline class="chart-grid" points="%s"/>' % pts(meridian(lon)))
 for lat in (-30, 30, 60):
-    out.append('<polyline class="chart-grid" points="%s"/>' % pts(parallel(lat)))
-out.append('<polyline class="chart-grid chart-grid-major" points="%s"/>' % pts(parallel(0)))
+    grid.append('<polyline class="chart-grid" points="%s"/>' % pts(parallel(lat)))
+grid.append('<polyline class="chart-grid chart-grid-major" points="%s"/>' % pts(parallel(0)))
 for lat in (-23.44, 23.44, 66.56):  # tropics and Arctic Circle
-    out.append('<polyline class="chart-grid chart-grid-dash" points="%s"/>' % pts(parallel(lat)))
+    grid.append('<polyline class="chart-grid chart-grid-dash" points="%s"/>' % pts(parallel(lat)))
+# Drawn twice: here under the countries, in the light line that shows on the sea, and again on
+# top of the countries (the chart-over group at the end of the file) in a dark line that shows
+# on the land, so the grid runs across the whole chart as on a printed map.
+out += grid
 
 # ---- compass ring with the brand logo, wordmark and rhumb lines (South Pacific, clear of land)
 LOGO_FILE = __file__.rsplit("/", 1)[0] + "/assets/tbw-wordmark-centered.svg"
@@ -124,12 +149,20 @@ for line in open(LABEL_FILE, encoding="utf-8").read().splitlines():
     x, y, fs = float(x), float(y), float(fs)
     lines = name.split("|")
     y0 = y - (len(lines) - 1) * fs * 0.62
+    # Each line is upright lettering leaned to follow the meridian (the curved north-south grid
+    # line) where it stands: leaning right in the north-west, left in the north-east, and the
+    # other way round south of the equator, like lettering on a globe.
     # Letter-spacing also adds a gap after the last letter, which would push the visible letters
     # left of centre by half a gap (spacing as in map.css)
     xc = x + (0.22 if small == "1" else 0.34) * fs / 2
-    spans = "".join('<tspan x="%s" y="%s">%s</tspan>' % (f(xc), f(y0 + i * fs * 1.25), t) for i, t in enumerate(lines))
     cls = "chart-sea-label" + (" chart-sea-label-small" if small == "1" else "")
-    out.append('<text class="%s" font-size="%s" text-anchor="middle">%s</text>' % (cls, f(fs), spans))
+    ymid = y0 + (len(lines) - 1) * fs * 1.25 / 2
+    stack = math.tan(math.radians(meridian_lean(xc, ymid - fs * 0.35)))
+    for i, t in enumerate(lines):
+        yl = y0 + i * fs * 1.25
+        xl = xc + (yl - ymid) * stack      # the lines are stacked along the meridian too
+        out.append('<text class="%s" font-size="%s" text-anchor="middle" transform="translate(%s %s) skewX(%s)">%s</text>'
+                   % (cls, f(fs), f(xl), f(yl), f(meridian_lean(xl, yl - fs * 0.35)), t))
 
 group = '  <g class="chart" aria-hidden="true">\n    ' + "\n    ".join(out) + "\n  </g>\n"
 
@@ -141,5 +174,9 @@ group += '  <g class="hit-areas" aria-hidden="true">\n    ' + "\n    ".join(hit)
 i = svg.index("  <path ")
 svg = svg[:i] + group + svg[i:]
 svg = svg.replace("<!-- Equal Earth projection", "<!-- Nautical chart edition (scripts/make-nautical-map.py). Equal Earth projection", 1)
+# ---- the grid again, on top of the countries
+over = '  <g class="chart chart-over" aria-hidden="true">\n    ' + "\n    ".join(grid) + "\n  </g>\n"
+i = svg.rindex("</svg>")
+svg = svg[:i] + over + svg[i:]
 open(dst, "w", encoding="utf-8").write(svg)
 print("wrote", dst, "with", len(out), "chart elements,", len(hit), "tap areas; compass at", f(cx), f(cy), "wordmark bottom", f(WORDMARK_BOTTOM), "of", H)

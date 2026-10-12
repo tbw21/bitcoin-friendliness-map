@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { initializeCountries, getAllCountries } from "@/data/countriesCsv";
 import WorldMap from "./WorldMap";
 import Modal from "./Modal";
+import CursorDebug from "./CursorDebug";
 import { paletteVars } from "@/data/palettes";
 
 // Film grain: fine specks in many colours, drawn as their own dots laid straight on top (no
@@ -26,6 +27,13 @@ export default function MapPage() {
   // Phone bottom sheet: "full" covers the map; "peek" leaves the top two thirds of the screen free
   // so the country can be seen on the map with its details still within reach.
   const [sheetState, setSheetState] = useState<"full" | "peek">("full");
+  // TEMPORARY (cursor flicker hunt): ?debug=cursor shows the cursor readout
+  const [cursorDebug, setCursorDebug] = useState(false);
+  useEffect(() => {
+    const on = new URLSearchParams(window.location.search).get("debug") === "cursor";
+    const rafId = requestAnimationFrame(() => setCursorDebug(on));
+    return () => cancelAnimationFrame(rafId);
+  }, []);
   // Deep link: open the country named in ?country=XX once the data has loaded
   const urlSyncReadyRef = useRef(false);
   useEffect(() => {
@@ -119,6 +127,8 @@ export default function MapPage() {
           }}
         />
       )}
+
+      {cursorDebug && <CursorDebug />}
 
       {selectedCode && (
         <Modal

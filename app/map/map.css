@@ -316,9 +316,8 @@
    section styles it. Line widths divide by --map-zoom so they stay hairlines at any zoom.
    ===================================================================================== */
 
-/* Brand typeface: Kepler (Adobe). Four cuts, each used at the size it was drawn for.
-   The files in /public/fonts are for local previews only and are not committed; for a deployed
-   site, Kepler has to be served through an Adobe Fonts web project (or a web licence). */
+/* Brand typeface: Kepler (Adobe). Five cuts, each used at the size it was drawn for.
+   The files are in /public/fonts. */
 @font-face {
   font-family: "Kepler Display Condensed";
   src: url("/fonts/KeplerStd-CnDisp.otf") format("opentype");
@@ -328,6 +327,14 @@
 @font-face {
   font-family: "Kepler Caption";
   src: url("/fonts/KeplerStd-MediumCapt.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kepler Subhead";
+  src: url("/fonts/KeplerStd-Subh.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -477,12 +484,22 @@
 /* Graticule */
 .map-container svg .chart-grid {
   fill: none;
-  stroke: rgba(242, 238, 230, 0.13);
+  stroke: rgba(242, 238, 230, 0.18);
   stroke-width: calc(0.5 / var(--map-zoom, 1));
 }
 
 .map-container svg .chart-grid-major {
-  stroke: rgba(242, 238, 230, 0.24);
+  stroke: rgba(242, 238, 230, 0.32);
+}
+
+/* The same grid drawn over the countries: a dark line, which shows on the land colours and all
+   but disappears over the sea, where the light line underneath does the work */
+.map-container svg .chart-over .chart-grid {
+  stroke: rgba(6, 32, 58, 0.3);
+}
+
+.map-container svg .chart-over .chart-grid-major {
+  stroke: rgba(6, 32, 58, 0.45);
 }
 
 .map-container svg .chart-grid-dash {
@@ -554,9 +571,11 @@
   fill: rgba(242, 238, 230, 0.42);
 }
 
-/* Sea names: spaced italic capitals that fade out as you zoom in; small seas fade in instead */
-.map-container svg .chart-sea-label {
-  font-style: italic;
+/* Sea names: spaced capitals that fade out as you zoom in; small seas fade in instead. Upright
+   lettering: each line is leaned in the map file to follow the meridians (make-nautical-map.py) */
+.map-container svg .chart text.chart-sea-label {
+  font-family: "Kepler Subhead", "Kepler Std", Didot, Georgia, serif;
+  font-style: normal;
   letter-spacing: 0.34em;
   text-transform: uppercase;
   fill: rgba(242, 238, 230, 0.26);
