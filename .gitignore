@@ -44,5 +44,3 @@ next-env.d.ts
 # editor debug logs
 .cursor/
 
-# Kepler font files are licensed (Adobe): used for local previews only, never committed
-/public/fonts/
