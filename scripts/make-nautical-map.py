@@ -112,22 +112,15 @@ for lat in (-30, 0, 30, 60):
     label = "0°" if lat == 0 else "%d°%s" % (abs(lat), "N" if lat > 0 else "S")
     out.append('<text class="chart-degree" x="-13" y="%s" text-anchor="end">%s</text>' % (f(y + 2), label))
 
-# ---- sea names
-SEAS = [
-    ("North|Atlantic|Ocean", -41, 33, 1.0), ("South|Atlantic|Ocean", -14, -29, 1.0),
-    ("North|Pacific|Ocean", -148, 33, 1.0), ("South|Pacific|Ocean", -108, -12, 1.0),
-    ("Pacific|Ocean", 167, 16, 0.85), ("Indian|Ocean", 77, -27, 1.0),
-    ("Southern Ocean", 60, -55, 0.8), ("Arctic Ocean", -150, 76, 0.7),
-    ("Mediterranean Sea", 18, 35.2, 0.28), ("Caribbean Sea", -75, 15, 0.3), ("Arabian|Sea", 64, 15, 0.38),
-    ("Bay of|Bengal", 89, 14, 0.34), ("Tasman|Sea", 160, -38, 0.4), ("Gulf of|Mexico", -90, 25, 0.3),
-]
-for name, lon, lat, size in SEAS:
-    x, y = project(lon, lat)
-    fs = 9.0 * size
+# ---- sea names (positions and sizes are fitted to open water by make-coast-rings.py)
+LABEL_FILE = __file__.rsplit("/", 1)[0] + "/assets/sea-labels.txt"
+for line in open(LABEL_FILE, encoding="utf-8").read().splitlines():
+    name, x, y, fs, small = line.split("\t")
+    x, y, fs = float(x), float(y), float(fs)
     lines = name.split("|")
     y0 = y - (len(lines) - 1) * fs * 0.62
     spans = "".join('<tspan x="%s" y="%s">%s</tspan>' % (f(x), f(y0 + i * fs * 1.25), t) for i, t in enumerate(lines))
-    cls = "chart-sea-label" + (" chart-sea-label-small" if size < 0.5 else "")
+    cls = "chart-sea-label" + (" chart-sea-label-small" if small == "1" else "")
     out.append('<text class="%s" font-size="%s" text-anchor="middle">%s</text>' % (cls, f(fs), spans))
 
 group = '  <g class="chart" aria-hidden="true">\n    ' + "\n    ".join(out) + "\n  </g>\n"

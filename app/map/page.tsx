@@ -6,43 +6,92 @@ import WorldMap from "./WorldMap";
 import Modal from "./Modal";
 import { paletteVars } from "@/data/palettes";
 
-// Film grain. One tiling noise texture, coloured and blended four ways:
-//  - dark:   only dark specks, laid straight on top (like dust or ink)
-//  - light:  only light specks
-//  - both:   grey grain that lightens some pixels and darkens others, leaving colours untinted
-//  - colour: the same, but each speck has its own tint, as in colour film
-type GrainMode = "dark" | "light" | "both" | "colour";
-const GRAIN_MODES: Record<GrainMode, { label: string; blend: "normal" | "overlay"; filter: string }> = {
-  dark: {
-    label: "Dark",
-    blend: "normal",
-    filter: "<feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.7 0.7 0.7 0 -0.72'/>",
+// Film grain, in the three kinds Figma's noise effect offers. Every kind draws its specks as
+// their own dots laid straight on top (no blending), so the grain looks the same on dark and
+// light areas instead of fading out on them.
+//  - mono:  specks of one colour (light)
+//  - duo:   light specks and dark specks, in different places
+//  - multi: specks in many colours
+// The map and the interface each have their own grain: the map's is part of the map and moves
+// with it; the interface's sits on the panels and controls.
+type GrainKind = "mono" | "duo" | "multi";
+const GRAIN_KINDS: Record<GrainKind, { label: string; filter: string }> = {
+  mono: {
+    label: "Mono",
+    filter: "<feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  5 0 0 0 -2.6'/>",
   },
-  light: {
-    label: "Light",
-    blend: "normal",
-    filter: "<feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0.7 0.7 0.7 0 -0.72'/>",
-  },
-  both: {
-    label: "Dark + light",
-    blend: "overlay",
+  duo: {
+    label: "Duo",
     filter:
-      "<feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncA type='linear' slope='1.6' intercept='-0.15'/></feComponentTransfer>",
+      "<feColorMatrix in='n' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  5 0 0 0 -2.6' result='light'/>" +
+      "<feColorMatrix in='n' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 5 0 0 -2.6' result='dark'/>" +
+      "<feMerge><feMergeNode in='dark'/><feMergeNode in='light'/></feMerge>",
   },
-  colour: {
-    label: "Colour",
-    blend: "overlay",
-    filter: "<feComponentTransfer><feFuncA type='linear' slope='1.6' intercept='-0.15'/></feComponentTransfer>",
+  multi: {
+    label: "Multi",
+    filter: "<feColorMatrix values='4 0 0 0 -1.5  0 4 0 0 -1.5  0 0 4 0 -1.5  2 2 2 0 -2.7'/>",
   },
 };
 
-function grainImage(mode: GrainMode): string {
+function grainImage(kind: GrainKind): string {
   const svg =
-    "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g'>" +
-    "<feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='11' stitchTiles='stitch'/>" +
-    GRAIN_MODES[mode].filter +
+    "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='g' color-interpolation-filters='sRGB'>" +
+    "<feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='11' stitchTiles='stitch' result='n'/>" +
+    GRAIN_KINDS[kind].filter +
     "</filter><rect width='240' height='240' filter='url(#g)'/></svg>";
   return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+// TEMPORARY (grain testing): one row of the test panel
+function GrainControl({
+  label,
+  kind,
+  strength,
+  onKind,
+  onStrength,
+}: {
+  label: string;
+  kind: GrainKind;
+  strength: number;
+  onKind: (kind: GrainKind) => void;
+  onStrength: (strength: number) => void;
+}) {
+  return (
+    <div className="flex flex-col gap-1">
+      <div className="flex items-center gap-2">
+        <span className="w-16 shrink-0 text-zinc-300">{label}</span>
+        <div className="flex gap-1" role="group" aria-label={`${label} grain type`}>
+          {(Object.keys(GRAIN_KINDS) as GrainKind[]).map((option) => (
+            <button
+              key={option}
+              type="button"
+              onClick={() => onKind(option)}
+              aria-pressed={kind === option}
+              className={`h-7 rounded px-2 font-semibold cursor-pointer transition-colors ${
+                kind === option ? "bg-white text-zinc-900" : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
+              }`}
+            >
+              {GRAIN_KINDS[option].label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <label className="flex items-center gap-2">
+        <span className="w-16 shrink-0" />
+        <input
+          type="range"
+          min={0}
+          max={100}
+          step={1}
+          value={strength}
+          onChange={(event) => onStrength(Number(event.target.value))}
+          className="h-6 w-full min-w-[8rem] cursor-pointer"
+          aria-label={`${label} grain strength`}
+        />
+        <span className="w-9 shrink-0 text-right tabular-nums">{strength}%</span>
+      </label>
+    </div>
+  );
 }
 
 export default function MapPage() {
@@ -50,8 +99,8 @@ export default function MapPage() {
   const [zoomToCountryCode, setZoomToCountryCode] = useState<string | null>(null);
   const [stepToCountryCode, setStepToCountryCode] = useState<string | null>(null);
   const [highlightOnlyCode, setHighlightOnlyCode] = useState<string | null>(null);
-  const [grainMode, setGrainMode] = useState<GrainMode>("both");
-  const [grainStrength, setGrainStrength] = useState(28);
+  const [mapGrain, setMapGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "mono", strength: 12 });
+  const [uiGrain, setUiGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "duo", strength: 40 });
   // Phone bottom sheet: "full" covers the map; "peek" leaves the top two thirds of the screen free
   // so the country can be seen on the map with its details still within reach.
   const [sheetState, setSheetState] = useState<"full" | "peek">("full");
@@ -107,7 +156,15 @@ export default function MapPage() {
   return (
     <div
       className="flex h-screen w-screen flex-col overflow-hidden"
-      style={{ ...paletteVars(), backgroundColor: "var(--map-bg)" }}
+      style={{
+        ...paletteVars(),
+        backgroundColor: "var(--map-bg)",
+        // Grain textures and strengths, picked up by .map-grain and .ui-grain in map.css
+        ["--map-grain-image" as string]: grainImage(mapGrain.kind),
+        ["--map-grain-opacity" as string]: mapGrain.strength / 100,
+        ["--ui-grain-image" as string]: grainImage(uiGrain.kind),
+        ["--ui-grain-opacity" as string]: uiGrain.strength / 100,
+      }}
     >
       <main className="flex flex-1 flex-col overflow-hidden">
         <WorldMap
@@ -141,49 +198,24 @@ export default function MapPage() {
         />
       )}
 
-      {/* Film grain over the whole view: purely decorative, never intercepts input */}
-      <div
-        className="grain-overlay"
-        aria-hidden="true"
-        style={{
-          backgroundImage: grainImage(grainMode),
-          mixBlendMode: GRAIN_MODES[grainMode].blend,
-          opacity: grainStrength / 100,
-        }}
-      />
-
-      {/* TEMPORARY (grain testing): pick the kind of grain and its strength. Remove before launch,
-          then hard-code the chosen values as the two useState defaults above. */}
+      {/* TEMPORARY (grain testing): choose the kind of grain and its strength, separately for the
+          map and the interface. Remove before launch, then hard-code the chosen values as the two
+          useState defaults above. */}
       <div className="absolute top-[4.5rem] left-4 z-10 flex flex-col gap-2 rounded-md border border-zinc-700 bg-zinc-900/95 p-2 text-xs text-white shadow-sm">
-        <div className="flex gap-1" role="group" aria-label="Grain type">
-          {(Object.keys(GRAIN_MODES) as GrainMode[]).map((mode) => (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => setGrainMode(mode)}
-              aria-pressed={grainMode === mode}
-              className={`h-8 rounded px-2 font-semibold cursor-pointer transition-colors ${
-                grainMode === mode ? "bg-white text-zinc-900" : "bg-zinc-800 text-zinc-200 hover:bg-zinc-700"
-              }`}
-            >
-              {GRAIN_MODES[mode].label}
-            </button>
-          ))}
-        </div>
-        <label className="flex items-center gap-2">
-          <span className="shrink-0 text-zinc-300">Grain</span>
-          <input
-            type="range"
-            min={0}
-            max={80}
-            step={1}
-            value={grainStrength}
-            onChange={(event) => setGrainStrength(Number(event.target.value))}
-            className="h-8 w-full min-w-[9rem] cursor-pointer"
-            aria-label="Grain strength"
-          />
-          <span className="w-9 shrink-0 text-right tabular-nums">{grainStrength}%</span>
-        </label>
+        <GrainControl
+          label="Map"
+          kind={mapGrain.kind}
+          strength={mapGrain.strength}
+          onKind={(kind) => setMapGrain((g) => ({ ...g, kind }))}
+          onStrength={(strength) => setMapGrain((g) => ({ ...g, strength }))}
+        />
+        <GrainControl
+          label="Interface"
+          kind={uiGrain.kind}
+          strength={uiGrain.strength}
+          onKind={(kind) => setUiGrain((g) => ({ ...g, kind }))}
+          onStrength={(strength) => setUiGrain((g) => ({ ...g, strength }))}
+        />
       </div>
 
       {selectedCode && (

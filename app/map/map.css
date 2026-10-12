@@ -522,12 +522,45 @@
   opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(1.8 - var(--map-zoom, 1) / 14)), 1);
 }
 
-/* Film grain across the whole view (map and interface) for a slightly printed, physical feel.
-   This only places the layer; its texture, blend mode and strength are set in page.tsx. */
-.grain-overlay {
-  position: fixed;
+/* Film grain. Two separate layers, each with its own texture and strength (set in page.tsx):
+
+   .map-grain  lies over the map only, under the search bar, legends and panels. Its texture is
+               shifted with the map as it is dragged or zoomed (WorldMap.tsx sets the position),
+               so it reads as the surface of the chart, not a screen in front of it.
+   .ui-grain   goes on interface surfaces (search bar, legends, buttons, details panel) and
+               stays put with them. */
+.map-grain {
+  position: absolute;
   inset: 0;
-  z-index: 100;
+  z-index: 5;
   pointer-events: none;
+  background-image: var(--map-grain-image);
   background-size: 240px 240px;
+  opacity: var(--map-grain-opacity, 0);
+}
+
+/* Glide in step with the map during animated moves */
+.map-grain[data-animating="true"] {
+  transition: background-position 550ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ui-grain {
+  position: relative;
+}
+
+.ui-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image: var(--ui-grain-image);
+  background-size: 240px 240px;
+  opacity: var(--ui-grain-opacity, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-grain[data-animating="true"] {
+    transition: none;
+  }
 }

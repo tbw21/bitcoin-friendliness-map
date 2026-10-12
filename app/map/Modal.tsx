@@ -219,7 +219,7 @@ export const Modal: React.FC<ModalProps> = ({
           (4.875rem). Keep in step with the search bar's position and height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="flex flex-col w-full h-[calc(100dvh-4.875rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.875rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}

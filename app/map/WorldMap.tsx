@@ -288,6 +288,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   // Programmatic moves animate (see [data-animating] in map.css); direct manipulation must not,
   // so drag, wheel and pinch call stopAnimation() first.
   const animationTimerRef = useRef<number | null>(null);
+  const mapGrainRef = useRef<HTMLDivElement | null>(null);
   // The map file's own viewBox size (map units), read once when the SVG is inserted
   const baseViewBoxRef = useRef<{ width: number; height: number } | null>(null);
   // Sharp rendering at any zoom: while the view is moving it is a CSS transform of the SVG (fast,
@@ -306,12 +307,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     if (animationTimerRef.current !== null) window.clearTimeout(animationTimerRef.current);
     animationTimerRef.current = null;
     containerRef.current?.removeAttribute("data-animating");
+    mapGrainRef.current?.removeAttribute("data-animating");
   }, []);
   const startAnimation = useCallback(() => {
     const root = containerRef.current;
     if (!root) return;
     if (animationTimerRef.current !== null) window.clearTimeout(animationTimerRef.current);
     root.setAttribute("data-animating", "true");
+    mapGrainRef.current?.setAttribute("data-animating", "true");
     animationTimerRef.current = window.setTimeout(stopAnimation, 600);
   }, [stopAnimation]);
 
@@ -956,6 +959,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     const h = svg.clientHeight > 0 ? svg.clientHeight : rootRect.height;
     const { panX: clampedPanX, panY: clampedPanY } = getClampedPan(w, h, zoom, panX, panY);
 
+    // The grain is the map's surface: slide its texture by the same amount as the map
+    if (mapGrainRef.current) {
+      mapGrainRef.current.style.backgroundPosition = `${clampedPanX}px ${clampedPanY}px`;
+    }
+
     // Express the current view relative to the baked one (see bakedViewRef)
     const baked = bakedViewRef.current;
     const k = zoom / baked.zoom;
@@ -1334,7 +1342,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     <>
       {/* Search bar */}
       <div data-map-search className="absolute top-4 left-4 right-4 z-20 sm:right-auto sm:w-full sm:max-w-[38ch]">
-        <div className="relative">
+        <div className="ui-grain relative rounded-lg">
           <input
             ref={searchInputRef}
             type="text"
@@ -1431,6 +1439,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           selectedLegendScores.length > 0 || highlightOnlyCode !== null ? "legend-filter-active" : ""
         }`}
       />
+
+      {/* Map grain: moves with the map (its position is set where the map's transform is applied) */}
+      <div ref={mapGrainRef} className="map-grain" aria-hidden="true" />
       
       {/* Zoom controls - positioned below search bar on mobile when search bar is full width */}
       {/* On small screens the controls are hidden while the country sheet is up (it covers them anyway).
@@ -1449,7 +1460,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       >
         <button
           onClick={handleZoomIn}
-          className="flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom in (or press +)"
           title="Zoom in (+)"
         >
@@ -1459,7 +1470,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </button>
         <button
           onClick={handleZoomOut}
-          className="flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom out (or press -)"
           title="Zoom out (-)"
         >
@@ -1470,7 +1481,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         <button
           onClick={handleReset}
           disabled={isDefaultView}
-          className="flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
           aria-label="Show the whole world (or press 0)"
           title="Show the whole world (0)"
         >
@@ -1495,7 +1506,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
@@ -1580,7 +1591,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1607,7 +1618,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
@@ -1667,7 +1678,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}

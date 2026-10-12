@@ -47,20 +47,20 @@
     <text class="chart-degree" x="-13" y="250.95" text-anchor="end">0°</text>
     <text class="chart-degree" x="-13" y="137.86" text-anchor="end">30°N</text>
     <text class="chart-degree" x="-13" y="43.37" text-anchor="end">60°N</text>
-    <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="352.7" y="114.06">North</tspan><tspan x="352.7" y="125.31">Atlantic</tspan><tspan x="352.7" y="136.56">Ocean</tspan></text>
+    <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="356.14" y="122.37">North</tspan><tspan x="356.14" y="133.62">Atlantic</tspan><tspan x="356.14" y="144.87">Ocean</tspan></text>
     <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="422.85" y="347.3">South</tspan><tspan x="422.85" y="358.55">Atlantic</tspan><tspan x="422.85" y="369.8">Ocean</tspan></text>
     <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="69.75" y="114.06">North</tspan><tspan x="69.75" y="125.31">Pacific</tspan><tspan x="69.75" y="136.56">Ocean</tspan></text>
     <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="152.54" y="283.98">South</tspan><tspan x="152.54" y="295.23">Pacific</tspan><tspan x="152.54" y="306.48">Ocean</tspan></text>
-    <text class="chart-sea-label" font-size="7.65" text-anchor="middle"><tspan x="929.36" y="182.81">Pacific</tspan><tspan x="929.36" y="192.37">Ocean</tspan></text>
+    <text class="chart-sea-label" font-size="7.6" text-anchor="middle"><tspan x="932.05" y="185.53">Pacific</tspan><tspan x="932.05" y="195.03">Ocean</tspan></text>
     <text class="chart-sea-label" font-size="9" text-anchor="middle"><tspan x="669.58" y="345.64">Indian</tspan><tspan x="669.58" y="356.89">Ocean</tspan></text>
-    <text class="chart-sea-label" font-size="7.2" text-anchor="middle"><tspan x="601.12" y="443.09">Southern Ocean</tspan></text>
-    <text class="chart-sea-label" font-size="6.3" text-anchor="middle"><tspan x="195.07" y="8.36">Arctic Ocean</tspan></text>
-    <text class="chart-sea-label chart-sea-label-small" font-size="2.52" text-anchor="middle"><tspan x="508.49" y="117.54">Mediterranean Sea</tspan></text>
+    <text class="chart-sea-label" font-size="7.2" text-anchor="middle"><tspan x="575.92" y="443.09">Southern Ocean</tspan></text>
+    <text class="chart-sea-label" font-size="6.3" text-anchor="middle"><tspan x="192.16" y="9.57">Arctic Ocean</tspan></text>
+    <text class="chart-sea-label chart-sea-label-small" font-size="2.25" text-anchor="middle"><tspan x="508.84" y="119.01">Mediterranean</tspan><tspan x="508.84" y="121.82">Sea</tspan></text>
     <text class="chart-sea-label chart-sea-label-small" font-size="2.7" text-anchor="middle"><tspan x="247.63" y="191.34">Caribbean Sea</tspan></text>
-    <text class="chart-sea-label chart-sea-label-small" font-size="3.42" text-anchor="middle"><tspan x="639.78" y="189.22">Arabian</tspan><tspan x="639.78" y="193.49">Sea</tspan></text>
-    <text class="chart-sea-label chart-sea-label-small" font-size="3.06" text-anchor="middle"><tspan x="710.78" y="193.24">Bay of</tspan><tspan x="710.78" y="197.07">Bengal</tspan></text>
+    <text class="chart-sea-label chart-sea-label-small" font-size="3.4" text-anchor="middle"><tspan x="639.78" y="189.23">Arabian</tspan><tspan x="639.78" y="193.48">Sea</tspan></text>
+    <text class="chart-sea-label chart-sea-label-small" font-size="3.1" text-anchor="middle"><tspan x="710.78" y="193.22">Bay of</tspan><tspan x="710.78" y="197.09">Bengal</tspan></text>
     <text class="chart-sea-label chart-sea-label-small" font-size="3.6" text-anchor="middle"><tspan x="873.56" y="387.73">Tasman</tspan><tspan x="873.56" y="392.23">Sea</tspan></text>
-    <text class="chart-sea-label chart-sea-label-small" font-size="2.7" text-anchor="middle"><tspan x="213.62" y="152.3">Gulf of</tspan><tspan x="213.62" y="155.68">Mexico</tspan></text>
+    <text class="chart-sea-label chart-sea-label-small" font-size="2.7" text-anchor="middle"><tspan x="213.62" y="152.31">Gulf of</tspan><tspan x="213.62" y="155.68">Mexico</tspan></text>
   </g>
   <g class="hit-areas" aria-hidden="true">
     <path class="hit-area" data-code="KI" d="M995.93,265.47Q995.53,265.67 995.42,266.26Q995.3,266.85 995.72,267.21Q996.14,267.58 997.03,267.35Q997.92,267.11 998.71,267.22Q999.51,267.32 999.89,266.89Q1000.27,266.47 1000.21,266.08Q1000.15,265.68 999.75,265.32Q999.36,264.96 998.61,265.25Q997.86,265.54 997.1,265.41Q996.33,265.28 995.93,265.47Z"/>
