@@ -491,7 +491,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleMouseMove = (event: MouseEvent) => {
       if (isPanningRef.current) {
-        // Dragging the map: the flag-and-name label goes away until the mouse hovers again
+        // Dragging the map: the closed "grabbing" hand everywhere, also over countries, and the
+        // flag-and-name label goes away until the mouse hovers again
+        root.setAttribute("data-dragging", "true");
+        root.removeAttribute("data-hovering");
         if (hoveredCountryRef.current !== null) setHoveredCountry(null);
         if (tooltipRef.current) tooltipRef.current.style.visibility = "hidden";
         const deltaX = event.clientX - lastPanPointRef.current.x;
@@ -541,11 +544,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleMouseLeave = () => {
       root.removeAttribute("data-hovering");
+      if (!isPanningRef.current) root.removeAttribute("data-dragging");
       setHoveredCountry(null);
     };
 
     const handleMouseUp = (event: MouseEvent) => {
       isPanningRef.current = false;
+      root.removeAttribute("data-dragging");
 
       // Check if this was a click (not a drag): short duration and little movement
       const clickDuration = Date.now() - clickStartTime;

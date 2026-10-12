@@ -450,6 +450,13 @@
   cursor: pointer;
 }
 
+/* While the map is being dragged: the closed hand, whatever is under the mouse */
+.map-container[data-dragging],
+.map-container[data-dragging] svg,
+.map-container[data-dragging] svg * {
+  cursor: grabbing !important;
+}
+
 .map-container svg path.hit-area:hover {
   fill-opacity: 0.09 !important;
 }
