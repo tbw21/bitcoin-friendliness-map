@@ -11,6 +11,9 @@ export interface WorldMapProps {
   onSelectCountry: (code: string) => void;
   zoomToCountryCode?: string | null;
   onZoomToCountryDone?: () => void;
+  /** Set when the previous/next arrows move to another country: bring it into view */
+  stepToCountryCode?: string | null;
+  onStepToCountryDone?: () => void;
   highlightOnlyCode?: string | null;
   onClearHighlightOnly?: () => void;
   /** Called when the empty map (not a country) is clicked while a country's details are open */
@@ -206,6 +209,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   onSelectCountry,
   zoomToCountryCode = null,
   onZoomToCountryDone,
+  stepToCountryCode = null,
+  onStepToCountryDone,
   highlightOnlyCode = null,
   onClearHighlightOnly,
   onClearSelection,
@@ -274,7 +279,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const bakeTimerRef = useRef<number | null>(null);
   const bakeNowRef = useRef<(() => void) | null>(null);
   // Latest zoomToPath (defined further down), for the event listeners attached once
-  const zoomToPathRef = useRef<((path: SVGPathElement) => void) | null>(null);
+  const zoomToPathRef = useRef<((path: SVGPathElement, keepZoom?: boolean) => void) | null>(null);
   // The view the last "zoom to country" produced; lets a second double-click zoom back out
   const zoomedToRef = useRef<{ code: string; zoom: number; panX: number; panY: number } | null>(null);
   // The map's wheel handler, shared with the legends so scrolling over them behaves the same
@@ -991,8 +996,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   }, []);
 
   // Zoom and pan so a country's main landmass is centred in the visible part of the map
+  // With keepZoom the country is only moved to the centre, at whatever zoom the map is at.
   const zoomToPath = useCallback(
-    (path: SVGPathElement) => {
+    (path: SVGPathElement, keepZoom = false) => {
       const root = containerRef.current;
       const svg = root?.querySelector<SVGSVGElement>("svg");
       if (!root || !svg) return;
@@ -1025,14 +1031,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       (visibleW * 0.6) / (pathBounds.width * scale),
       (visibleH * 0.6) / (pathBounds.height * scale)
     );
-    const newZoom = Math.min(getMaxZoom(root), Math.max(1, fitZoom));
+    const newZoom = keepZoom ? zoomRef.current : Math.min(getMaxZoom(root), Math.max(1, fitZoom));
 
     // Center the country in the visible area: viewBox (pathCenterX, pathCenterY) -> viewport = pan + (offset + pathCenter*scale)*zoom
     const rawPanX = visibleW / 2 - (offsetX + pathCenterX * scale) * newZoom;
     const rawPanY = vertical.top + visibleH / 2 - (offsetY + pathCenterY * scale) * newZoom;
     const { panX: newPanX, panY: newPanY } = getClampedPan(viewportW, viewportH, newZoom, rawPanX, rawPanY);
 
-    zoomedToRef.current = { code: path.id.toUpperCase(), zoom: newZoom, panX: newPanX, panY: newPanY };
+    // Only a fitted view counts as "zoomed to this country" (double-click then zooms back out,
+    // and the arrows keep fitting the next one). A plain move at the current zoom does not.
+    zoomedToRef.current = keepZoom
+      ? null
+      : { code: path.id.toUpperCase(), zoom: newZoom, panX: newPanX, panY: newPanY };
     startAnimation();
     setZoom(newZoom);
     setPanX(newPanX);
@@ -1077,6 +1087,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     return () => cancelAnimationFrame(rafId);
   }, [zoomToCountryCode, onZoomToCountryDone, zoomToPath]);
+
+  // Previous/next arrows: bring the newly selected country into view, in the same manner as the
+  // one before it. If the map was fitted to that country (double-click, locate, search), fit the
+  // new one too. If it was only selected, keep the current zoom and just centre the new one.
+  useEffect(() => {
+    if (!stepToCountryCode || !onStepToCountryDone) return;
+    const root = containerRef.current;
+    const svg = root?.querySelector<SVGSVGElement>("svg");
+    const codeLower = stepToCountryCode.toLowerCase();
+    const path = svg
+      ? Array.from(svg.querySelectorAll<SVGPathElement>("path[id]")).find((p) => p.id.toLowerCase() === codeLower)
+      : undefined;
+    if (!path) {
+      onStepToCountryDone();
+      return;
+    }
+    const last = zoomedToRef.current;
+    const wasFitted =
+      last !== null &&
+      Math.abs(zoomRef.current - last.zoom) < last.zoom * 0.02 &&
+      Math.abs(panXRef.current - last.panX) < 4 &&
+      Math.abs(panYRef.current - last.panY) < 4;
+    // After layout, so the panel's size is known
+    const rafId = requestAnimationFrame(() => {
+      zoomToPath(path, !wasFitted);
+      onStepToCountryDone();
+    });
+    return () => cancelAnimationFrame(rafId);
+  }, [stepToCountryCode, onStepToCountryDone, zoomToPath]);
 
   const handleZoomIn = () => {
     if (!containerRef.current || !svgRef.current) {
