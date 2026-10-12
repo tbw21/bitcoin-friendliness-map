@@ -89,6 +89,24 @@ function getMaxZoom(root: HTMLElement | null): number {
   return Math.max(10, 6_000_000 / width);
 }
 
+// Which country a pointer event landed on. Country shapes carry their code as the element id.
+// Small islands also have an enlarged tap area around them (their innermost coast ring, see
+// scripts/make-coast-rings.py); those carry the code in data-code.
+function getCountryCode(target: EventTarget | null): string | null {
+  if (!(target instanceof SVGPathElement)) return null;
+  if (target.id) return target.id.toUpperCase();
+  return target.getAttribute("data-code");
+}
+
+// The country's own shape (not its tap area)
+function getCountryPath(root: HTMLElement | null, code: string): SVGPathElement | null {
+  return (
+    Array.from(root?.querySelectorAll<SVGPathElement>("svg path[id]") ?? []).find(
+      (path) => path.id.toUpperCase() === code
+    ) ?? null
+  );
+}
+
 // Width (px) of the map hidden behind the country panel when it is docked to the right edge
 function getRightInset(root: HTMLElement): number {
   const panel = document.querySelector<HTMLElement>("[data-country-panel]");
@@ -486,8 +504,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
       // Handle hover tooltip
       const target = event.target;
-      if (target instanceof SVGPathElement && target.id) {
-        const code = target.id.toUpperCase();
+      const hoveredCode = getCountryCode(target);
+      if (hoveredCode) {
+        const code = hoveredCode;
         const currentHovered = hoveredCountryRef.current;
         
         // Only update state if country changed (prevents unnecessary re-renders)
@@ -531,13 +550,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         const target = event.target;
         const currentHighlight = highlightOnlyCodeRef.current;
         const clearHighlight = onClearHighlightOnlyRef.current;
-        if (target instanceof SVGPathElement && target.id) {
-          const code = target.id.toUpperCase();
+        const code = getCountryCode(target);
+        if (code) {
           // When a country is highlighted: click on that country opens modal; click elsewhere clears highlight
           if (currentHighlight && code !== currentHighlight) {
             clearHighlight?.();
           } else {
-            target.blur();
+            if (target instanceof SVGElement) target.blur();
             onSelectCountry(code);
           }
         } else if (currentHighlight) {
@@ -692,13 +711,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const currentPanX = panXRef.current;
       const currentPanY = panYRef.current;
       
-      const target = event.target;
-      if (target instanceof SVGPathElement && target.id) {
+      const targetCode = getCountryCode(event.target);
+      const target = targetCode ? getCountryPath(containerRef.current, targetCode) : null;
+      if (target && targetCode) {
         // Double-click on a country that is already zoomed in and centred: zoom back out to the world
         const last = zoomedToRef.current;
         const stillThere =
           last !== null &&
-          last.code === target.id.toUpperCase() &&
+          last.code === targetCode &&
           Math.abs(currentZoom - last.zoom) < last.zoom * 0.02 &&
           Math.abs(currentPanX - last.panX) < 4 &&
           Math.abs(currentPanY - last.panY) < 4;

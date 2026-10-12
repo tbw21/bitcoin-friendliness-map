@@ -100,6 +100,9 @@ export default function MapPage() {
         />
       )}
 
+      {/* Film grain over the whole view: purely decorative, never intercepts input */}
+      <div className="grain-overlay" aria-hidden="true" />
+
       {selectedCode && (
         <Modal
           countryCode={selectedCode}

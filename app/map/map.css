@@ -356,6 +356,20 @@
   stroke-width: calc(0.4 / var(--map-zoom, 1));
 }
 
+/* Enlarged tap areas for small islands: the area inside their innermost coast ring. They sit
+   under the country shapes, so the islands themselves still take their own taps. */
+.map-container svg path.hit-area {
+  fill: #afbdce !important;
+  fill-opacity: 0 !important;
+  pointer-events: all;
+  cursor: pointer;
+  transition: fill-opacity 160ms ease-out;
+}
+
+.map-container svg path.hit-area:hover {
+  fill-opacity: 0.09 !important;
+}
+
 /* Graticule */
 .map-container svg .chart-grid {
   fill: none;
@@ -448,4 +462,18 @@
 .map-container svg .chart-sea-label-small {
   letter-spacing: 0.22em;
   opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(1.8 - var(--map-zoom, 1) / 14)), 1);
+}
+
+/* Film grain across the whole view (map and interface) for a slightly printed, physical feel.
+   One small tiling noise image, blended so it lightens and darkens what is underneath without
+   tinting it. To make it stronger or subtler, change the opacity. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.2;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='1.6' intercept='-0.15'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
 }

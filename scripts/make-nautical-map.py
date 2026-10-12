@@ -130,8 +130,14 @@ for name, lon, lat, size in SEAS:
     out.append('<text class="%s" font-size="%s" text-anchor="middle">%s</text>' % (cls, f(fs), spans))
 
 group = '  <g class="chart" aria-hidden="true">\n    ' + "\n    ".join(out) + "\n  </g>\n"
+
+# ---- enlarged tap areas for small islands (drawn above the chart, below the countries)
+HIT_FILE = __file__.rsplit("/", 1)[0] + "/assets/coast-hit-areas.txt"
+hit = ['<path class="hit-area" data-code="%s" d="%s"/>' % tuple(l.split("\t"))
+       for l in open(HIT_FILE, encoding="utf-8").read().splitlines() if l]
+group += '  <g class="hit-areas" aria-hidden="true">\n    ' + "\n    ".join(hit) + "\n  </g>\n"
 i = svg.index("  <path ")
 svg = svg[:i] + group + svg[i:]
 svg = svg.replace("<!-- Equal Earth projection", "<!-- Nautical chart edition (scripts/make-nautical-map.py). Equal Earth projection", 1)
 open(dst, "w", encoding="utf-8").write(svg)
-print("wrote", dst, "with", len(out), "chart elements; compass at", f(cx), f(cy), "wordmark bottom", f(WORDMARK_BOTTOM), "of", H)
+print("wrote", dst, "with", len(out), "chart elements,", len(hit), "tap areas; compass at", f(cx), f(cy), "wordmark bottom", f(WORDMARK_BOTTOM), "of", H)
