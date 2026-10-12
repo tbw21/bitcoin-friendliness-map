@@ -320,12 +320,12 @@ export const Modal: React.FC<ModalProps> = ({
             <h2 className="font-chart-display min-w-0 text-[1.875rem] leading-none sm:text-[2.125rem] text-zinc-900 dark:text-white">
               {formattedName}
             </h2>
-            {/* Optical alignment: the heading's letters sit below the middle of its line box (space is
-                reserved above for accents), so a box-centred pill looks high. Nudge it down to the
-                middle of the letters (halfway between the centre of the capitals and of the lowercase),
-                measured for the 20px and 24px heading sizes. */}
+            {/* Optical alignment: Kepler's letters sit above the middle of the heading's line box, so
+                a box-centred pill looks low. Nudge it up to the middle of the letters (halfway
+                between the centre of the capitals and of the lowercase), measured for the 30px and
+                34px heading sizes. */}
             <span
-              className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 text-white translate-y-[1.75px] sm:translate-y-[1.6px]"
+              className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 text-white -translate-y-[1.65px] sm:-translate-y-[1.9px]"
               style={
                 hasData
                   ? scoreTint(country.score)

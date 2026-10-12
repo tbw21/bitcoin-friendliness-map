@@ -508,6 +508,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       // Handle hover tooltip
       const target = event.target;
       const hoveredCode = getCountryCode(target);
+      // The hand cursor is set once for the whole map while a country (or its tap area) is under
+      // the mouse, instead of per shape, so it holds steady as the mouse crosses from an island
+      // to the water around it
+      root.toggleAttribute("data-hovering", hoveredCode !== null);
       if (hoveredCode) {
         const code = hoveredCode;
         const currentHovered = hoveredCountryRef.current;
@@ -520,8 +524,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         // Update tooltip position directly via DOM (no re-render)
         if (tooltipRef.current) {
           tooltipRef.current.style.visibility = "visible";
-          tooltipRef.current.style.left = `${event.clientX + 10}px`;
-          tooltipRef.current.style.top = `${event.clientY - 30}px`;
+          // Moved with a transform: unlike left/top it needs no new page layout on every mouse move
+          tooltipRef.current.style.transform = `translate(${event.clientX + 10}px, ${event.clientY - 30}px)`;
         }
       } else {
         if (hoveredCountryRef.current !== null) {
@@ -535,6 +539,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     };
 
     const handleMouseLeave = () => {
+      root.removeAttribute("data-hovering");
       setHoveredCountry(null);
     };
 
@@ -773,6 +778,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       stopAnimation();
       lastTouchTimeRef.current = Date.now();
       if (hoveredCountryRef.current !== null) setHoveredCountry(null);
+      root.removeAttribute("data-hovering");
       if (tooltipRef.current) tooltipRef.current.style.visibility = "hidden";
       if (event.touches.length === 2) {
         // Two fingers: start combined pan + zoom
@@ -1527,7 +1533,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             }}
             aria-label="Minimize legend"
           >
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-600 dark:text-zinc-200">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
               Filter by Scores
             </span>
             <div className="shrink-0 text-zinc-500 dark:text-zinc-400">
@@ -1604,7 +1610,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1638,7 +1644,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             aria-label="Minimize top countries legend"
           >
             <div className="flex flex-col">
-              <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-600 dark:text-zinc-200">
+              <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
                 Top 5 Countries
               </span>
             </div>
@@ -1691,7 +1697,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1707,7 +1713,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {hoveredCountryData && (
         <div
           ref={tooltipRef}
-          className="map-tooltip fixed pointer-events-none z-50 bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg"
+          className="map-tooltip fixed left-0 top-0 pointer-events-none z-50 bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg"
           style={{
             display: "inline-flex",
             flexDirection: "row",

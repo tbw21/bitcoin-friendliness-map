@@ -119,7 +119,10 @@ for line in open(LABEL_FILE, encoding="utf-8").read().splitlines():
     x, y, fs = float(x), float(y), float(fs)
     lines = name.split("|")
     y0 = y - (len(lines) - 1) * fs * 0.62
-    spans = "".join('<tspan x="%s" y="%s">%s</tspan>' % (f(x), f(y0 + i * fs * 1.25), t) for i, t in enumerate(lines))
+    # Letter-spacing also adds a gap after the last letter, which would push the visible letters
+    # left of centre by half a gap (spacing as in map.css)
+    xc = x + (0.22 if small == "1" else 0.34) * fs / 2
+    spans = "".join('<tspan x="%s" y="%s">%s</tspan>' % (f(xc), f(y0 + i * fs * 1.25), t) for i, t in enumerate(lines))
     cls = "chart-sea-label" + (" chart-sea-label-small" if small == "1" else "")
     out.append('<text class="%s" font-size="%s" text-anchor="middle">%s</text>' % (cls, f(fs), spans))
 

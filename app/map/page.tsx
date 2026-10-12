@@ -10,26 +10,35 @@ import { paletteVars } from "@/data/palettes";
 // their own dots laid straight on top (no blending), so the grain looks the same on dark and
 // light areas instead of fading out on them.
 //  - mono:  specks of one colour (light)
-//  - duo:   light specks and dark specks, in different places
+//  - duo:   light specks and dark specks, in different places. A dark speck on a light colour is
+//           far harder to see than a light speck on a dark one at the same strength, so the dark
+//           specks are drawn DUO_DARK_GAIN times stronger; the strength setting is that of the
+//           light specks.
 //  - multi: specks in many colours
 // The map and the interface each have their own grain: the map's is part of the map and moves
 // with it; the interface's sits on the panels and controls.
 type GrainKind = "mono" | "duo" | "multi";
-const GRAIN_KINDS: Record<GrainKind, { label: string; filter: string }> = {
+const DUO_DARK_GAIN = 3;
+// gain: how much stronger than the strength setting the layer is drawn (the texture itself makes
+// up for it where needed)
+const GRAIN_KINDS: Record<GrainKind, { label: string; filter: string; gain: number }> = {
   mono: {
     label: "Mono",
     filter: "<feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  5 0 0 0 -2.6'/>",
+    gain: 1,
   },
   duo: {
     label: "Duo",
+    gain: DUO_DARK_GAIN,
     filter:
-      "<feColorMatrix in='n' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  5 0 0 0 -2.6' result='light'/>" +
+      `<feColorMatrix in='n' values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  ${5 / DUO_DARK_GAIN} 0 0 0 ${-2.6 / DUO_DARK_GAIN}' result='light'/>` +
       "<feColorMatrix in='n' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 5 0 0 -2.6' result='dark'/>" +
       "<feMerge><feMergeNode in='dark'/><feMergeNode in='light'/></feMerge>",
   },
   multi: {
     label: "Multi",
     filter: "<feColorMatrix values='4 0 0 0 -1.5  0 4 0 0 -1.5  0 0 4 0 -1.5  2 2 2 0 -2.7'/>",
+    gain: 1,
   },
 };
 
@@ -99,8 +108,8 @@ export default function MapPage() {
   const [zoomToCountryCode, setZoomToCountryCode] = useState<string | null>(null);
   const [stepToCountryCode, setStepToCountryCode] = useState<string | null>(null);
   const [highlightOnlyCode, setHighlightOnlyCode] = useState<string | null>(null);
-  const [mapGrain, setMapGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "mono", strength: 12 });
-  const [uiGrain, setUiGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "duo", strength: 40 });
+  const [mapGrain, setMapGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "duo", strength: 8 });
+  const [uiGrain, setUiGrain] = useState<{ kind: GrainKind; strength: number }>({ kind: "duo", strength: 5 });
   // Phone bottom sheet: "full" covers the map; "peek" leaves the top two thirds of the screen free
   // so the country can be seen on the map with its details still within reach.
   const [sheetState, setSheetState] = useState<"full" | "peek">("full");
@@ -161,9 +170,9 @@ export default function MapPage() {
         backgroundColor: "var(--map-bg)",
         // Grain textures and strengths, picked up by .map-grain and .ui-grain in map.css
         ["--map-grain-image" as string]: grainImage(mapGrain.kind),
-        ["--map-grain-opacity" as string]: mapGrain.strength / 100,
+        ["--map-grain-opacity" as string]: Math.min(1, (mapGrain.strength / 100) * GRAIN_KINDS[mapGrain.kind].gain),
         ["--ui-grain-image" as string]: grainImage(uiGrain.kind),
-        ["--ui-grain-opacity" as string]: uiGrain.strength / 100,
+        ["--ui-grain-opacity" as string]: Math.min(1, (uiGrain.strength / 100) * GRAIN_KINDS[uiGrain.kind].gain),
       }}
     >
       <main className="flex flex-1 flex-col overflow-hidden">

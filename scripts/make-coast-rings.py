@@ -125,13 +125,54 @@ def text_box(lines, x, y, fs, small):
     return box(x - width / 2, top, x + width / 2, bottom)
 
 
+def fit_small_sea(lines, x0, y0, want, smallest):
+    """A small sea's name goes in the middle of its water: of all spots near the wanted one, take
+    the one whose text box lies furthest from every coast, so the gap to the land (and to the
+    rings around it) is the same on both sides. The name is first tried clear of all three
+    coast rings, then of two, then of one."""
+    reach = 16.0
+    near = box(x0 - 60, y0 - 40, x0 + 60, y0 + 40)
+    blocked = unary_union([land_simple.intersection(near)] + [o for o in obstacles if o.intersects(near)])
+    step = 0.6
+    n = int(reach / step)
+    spots = [(i * step, j * step) for i in range(-n, n + 1) for j in range(-n, n + 1) if math.hypot(i, j) * step <= reach]
+    # Keeping the name readable comes before clearing the outer rings: only when it cannot stay
+    # near its wanted size inside any ring is it allowed to shrink further.
+    for floor in (0.72 * want, smallest):
+        for ring in (3.6, 2.3, 1.1):
+            fs = want
+            while fs >= floor:
+                need = ring + max(0.5 * fs, 0.7)
+                best = None
+                for dx, dy in spots:
+                    b = text_box(lines, x0 + dx, y0 + dy, fs, True)
+                    if not CHART.contains(b):
+                        continue
+                    gap = b.distance(blocked)
+                    if gap < need:
+                        continue
+                    # furthest from land first; between equals, nearest the wanted spot
+                    score = gap - 0.03 * math.hypot(dx, dy)
+                    if best is None or score > best[0]:
+                        best = (score, x0 + dx, y0 + dy, gap)
+                if best:
+                    print("   clear of land by %.1f (outside the ring at %.1f)" % (best[3], ring))
+                    return best[1], best[2], fs
+                fs *= 0.95
+    return None
+
+
 placed = []
 for name, lon, lat, want, smallest, small in SEAS:
     lines = name.split("|")
     x0, y0 = project(lon, lat)
     found = None
     fs = want
-    while fs >= smallest and not found:
+    if small:
+        found = fit_small_sea(lines, x0, y0, want, smallest)
+        if found:
+            obstacles.append(text_box(lines, found[0], found[1], found[2], True))
+    while not small and fs >= smallest and not found:
         margin = max(0.45 * fs, 0.8)
         steps = [(0.0, 0.0)] + [
             (r * math.cos(a), r * math.sin(a))

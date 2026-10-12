@@ -421,7 +421,14 @@
   fill-opacity: 0 !important;
   pointer-events: all;
   cursor: pointer;
-  transition: fill-opacity 160ms ease-out;
+}
+
+/* One hand cursor for the whole map while a country or its tap area is under the mouse (set by
+   WorldMap.tsx), so it cannot flicker between shapes */
+.map-container[data-hovering],
+.map-container[data-hovering] svg,
+.map-container[data-hovering] svg * {
+  cursor: pointer;
 }
 
 .map-container svg path.hit-area:hover {
