@@ -332,6 +332,30 @@
   pointer-events: none;
 }
 
+/* Water lining: three smooth rings following the coast, fading out to sea. They also make
+   small islands easier to spot. (They are <path>s, so fill must be switched off explicitly.) */
+.map-container svg path.chart-coast {
+  fill: none !important;
+  stroke: #afbdce;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.map-container svg path.chart-coast-1 {
+  stroke-opacity: 0.42;
+  stroke-width: calc(0.5 / var(--map-zoom, 1));
+}
+
+.map-container svg path.chart-coast-2 {
+  stroke-opacity: 0.26;
+  stroke-width: calc(0.45 / var(--map-zoom, 1));
+}
+
+.map-container svg path.chart-coast-3 {
+  stroke-opacity: 0.14;
+  stroke-width: calc(0.4 / var(--map-zoom, 1));
+}
+
 /* Graticule */
 .map-container svg .chart-grid {
   fill: none;

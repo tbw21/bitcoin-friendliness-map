@@ -1,5 +1,5 @@
 """Add nautical-chart furniture to the Equal Earth map: graticule, neatline frame with degree
-labels, a compass ring holding the brand logo (with the wordmark below and rhumb lines fanning
+labels, water lining along the coasts, a compass ring holding the brand logo (with the wordmark below and rhumb lines fanning
 out), and sea names. Everything goes in one group drawn
 underneath the countries, so it only shows over water. Styling lives in app/map/map.css.
 
@@ -31,6 +31,12 @@ def project(lon, lat):
 f = lambda v: ("%.2f" % v).rstrip("0").rstrip(".")
 pts = lambda ps: " ".join(f(x) + "," + f(y) for x, y in ps)
 out = []
+
+# ---- water lining: smooth rings following the coast out to sea (see make-coast-rings.py)
+COAST_FILE = __file__.rsplit("/", 1)[0] + "/assets/coast-rings.txt"
+for line in open(COAST_FILE, encoding="utf-8").read().splitlines():
+    n, d = line.split("\t")
+    out.append('<path class="chart-coast chart-coast-%s" d="%s"/>' % (n, d))
 
 # ---- graticule
 def meridian(lon):
