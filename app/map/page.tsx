@@ -9,6 +9,7 @@ import { paletteVars } from "@/data/palettes";
 export default function MapPage() {
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
   const [zoomToCountryCode, setZoomToCountryCode] = useState<string | null>(null);
+  const [stepToCountryCode, setStepToCountryCode] = useState<string | null>(null);
   const [highlightOnlyCode, setHighlightOnlyCode] = useState<string | null>(null);
   // Phone bottom sheet: "full" covers the map; "peek" leaves the top two thirds of the screen free
   // so the country can be seen on the map with its details still within reach.
@@ -50,6 +51,13 @@ export default function MapPage() {
     setZoomToCountryCode(selectedCode);
   };
 
+  // Previous/next arrows in the details: select the country and have the map bring it into view
+  const handleStepCountry = useCallback((code: string) => {
+    setSelectedCode(code);
+    setStepToCountryCode(code);
+  }, []);
+  const handleStepDone = useCallback(() => setStepToCountryCode(null), []);
+
   const handleSelectCountry = useCallback((code: string) => {
     setHighlightOnlyCode(null);
     setSelectedCode(code);
@@ -66,6 +74,8 @@ export default function MapPage() {
           onSelectCountry={handleSelectCountry}
           zoomToCountryCode={zoomToCountryCode}
           onZoomToCountryDone={() => setZoomToCountryCode(null)}
+          stepToCountryCode={stepToCountryCode}
+          onStepToCountryDone={handleStepDone}
           highlightOnlyCode={highlightOnlyCode}
           onClearHighlightOnly={() => setHighlightOnlyCode(null)}
           onClearSelection={handleCloseModal}
@@ -95,7 +105,7 @@ export default function MapPage() {
           countryCode={selectedCode}
           onClose={handleCloseModal}
           onShowOnMap={handleShowOnMap}
-          onSelectCountry={setSelectedCode}
+          onSelectCountry={handleStepCountry}
           sheetState={sheetState}
           onSheetStateChange={setSheetState}
         />
