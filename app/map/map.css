@@ -309,3 +309,125 @@
     transition: none !important;
   }
 }
+
+/* =====================================================================================
+   Nautical chart edition (experiment branch)
+   Chart furniture is drawn under the countries by scripts/make-nautical-map.py; this
+   section styles it. Line widths divide by --map-zoom so they stay hairlines at any zoom.
+   ===================================================================================== */
+
+/* Display serif for chart lettering and headings (Didot ships with Apple devices) */
+.font-chart,
+.map-container svg .chart text {
+  font-family: "Playfair Display", Didot, "Bodoni 72", "Bodoni MT", Georgia, "Times New Roman", serif;
+}
+
+/* Sea: slightly lighter mid-ocean falling off to the brand navy at the edges */
+.map-container {
+  background: radial-gradient(120% 95% at 50% 45%, #0a2b46 0%, #06203a 45%, #021625 80%, var(--map-bg) 100%);
+}
+
+.map-container svg .chart,
+.map-container svg .chart * {
+  pointer-events: none;
+}
+
+/* Graticule */
+.map-container svg .chart-grid {
+  fill: none;
+  stroke: rgba(242, 238, 230, 0.13);
+  stroke-width: calc(0.5 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-grid-major {
+  stroke: rgba(242, 238, 230, 0.24);
+}
+
+.map-container svg .chart-grid-dash {
+  stroke-dasharray: calc(3 / var(--map-zoom, 1)) calc(3 / var(--map-zoom, 1));
+}
+
+/* Rhumb lines fanning out from the compass rose */
+.map-container svg .chart-rhumb {
+  stroke: rgba(242, 238, 230, 0.05);
+  stroke-width: calc(0.4 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-rhumb-major {
+  stroke: rgba(242, 238, 230, 0.1);
+}
+
+/* Compass rose */
+.map-container svg .chart-rose-ring {
+  fill: none;
+  stroke: rgba(242, 238, 230, 0.5);
+  stroke-width: calc(0.6 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-rose-tick {
+  stroke: rgba(242, 238, 230, 0.45);
+  stroke-width: calc(0.4 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-rose-dark,
+.map-container svg .chart-rose-light,
+.map-container svg .chart-rose-north {
+  stroke: rgba(242, 238, 230, 0.8);
+  stroke-width: calc(0.3 / var(--map-zoom, 1));
+  stroke-linejoin: round;
+}
+
+.map-container svg .chart-rose-dark {
+  fill: rgba(242, 238, 230, 0.8);
+}
+
+.map-container svg .chart-rose-light {
+  fill: #06203a;
+}
+
+.map-container svg .chart-rose-north {
+  fill: #eb8500;
+  stroke: #eb8500;
+}
+
+.map-container svg .chart-rose-hub {
+  fill: #eb8500;
+}
+
+.map-container svg .chart-rose-letter {
+  font-size: 8px;
+  font-style: italic;
+  fill: rgba(242, 238, 230, 0.75);
+}
+
+/* Neatline (double frame) and degree labels */
+.map-container svg .chart-frame {
+  fill: none;
+  stroke: rgba(242, 238, 230, 0.4);
+  stroke-width: calc(1.4 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-frame-inner {
+  stroke: rgba(242, 238, 230, 0.28);
+  stroke-width: calc(0.5 / var(--map-zoom, 1));
+}
+
+.map-container svg .chart-degree {
+  font-size: 5.5px;
+  font-style: italic;
+  fill: rgba(242, 238, 230, 0.42);
+}
+
+/* Sea names: spaced italic capitals that fade out as you zoom in; small seas fade in instead */
+.map-container svg .chart-sea-label {
+  font-style: italic;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  fill: rgba(242, 238, 230, 0.26);
+  opacity: clamp(0, calc(1.3 - var(--map-zoom, 1) / 5), 1);
+}
+
+.map-container svg .chart-sea-label-small {
+  letter-spacing: 0.22em;
+  opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(1.8 - var(--map-zoom, 1) / 14)), 1);
+}
