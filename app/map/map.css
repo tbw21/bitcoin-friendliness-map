@@ -60,7 +60,7 @@
 /* White outline so the open country stands out on every score colour */
 .map-container svg path.country-shape.selected-country {
   stroke: #ffffff !important;
-  stroke-width: calc(1.5 / var(--map-zoom, 1)) !important;
+  stroke-width: calc(0.9 / var(--map-zoom, 1)) !important;
 }
 
 /* Bitcoin friendliness score colours come from the active palette (--score-N, set in page.tsx) */

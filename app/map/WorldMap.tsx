@@ -240,6 +240,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const highlightOnlyCodeRef = useRef<string | null>(null);
   const onClearHighlightOnlyRef = useRef<(() => void) | undefined>(undefined);
   const onClearSelectionRef = useRef<(() => void) | undefined>(undefined);
+  // The open country and when it was opened, for the click handler (a click on it closes it)
+  const selectedCodeRef = useRef<string | null>(null);
+  const selectedAtRef = useRef(0);
+  useEffect(() => {
+    selectedCodeRef.current = selectedCode;
+    selectedAtRef.current = Date.now();
+  }, [selectedCode]);
   const [zoom, setZoom] = useState(1);
   const [panX, setPanX] = useState(0);
   const [panY, setPanY] = useState(0);
@@ -565,7 +572,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             clearHighlight?.();
           } else {
             if (target instanceof SVGElement) target.blur();
-            onSelectCountry(code);
+            if (code === selectedCodeRef.current) {
+              // Clicking the open country closes its details. Not right after it opened: that is
+              // the second click of a double-click (zoom), which should leave it open.
+              if (Date.now() - selectedAtRef.current > 400) onClearSelectionRef.current?.();
+            } else {
+              onSelectCountry(code);
+            }
           }
         } else if (currentHighlight) {
           // Click on ocean/non-path: clear highlight
@@ -1601,7 +1614,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1px]">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1688,7 +1701,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1px]">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
