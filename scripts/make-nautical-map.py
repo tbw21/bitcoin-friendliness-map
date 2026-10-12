@@ -66,7 +66,7 @@ logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
 
 cx, cy = project(-128, -30)
 R = 19.0         # radius of the compass ring (the pale circle with degree ticks)
-LOGO_FILL = 0.40 # logo diameter as a share of the ring's diameter; sized independently of the ring
+LOGO_FILL = 0.66 # logo diameter as a share of the ring's diameter; sized independently of the ring
 WORDMARK_W = 57  # width of the wordmark, sized independently of both
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []

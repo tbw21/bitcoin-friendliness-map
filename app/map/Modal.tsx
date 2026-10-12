@@ -317,7 +317,7 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Row 2: country name with its score pill; the pill drops below the name when it does not fit beside it */}
           <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h2 className="font-chart min-w-0 text-2xl font-semibold sm:text-[1.75rem] text-zinc-900 dark:text-white">
+            <h2 className="font-chart-display min-w-0 text-[1.875rem] leading-none sm:text-[2.125rem] text-zinc-900 dark:text-white">
               {formattedName}
             </h2>
             {/* Optical alignment: the heading's letters sit below the middle of its line box (space is

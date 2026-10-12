@@ -1516,7 +1516,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             }}
             aria-label="Minimize legend"
           >
-            <span className="font-chart min-w-0 truncate whitespace-nowrap text-[0.8125rem] italic tracking-wide text-zinc-500 dark:text-zinc-300">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-600 dark:text-zinc-200">
               Filter by Scores
             </span>
             <div className="shrink-0 text-zinc-500 dark:text-zinc-400">
@@ -1593,7 +1593,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart min-w-0 truncate whitespace-nowrap text-[0.8125rem] italic tracking-wide text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-900 dark:text-white">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1627,7 +1627,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             aria-label="Minimize top countries legend"
           >
             <div className="flex flex-col">
-              <span className="font-chart min-w-0 truncate whitespace-nowrap text-[0.8125rem] italic tracking-wide text-zinc-500 dark:text-zinc-300">
+              <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-600 dark:text-zinc-200">
                 Top 5 Countries
               </span>
             </div>
@@ -1680,7 +1680,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart min-w-0 truncate whitespace-nowrap text-[0.8125rem] italic tracking-wide text-zinc-900 dark:text-white">
+            <span className="font-chart-caption min-w-0 truncate whitespace-nowrap text-[0.9375rem] leading-tight text-zinc-900 dark:text-white">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
