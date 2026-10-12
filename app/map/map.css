@@ -442,6 +442,19 @@
   cursor: pointer;
 }
 
+/* The open "grab" hand is set on the map and everything drawn in it, not only inherited from
+   the map's box: whichever of them the browser finds under a moving mouse, the cursor is the
+   same. Countries, tap areas and the rules below override it. */
+.map-container svg,
+.map-container svg * {
+  cursor: grab;
+}
+
+.map-container svg path.country-shape.is-rated,
+.map-container svg path.hit-area {
+  cursor: pointer;
+}
+
 /* One hand cursor for the whole map while a country or its tap area is under the mouse (set by
    WorldMap.tsx), so it cannot flicker between shapes */
 .map-container[data-hovering],
