@@ -1193,13 +1193,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     setSelectedSearchIndex(-1);
   }, [searchQuery, allCountries]);
 
-  // Handle search selection
+  // Handle search selection: open the country and centre it on the map, like a double-click
   const handleSelectCountry = useCallback((code: string) => {
     onSelectCountry(code);
     setSearchQuery("");
     setSearchResults([]);
     setSelectedSearchIndex(-1);
     searchInputRef.current?.blur();
+    const path = Array.from(
+      containerRef.current?.querySelectorAll<SVGPathElement>("svg path[id]") ?? []
+    ).find((p) => p.id.toUpperCase() === code.toUpperCase());
+    // Wait a frame so the details panel is laid out and its width is known
+    if (path) requestAnimationFrame(() => zoomToPathRef.current?.(path));
   }, [onSelectCountry]);
 
   // Handle keyboard navigation in search
