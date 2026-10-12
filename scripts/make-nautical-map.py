@@ -65,7 +65,8 @@ brand_paths = re.findall(r"<path\b[^>]*?\bd=\"([^\"]+)\"[^>]*?/>", brand)
 logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
 
 cx, cy = project(-128, -30)
-R = 19.0
+R = 9.5          # radius of the compass ring that holds the logo
+WORDMARK_W = 57  # width of the wordmark, sized independently of the ring
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []
 for i in range(32):
@@ -92,10 +93,10 @@ logo_scale = (2 * R * 0.80) / 400
 out.append('<g class="chart-logo" transform="translate(%s %s) scale(%s) translate(-404 -200)">%s</g>' % (
     f(cx), f(cy), "%.5f" % logo_scale,
     "".join('<path fill-rule="evenodd" clip-rule="evenodd" d="%s"/>' % d for d in logo_paths)))
-word_scale = (2 * R * 1.5) / 809
+word_scale = WORDMARK_W / 809
 out.append('<g class="chart-wordmark" transform="translate(%s %s) scale(%s) translate(-406.8 -448.8)"><path d="%s"/></g>' % (
-    f(cx), f(cy + R * 1.2), "%.5f" % word_scale, wordmark_path))
-WORDMARK_BOTTOM = cy + R * 1.2 + 136 * word_scale
+    f(cx), f(cy + R + 3.2), "%.5f" % word_scale, wordmark_path))
+WORDMARK_BOTTOM = cy + R + 3.2 + 136 * word_scale
 
 # ---- neatline frame with degree labels
 out.append('<rect class="chart-frame" x="-9" y="-9" width="%s" height="%s"/>' % (f(W + 18), f(H + 18)))
