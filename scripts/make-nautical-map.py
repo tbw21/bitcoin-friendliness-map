@@ -58,8 +58,8 @@ brand_paths = re.findall(r"<path\b[^>]*?\bd=\"([^\"]+)\"[^>]*?/>", brand)
 # centred on (404, 200). The last path is the wordmark, spanning x 2..811, y 449..585.
 logo_paths, wordmark_path = brand_paths[:-1], brand_paths[-1]
 
-cx, cy = project(-128, -27)
-R = 38.0
+cx, cy = project(-128, -30)
+R = 19.0
 out.append('<clipPath id="chart-clip"><rect x="0" y="0" width="%s" height="%s"/></clipPath>' % (f(W), f(H)))
 rh = []
 for i in range(32):
@@ -78,7 +78,8 @@ for i in range(72):  # degree ticks between the two rings
 # north marker on the ring, and the letter above it
 rose.append('<polygon class="chart-rose-north" points="%s"/>' % pts(
     [(cx, cy - R * 1.0), (cx - R * 0.05, cy - R * 0.86), (cx + R * 0.05, cy - R * 0.86)]))
-rose.append('<text class="chart-rose-letter" x="%s" y="%s" text-anchor="middle">N</text>' % (f(cx), f(cy - R * 1.09)))
+rose.append('<text class="chart-rose-letter" font-size="%s" x="%s" y="%s" text-anchor="middle">N</text>' % (
+    f(R * 0.21), f(cx), f(cy - R * 1.09)))
 out.append('<g class="chart-rose">%s</g>' % "".join(rose))
 
 logo_scale = (2 * R * 0.80) / 400
