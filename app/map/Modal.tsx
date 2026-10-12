@@ -163,6 +163,7 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
   const formattedName = formatCountryName(country.name);
   // Plain-language band for the score (Hostile … Very Friendly), same wording as the legend
   const scoreLabel = legendEntries.find((entry) => entry.score === country.score)?.label;
+  const hasData = country.hasData;
 
   return (
     <div
@@ -282,9 +283,13 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
                 measured for the 20px and 24px heading sizes. */}
             <span
               className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 text-white translate-y-[1.75px] sm:translate-y-[1.6px]"
-              style={scoreTint(country.score)}
+              style={
+                hasData
+                  ? scoreTint(country.score)
+                  : { backgroundColor: "var(--no-data)", borderColor: "color-mix(in srgb, var(--no-data) 60%, white)" }
+              }
             >
-              {scoreLabel ? `${scoreLabel} · ` : ""}{formatScore(country)} / 5
+              {hasData ? `${scoreLabel ? `${scoreLabel} · ` : ""}${formatScore(country)} / 5` : "No data"}
             </span>
           </div>
 
@@ -306,8 +311,19 @@ export const Modal: React.FC<ModalProps> = ({ countryCode, onClose, onShowOnMap,
           key={`body-${countryCode}`}
           className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-sm leading-relaxed text-zinc-900 dark:text-white sm:px-5 md:pb-5"
         >
+          {!hasData && (
+            <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-sm country-panel-content">
+              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
+                No data yet
+              </h3>
+              <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+                This country or territory has not been scored yet.
+              </p>
+            </div>
+          )}
+
           {/* Key dimensions */}
-          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 stagger-children">
+          <div className={`grid gap-3 sm:grid-cols-2 md:grid-cols-1 stagger-children ${hasData ? "" : "hidden"}`}>
             <div className="rounded-lg border p-2.5" style={scoreTint(country.lcScore ?? 3)}>
               <div className="mb-1 flex items-center justify-between">
                 <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${getScoreTextClass(country.lcScore ?? 3)}`}>

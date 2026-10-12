@@ -26,7 +26,8 @@ function getCountryClasses(
   const data = getCountry(code);
   const base = ["country-shape"];
 
-  base.push(`score-${data.score}`, "is-rated");
+  // is-rated keeps the shape clickable; countries without data get their own colour
+  base.push(data.hasData ? `score-${data.score}` : "no-data", "is-rated");
 
   if (selectedCode === code) {
     base.push("selected-country");
@@ -36,7 +37,7 @@ function getCountryClasses(
   }
 
   // If legend scores are selected, dim countries whose score is not among them
-  if (selectedLegendScores.length > 0 && !selectedLegendScores.includes(data.score)) {
+  if (selectedLegendScores.length > 0 && (!data.hasData || !selectedLegendScores.includes(data.score))) {
     base.push("filtered-out");
   }
   // If zoom-to-country highlight is active, filter out all countries except the highlighted one
@@ -49,19 +50,21 @@ function getCountryClasses(
 
 function getCountryLabel(code: string): string {
   const data = getCountry(code);
+  if (!data.hasData) return `${data.name} — no data yet`;
   return `${data.name} — Bitcoin friendliness score ${data.score} out of 5`;
 }
 
-// Small score indicator used in the top-countries list and search results
+// Small score indicator used in the top-countries list and search results.
+// A score of 0 means the country has no data.
 function ScoreChip({ score, label }: { score: number; label: string }) {
   return (
     <span
       className="ml-auto shrink-0 inline-flex items-center gap-1 text-xs font-semibold tabular-nums text-zinc-700 dark:text-zinc-200"
-      aria-label={`Score ${label} out of 5`}
+      aria-label={score ? `Score ${label} out of 5` : "No data"}
     >
       <span
         className="h-2 w-2 rounded-full"
-        style={{ backgroundColor: `var(--score-${score})` }}
+        style={{ backgroundColor: score ? `var(--score-${score})` : "var(--no-data)" }}
         aria-hidden="true"
       />
       {label}
@@ -1050,8 +1053,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         countries.map((c) => ({
           code: c.code,
           name: formatCountryName(c.name),
-          score: c.score,
-          scoreLabel: formatScore(c),
+          score: c.hasData ? c.score : 0,
+          scoreLabel: c.hasData ? formatScore(c) : "No data",
         }))
       );
       
@@ -1400,6 +1403,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </li>
             ))}
           </ul>
+          {/* Not a filter: explains the grey used for places without a score */}
+          <div className="mt-1 flex items-center gap-2 border-t border-zinc-200 px-1 pt-1.5 text-[0.8125rem] dark:border-zinc-700 legend-content-slide">
+            <span
+              className="h-2.5 w-2.5 shrink-0 rounded-full border border-zinc-400 dark:border-zinc-500"
+              style={{ backgroundColor: "var(--no-data)" }}
+              aria-hidden="true"
+            />
+            <span className="text-zinc-600 dark:text-zinc-400">No data</span>
+          </div>
         </div>
       ) : (
         <div

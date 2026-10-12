@@ -101,6 +101,15 @@
   fill: color-mix(in srgb, var(--score-5) 88%, black) !important; /* slightly darker */
 }
 
+/* No data: neutral grey, outside the score scale */
+.map-container svg path.country-shape.no-data {
+  fill: var(--no-data) !important;
+}
+
+.map-container svg path.country-shape.no-data.is-rated:hover {
+  fill: color-mix(in srgb, var(--no-data) 85%, white) !important;
+}
+
 /* Filtered out: countries outside the active filter keep their score colour but are dimmed,
    so the geography stays readable */
 .map-container svg path.country-shape.filtered-out {

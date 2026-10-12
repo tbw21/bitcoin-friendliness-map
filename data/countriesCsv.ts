@@ -13,6 +13,8 @@ export interface CountryData {
   score: BitcoinScore;
   /** Unrounded score from the CSV (e.g. 3.4); null when the CSV value is missing or not numeric */
   scoreExact: number | null;
+  /** False when there is no usable score for this country: it is shown as "No data", not as a band */
+  hasData: boolean;
   summary: string;
   details: string;
   legalClarity: string;
@@ -256,6 +258,7 @@ async function initializeCountries(): Promise<void> {
           name,
           score,
           scoreExact,
+          hasData: scoreExact !== null,
           summary: summary || "Bitcoin friendliness profile (from CSV).",
           details,
           legalClarity,
@@ -275,8 +278,9 @@ async function initializeCountries(): Promise<void> {
         };
       }
 
-      // Compute rank_global: sort by score_1_5 desc, then avg of sub-scores desc, then name asc
-      const countriesArray = Object.values(out);
+      // Compute rank_global: sort by score_1_5 desc, then avg of sub-scores desc, then name asc.
+      // Countries without data are not ranked.
+      const countriesArray = Object.values(out).filter((country) => country.hasData);
       
       countriesArray.sort((a, b) => {
         // Primary: score_1_5 descending (unrounded where available)
@@ -314,10 +318,13 @@ async function initializeCountries(): Promise<void> {
         country.rankGlobal = index + 1;
       });
 
-      // Convert back to record
+      // Convert back to record (ranked countries first, then the ones without data)
       const result: Record<string, CountryData> = {};
       countriesArray.forEach((country) => {
         result[country.code] = country;
+      });
+      Object.values(out).forEach((country) => {
+        if (!country.hasData) result[country.code] = country;
       });
 
       cachedCountries = result;
@@ -359,13 +366,26 @@ export function getCountry(code: string): CountryData {
   return getDefaultCountry(code);
 }
 
+// Shapes on the map that have no row in the CSV (shown as "No data")
+const NAMES_WITHOUT_ROW: Record<string, string> = {
+  GO: "Glorioso Islands",
+  JU: "Juan de Nova Island",
+  "UM-DQ": "Jarvis Island",
+  "UM-FQ": "Baker Island",
+  "UM-HQ": "Howland Island",
+  "UM-JQ": "Johnston Atoll",
+  "UM-MQ": "Midway Islands",
+  "UM-WQ": "Wake Island",
+};
+
 function getDefaultCountry(code: string): CountryData {
   const upper = code.toUpperCase();
   return {
     code: upper,
-    name: upper,
+    name: NAMES_WITHOUT_ROW[upper] ?? upper,
     score: 3,
     scoreExact: null,
+    hasData: false,
     summary: "Default Bitcoin friendliness profile (not found in CSV).",
     details: "This country was not found in the CSV dataset.",
     legalClarity: "Unknown",
