@@ -414,6 +414,25 @@
   stroke: #ffffff !important;
 }
 
+/* Countries outside the active filter (or behind an open country) all take one flat colour, a
+   shade above the sea, instead of a dimmed version of their own. Dimmed light colours came out
+   as mid blues that looked just like the two lowest scores, so those never stood out. The
+   countries that are in the filter also get a light outline, so every band reads clearly,
+   alone or together with others. (The class is repeated to outrank the score colour rules.) */
+.map-container svg path.country-shape.filtered-out.filtered-out.filtered-out {
+  fill: #14324c !important;
+  fill-opacity: 1 !important;
+}
+
+.map-container svg path.country-shape.filtered-out.filtered-out.filtered-out.is-rated:hover {
+  fill: #1d405e !important;
+}
+
+.map-container.legend-filter-active svg path.country-shape:not(.filtered-out):not(.selected-country) {
+  stroke: rgba(236, 242, 248, 0.6) !important;
+  stroke-width: calc(0.7 / var(--map-zoom, 1)) !important;
+}
+
 /* Water lining: three smooth rings following the coast, fading out to sea. They also make
    small islands easier to spot. (They are <path>s, so fill must be switched off explicitly.)
    Zoomed right out the rings would sit less than a pixel apart and merge into a heavy band,
