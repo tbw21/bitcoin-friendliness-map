@@ -1,8 +1,8 @@
 # Bitcoin Friendliness Map
 
 An interactive world map that shows how Bitcoin-friendly each country is. Every country
-gets a score from 1 (hostile) to 5 (very friendly), built from four researched areas:
-legal clarity, tax treatment, banking and fiat rails, and residency and mobility.
+gets an overall score out of 5, built from eight researched areas: tax, banking, legal
+freedom, residency, spending, community, privacy and stability (the Bitcoin Living Index).
 
 The map is made to be embedded in another website. It has no header or page chrome of its
 own; the app lives at `/map`.
@@ -11,8 +11,8 @@ own; the app lives at `/map`.
 
 - **Colour-coded world map** in an Equal Earth projection, so countries appear at their
   true relative size.
-- **Country details** on click: overall score and band, rank, capital, population, the four
-  area scores with a short assessment each, and notes.
+- **Country details** on click: overall score and band, rank, capital, population, the eight
+  area scores with a short assessment each, and a summary.
 - **Search** by country name or two-letter code.
 - **Filter by score**: pick one or more bands; the rest of the map dims.
 - **Top 5 list** of the highest-scoring countries.
@@ -58,26 +58,31 @@ Then open [http://localhost:3000/map](http://localhost:3000/map).
 
 ## Updating the data
 
-All country data comes from one file: `public/research-bitcoin-friendliness.csv`. Replace
-it and the map picks up the changes on the next load; no code changes are needed.
+All country data comes from one file: `public/bitcoin-living-index.csv`. It is made from the
+Bitcoin Living Index spreadsheet:
 
-The file is semicolon-separated, UTF-8, and uses a comma as the decimal sign (`3,4`).
+```bash
+pip install openpyxl
+python3 scripts/import-living-index.py path/to/Bitcoin_Living_Index.xlsx public/bitcoin-living-index.csv
+```
+
+The map picks up the new file on the next load; no code changes are needed.
+
+The file is semicolon-separated and UTF-8.
 
 | Column | Contents |
 |---|---|
 | `name` | Country name |
 | `alpha_2` | Two-letter ISO code. The map matches countries by this, so it must not change |
 | `alpha_3`, `numeric` | Other ISO codes (not used by the map) |
-| `legal_clarity`, `LC Score` | Assessment text and 1–5 score |
-| `tax_treatment`, `TT Score` | Assessment text and 1–5 score |
-| `banking_fiat_rails`, `BFC Score` | Assessment text and 1–5 score |
-| `residency_mobility`, `RM Score` | Assessment text and 1–5 score |
-| `Capital`, `Population` | Shown as written |
-| `score_1_5` | Overall score, 1–5, decimals allowed |
-| `notes` | Free text shown under the four areas |
-| `confidence` | Loaded but not currently shown |
+| `tax`, `tax_score` | Assessment text and 0–5 score. The same pair exists for `banking`, `legal`, `residency`, `spending`, `community`, `privacy` and `stability` |
+| `capital`, `population` | Shown as written |
+| `overall_score` | Overall score out of 5, two decimals. Worked out by the import script from the eight scores: tax 20%, banking 15%, legal 15%, residency 12%, spending 12%, privacy 10%, community 8%, stability 8% |
+| `summary` | Free text shown under the eight areas |
+| `detail` | How much research is behind the row. Loaded but not currently shown |
 
-A country with a missing or unreadable score is shown as a neutral 3.
+A country with an empty `overall_score` is shown as "No data". Countries are ranked by overall
+score, ties in alphabetical order, which is also how the summaries in the data count ranks.
 
 ## Customising the look
 
@@ -108,10 +113,11 @@ data/
 lib/
   flags.ts          Flag image URLs
 public/
-  research-bitcoin-friendliness.csv   The data
+  bitcoin-living-index.csv            The data
   world_equal_earth.svg               The map
 scripts/
   reproject-map.py  Generates the Equal Earth map from the Mercator source
+  import-living-index.py  Turns the Bitcoin Living Index spreadsheet into the data file
 ```
 
 ## Embedding

@@ -371,70 +371,33 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Key dimensions */}
           <div className={`grid gap-3 sm:grid-cols-2 md:grid-cols-1 stagger-children ${hasData ? "" : "hidden"}`}>
-            <div className="rounded-lg border p-2.5" style={scoreTint(country.lcScore ?? 3)}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${getScoreTextClass(country.lcScore ?? 3)}`}>
-                  Legal clarity
+            {country.areas.map((area) => {
+              // Scores run 0 to 5; the tints only exist for bands 1 to 5, so 0 uses the lowest
+              const band = Math.min(5, Math.max(1, Math.round(area.score ?? 3)));
+              const textClass = getScoreTextClass(band);
+              return (
+                <div key={area.key} className="rounded-lg border p-2.5" style={scoreTint(band)}>
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${textClass}`}>{area.label}</div>
+                    {area.score !== null && (
+                      <span className={`shrink-0 text-xs font-bold ${textClass}`} aria-label={`${area.score} out of 5`}>
+                        {area.score}
+                      </span>
+                    )}
+                  </div>
+                  <p className={`text-sm sm:text-[0.9rem] ${textClass}`}>{area.text || "—"}</p>
                 </div>
-                {country.lcScore !== null && (
-                  <span className={`text-xs font-bold ${getScoreTextClass(country.lcScore ?? 3)}`}>{country.lcScore}</span>
-                )}
-              </div>
-              <p className={`text-sm sm:text-[0.9rem] ${getScoreTextClass(country.lcScore ?? 3)}`}>
-                {country.legalClarity || "—"}
-              </p>
-            </div>
-
-            <div className="rounded-lg border p-2.5" style={scoreTint(country.ttScore ?? 3)}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${getScoreTextClass(country.ttScore ?? 3)}`}>
-                  Tax treatment
-                </div>
-                {country.ttScore !== null && (
-                  <span className={`text-xs font-bold ${getScoreTextClass(country.ttScore ?? 3)}`}>{country.ttScore}</span>
-                )}
-              </div>
-              <p className={`text-sm sm:text-[0.9rem] ${getScoreTextClass(country.ttScore ?? 3)}`}>
-                {country.taxTreatment || "—"}
-              </p>
-            </div>
-
-            <div className="rounded-lg border p-2.5" style={scoreTint(country.bfcScore ?? 3)}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${getScoreTextClass(country.bfcScore ?? 3)}`}>
-                  Banking &amp; fiat rails
-                </div>
-                {country.bfcScore !== null && (
-                  <span className={`text-xs font-bold ${getScoreTextClass(country.bfcScore ?? 3)}`}>{country.bfcScore}</span>
-                )}
-              </div>
-              <p className={`text-sm sm:text-[0.9rem] ${getScoreTextClass(country.bfcScore ?? 3)}`}>
-                {country.bankingFiatRails || "—"}
-              </p>
-            </div>
-
-            <div className="rounded-lg border p-2.5" style={scoreTint(country.rmScore ?? 3)}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${getScoreTextClass(country.rmScore ?? 3)}`}>
-                  Residency &amp; mobility
-                </div>
-                {country.rmScore !== null && (
-                  <span className={`text-xs font-bold ${getScoreTextClass(country.rmScore ?? 3)}`}>{country.rmScore}</span>
-                )}
-              </div>
-              <p className={`text-sm sm:text-[0.9rem] ${getScoreTextClass(country.rmScore ?? 3)}`}>
-                {country.residencyMobility || "—"}
-              </p>
-            </div>
+              );
+            })}
           </div>
 
-          {country.notes && (
+          {country.summary && (
             <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/60 p-2.5 text-sm stagger-last">
               <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
-                Notes
+                Summary
               </h3>
               <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-400">
-                {country.notes}
+                {country.summary}
               </p>
             </div>
           )}

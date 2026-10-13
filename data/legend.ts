@@ -1,4 +1,4 @@
-import type { BitcoinScore } from "./countries";
+import type { BitcoinScore } from "./countriesCsv";
 
 export interface LegendEntry {
   score: BitcoinScore;
