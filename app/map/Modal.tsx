@@ -380,8 +380,11 @@ export const Modal: React.FC<ModalProps> = ({
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${textClass}`}>{area.label}</div>
                     {area.score !== null && (
-                      <span className={`shrink-0 text-xs font-bold ${textClass}`} aria-label={`${area.score} out of 5`}>
-                        {area.score}
+                      <span
+                        className={`shrink-0 whitespace-nowrap text-xs font-bold tabular-nums ${textClass}`}
+                        aria-label={`Score ${area.score} out of 5`}
+                      >
+                        {area.score} <span className="font-medium opacity-70">/ 5</span>
                       </span>
                     )}
                   </div>
