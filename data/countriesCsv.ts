@@ -26,6 +26,24 @@ export const AREAS: Array<{ key: string; label: string }> = [
   { key: "stability", label: "Stability" },
 ];
 
+// Band names as used in the legend (data/legend.ts), for wording inside summaries
+const BAND_WORDS: Record<BitcoinScore, string> = {
+  1: "hostile",
+  2: "unfriendly",
+  3: "neutral",
+  4: "friendly",
+  5: "very friendly",
+};
+
+/**
+ * The summaries in the data describe a country's standing in their own words ("Ranked 50th out
+ * of 249 countries (good)"). Swap that word for the band name the map uses for the same country,
+ * so the summary, the badge and the legend all say the same thing.
+ */
+function withBandWording(summary: string, band: BitcoinScore): string {
+  return summary.replace(/^(Ranked \d+\w* out of \d+ countries) \([a-z ]+\)/, `$1 (${BAND_WORDS[band]})`);
+}
+
 export interface CountryData {
   code: string;
   name: string;
@@ -174,11 +192,13 @@ async function initializeCountries(): Promise<void> {
         const scoreExact = parseDecimal(cols[iScore]);
         const capital = optionalText(cols[iCapital]);
 
+        // Colour band is the whole-number part of the score: 1.8 is band 1, and only a clean 5 is band 5
+        const band = clampBand(scoreExact !== null ? Math.floor(scoreExact) : 3);
+
         out[code] = {
           code,
           name: (cols[iName] || code).trim(),
-          // Colour band is the whole-number part of the score: 1.8 is band 1, and only a clean 5 is band 5
-          score: clampBand(scoreExact !== null ? Math.floor(scoreExact) : 3),
+          score: band,
           scoreExact,
           hasData: scoreExact !== null,
           areas: areaColumns.map((area) => ({
@@ -187,7 +207,7 @@ async function initializeCountries(): Promise<void> {
             text: (cols[area.iText] || "").trim(),
             score: parseDecimal(cols[area.iScore]),
           })),
-          summary: (cols[iSummary] || "").trim(),
+          summary: withBandWording((cols[iSummary] || "").trim(), band),
           capital: capital ? normalizeCapital(capital) || null : null,
           population: optionalText(cols[iPopulation]),
           detail: optionalText(cols[iDetail]),

@@ -34,19 +34,15 @@ function getCountryClasses(
   // is-rated keeps the shape clickable; countries without data get their own colour
   base.push(data.hasData ? `score-${data.score}` : "no-data", "is-rated");
 
-  if (selectedCode === code) {
+  // The open country is marked by its white outline only. Every other country keeps its score
+  // colour (also when the open one has been located with the pin button), so the colours can be
+  // read while stepping from country to country with the details open.
+  if (selectedCode === code || highlightOnlyCode === code) {
     base.push("selected-country");
-  } else if (selectedCode !== null) {
-    // While a country's details are open, dim every other country so it stands out
-    base.push("filtered-out");
   }
 
-  // If legend scores are selected, dim countries whose score is not among them
+  // Only the score filter takes colour away: countries whose score is not among the chosen ones
   if (selectedLegendScores.length > 0 && (!data.hasData || !selectedLegendScores.includes(data.score))) {
-    base.push("filtered-out");
-  }
-  // If zoom-to-country highlight is active, filter out all countries except the highlighted one
-  if (highlightOnlyCode !== null && code !== highlightOnlyCode) {
     base.push("filtered-out");
   }
 
@@ -562,28 +558,23 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
       if (isClick) {
         const target = event.target;
-        const currentHighlight = highlightOnlyCodeRef.current;
-        const clearHighlight = onClearHighlightOnlyRef.current;
         const code = getCountryCode(target);
         if (code) {
-          // When a country is highlighted: click on that country opens modal; click elsewhere clears highlight
-          if (currentHighlight && code !== currentHighlight) {
-            clearHighlight?.();
-          } else {
-            if (target instanceof SVGElement) target.blur();
-            if (code === selectedCodeRef.current) {
-              // Clicking the open country closes its details. Not right after it opened: that is
-              // the second click of a double-click (zoom), which should leave it open.
-              if (Date.now() - selectedAtRef.current > 400) onClearSelectionRef.current?.();
-            } else {
-              onSelectCountry(code);
+          if (target instanceof SVGElement) target.blur();
+          if (code === selectedCodeRef.current) {
+            // Clicking the open country closes its details. Not right after it opened: that is
+            // the second click of a double-click (zoom), which should leave it open.
+            if (Date.now() - selectedAtRef.current > 400) {
+              onClearHighlightOnlyRef.current?.();
+              onClearSelectionRef.current?.();
             }
+          } else {
+            // Any other country opens straight away (page.tsx also drops the pin highlight)
+            onSelectCountry(code);
           }
-        } else if (currentHighlight) {
-          // Click on ocean/non-path: clear highlight
-          clearHighlight?.();
         } else if (root.contains(target as Node)) {
-          // Click on ocean/non-path: close the open country's details (no-op when none is open)
+          // Click on the sea: close the open country's details (no-op when none is open)
+          onClearHighlightOnlyRef.current?.();
           onClearSelectionRef.current?.();
         }
       }
@@ -1454,7 +1445,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       <div
         ref={containerRef}
         className={`map-container relative min-h-0 w-full flex-1 ${
-          selectedLegendScores.length > 0 || highlightOnlyCode !== null ? "legend-filter-active" : ""
+          selectedLegendScores.length > 0 ? "legend-filter-active" : ""
         }`}
       />
 
