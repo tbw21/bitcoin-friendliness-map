@@ -326,7 +326,7 @@
 
 @font-face {
   font-family: "Kepler Caption";
-  src: url("/fonts/KeplerStd-MediumCapt.otf") format("opentype");
+  src: url("/fonts/KeplerStd-Capt.otf") format("opentype");
   font-display: swap;
 }
 
@@ -362,7 +362,7 @@
 /* Small labels: the caption cut, upright, which is drawn to stay legible at small sizes */
 .font-chart-caption {
   font-family: "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 /* Lettering on the chart itself */
