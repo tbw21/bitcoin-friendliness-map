@@ -97,6 +97,16 @@ score, ties in alphabetical order, which is also how the summaries in the data c
   python3 scripts/reproject-map.py public/world_modified_hover.svg public/world_equal_earth.svg
   ```
 
+## Link preview image
+
+`app/opengraph-image.jpg` is the picture shown when the map's link is shared: the chart on its
+own, 1200 x 630. It is made from the map, the data and the stylesheet, so run this again after
+the data or the look changes (macOS, needs Google Chrome):
+
+```bash
+python3 scripts/make-og-image.py app/opengraph-image.jpg
+```
+
 ## Project structure
 
 ```
