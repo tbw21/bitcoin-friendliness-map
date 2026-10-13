@@ -34,11 +34,14 @@ function getCountryClasses(
   // is-rated keeps the shape clickable; countries without data get their own colour
   base.push(data.hasData ? `score-${data.score}` : "no-data", "is-rated");
 
-  // The open country is marked by its white outline only. Every other country keeps its score
-  // colour (also when the open one has been located with the pin button), so the colours can be
-  // read while stepping from country to country with the details open.
-  if (selectedCode === code || highlightOnlyCode === code) {
+  // The open country (also when located with the pin button) keeps its full colour and gets a
+  // white outline. Every other country is toned down but keeps its own score colour, so the
+  // open one stands out and the colours can still be read while stepping between countries.
+  const openCode = selectedCode ?? highlightOnlyCode;
+  if (openCode === code) {
     base.push("selected-country");
+  } else if (openCode !== null) {
+    base.push("dimmed");
   }
 
   // Only the score filter takes colour away: countries whose score is not among the chosen ones

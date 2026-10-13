@@ -415,7 +415,14 @@
   stroke: #ffffff !important;
 }
 
-/* Countries outside the active filter (or behind an open country) all take one flat colour, a
+/* While a country's details are open, the others are toned down but keep their own colour */
+.map-container svg path.country-shape.dimmed {
+  fill-opacity: 0.35 !important;
+  /* Dimming (e.g. the previously open country) runs at half the time of the fade back in */
+  transition: fill 220ms ease-out, fill-opacity 130ms ease-out, stroke 110ms ease-out !important;
+}
+
+/* Countries outside the active score filter all take one flat colour, a
    shade above the sea, instead of a dimmed version of their own. Dimmed light colours came out
    as mid blues that looked just like the two lowest scores, so those never stood out. The
    countries that are in the filter also get a light outline, so every band reads clearly,
