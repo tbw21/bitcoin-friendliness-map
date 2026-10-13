@@ -7,6 +7,12 @@ more than some chat apps accept for link previews). Run it again after the data 
 macOS only: it uses Chrome and the sips tool.
 
     python3 scripts/make-og-image.py app/opengraph-image.jpg
+
+Other sizes: give width, height and a sharpness factor after the file name. The picture is laid
+out at width x height and saved that many times larger, e.g. a 3840 x 2160 video thumbnail
+background:
+
+    python3 scripts/make-og-image.py thumbnail.jpg 1280 720 3
 """
 import csv, math, os, re, subprocess, sys, tempfile, urllib.parse
 
@@ -14,7 +20,8 @@ dst = os.path.abspath(sys.argv[1])
 root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 read = lambda *p: open(os.path.join(root, *p), encoding="utf-8").read()
 
-W, H = 1200, 630
+W, H = (int(sys.argv[2]), int(sys.argv[3])) if len(sys.argv) > 3 else (1200, 630)
+SCALE = int(sys.argv[4]) if len(sys.argv) > 4 else 1
 MARGIN = 44            # sea between the chart's outer frame line and the picture's edge, px
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
@@ -73,10 +80,10 @@ html,body{margin:0;background:%s}
 with tempfile.TemporaryDirectory() as tmp:
     page_file = os.path.join(tmp, "og.html")
     open(page_file, "w", encoding="utf-8").write(html)
-    subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=1",
+    subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--force-device-scale-factor=%d" % SCALE,
                     "--window-size=%d,%d" % (W, H), "--virtual-time-budget=4000", "--user-data-dir=" + os.path.join(tmp, "profile"),
                     "--screenshot=" + os.path.join(tmp, "og.png"), "file://" + urllib.parse.quote(page_file)],
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     subprocess.run(["sips", "-s", "format", "jpeg", "-s", "formatOptions", "90", os.path.join(tmp, "og.png"), "--out", dst],
                    check=True, stdout=subprocess.DEVNULL)
-print("wrote", dst, os.path.getsize(dst) // 1024, "KB")
+print("wrote", dst, "%d x %d," % (W * SCALE, H * SCALE), os.path.getsize(dst) // 1024, "KB")
