@@ -68,7 +68,7 @@ function ScoreChip({ score, label }: { score: number; label: string }) {
       aria-label={score ? `Score ${label} out of 5` : "No data"}
     >
       <span
-        className="h-2 w-2 rounded-full"
+        className="h-2 w-2 rounded-full ring-1 ring-black/20 dark:ring-0"
         style={{ backgroundColor: score ? `var(--score-${score})` : "var(--no-data)" }}
         aria-hidden="true"
       />
@@ -1482,7 +1482,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Zoom in (or press +)"
           title="Zoom in (+)"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#e4e4e7" strokeWidth={2.5}>
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
         </button>
@@ -1492,7 +1492,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Zoom out (or press -)"
           title="Zoom out (-)"
         >
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#e4e4e7" strokeWidth={2.5}>
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
           </svg>
         </button>
@@ -1504,7 +1504,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           title="Show the whole world (0)"
         >
           {/* Globe: "back to the whole world" (circular arrows read as reload) */}
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#e4e4e7" strokeWidth={1.75}>
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
             <circle cx="12" cy="12" r="9" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
           </svg>
@@ -1587,7 +1587,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                 aria-pressed={selectedLegendScores.includes(entry.score)}
               >
                 <span
-                  className="h-2.5 w-2.5 shrink-0 rounded-full"
+                  className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-black/20 dark:ring-0"
                   style={{ backgroundColor: `var(--score-${entry.score})` }}
                   aria-hidden="true"
                 />

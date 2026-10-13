@@ -577,6 +577,20 @@
   opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(2 - var(--map-zoom, 1) / 25)), 1);
 }
 
+/* Score tints in the details panel (badge and the four cards): pale on the white panel of light
+   mode needs more colour to tell the bands apart than on the dark panel */
+:root {
+  --tint-fill: 42%;
+  --tint-border: 75%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tint-fill: 25%;
+    --tint-border: 50%;
+  }
+}
+
 /* Film grain. Two separate layers, each with its own texture and strength (set in page.tsx):
 
    .map-grain  lies over the map only, under the search bar, legends and panels. Its texture is

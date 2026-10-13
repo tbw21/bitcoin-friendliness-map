@@ -22,15 +22,17 @@ const SHEET_PEEK_FRACTION = 1 / 3;
 // Tinted background + border in the score's palette colour (badge and dimension cards)
 function scoreTint(score: number): React.CSSProperties {
   return {
-    backgroundColor: `color-mix(in srgb, var(--score-${score}) 25%, transparent)`,
-    borderColor: `color-mix(in srgb, var(--score-${score}) 50%, transparent)`,
+    // Strengths differ between light and dark mode (--tint-fill / --tint-border in map.css)
+    backgroundColor: `color-mix(in srgb, var(--score-${score}) var(--tint-fill, 25%), transparent)`,
+    borderColor: `color-mix(in srgb, var(--score-${score}) var(--tint-border, 50%), transparent)`,
   };
 }
 
-// Get text color classes for dimension card content (light text for all scores)
+// Text colour for the tinted badge and dimension cards: dark on the pale tints of light mode,
+// white on the deep tints of dark mode
 function getScoreTextClass(score: number): string {
-  // Use light text for all scores for better contrast on darker backgrounds
-  return "text-white";
+  void score;
+  return "text-zinc-900 dark:text-white";
 }
 
 
@@ -325,7 +327,9 @@ export const Modal: React.FC<ModalProps> = ({
                 between the centre of the capitals and of the lowercase), measured for the 30px and
                 34px heading sizes. */}
             <span
-              className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 text-white -translate-y-[1.65px] sm:-translate-y-[1.9px]"
+              className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 -translate-y-[1.65px] sm:-translate-y-[1.9px] ${
+                hasData ? "text-zinc-900 dark:text-white" : "text-white"
+              }`}
               style={
                 hasData
                   ? scoreTint(country.score)
@@ -429,7 +433,7 @@ export const Modal: React.FC<ModalProps> = ({
               <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
                 Notes
               </h3>
-              <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-500 dark:text-zinc-400">
+              <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-400">
                 {country.notes}
               </p>
             </div>
