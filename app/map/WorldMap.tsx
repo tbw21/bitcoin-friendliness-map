@@ -1362,7 +1362,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search countries..."
-            className={`w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900/95 px-4 py-2.5 text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
+            className={`w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 px-4 py-2.5 text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
               searchQuery ? "pr-[4.5rem]" : "pr-10"
             }`}
           />
@@ -1409,7 +1409,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           {searchResults.length > 0 && (
             <div
               ref={searchResultsRef}
-              className="absolute top-full mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white/95 dark:bg-zinc-900/95 shadow-lg backdrop-blur z-30 search-results-enter stagger-children"
+              className="absolute top-full mt-1 w-full max-h-60 overflow-y-auto rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 shadow-lg backdrop-blur z-30 search-results-enter stagger-children"
             >
               {searchResults.map((country, index) => (
                 <button
@@ -1423,7 +1423,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                   }`}
                 >
                   {/* Flag */}
-                  <div className="h-4 w-6 shrink-0 flex items-center justify-center rounded border border-zinc-200 dark:border-zinc-700 overflow-hidden bg-zinc-100 dark:bg-zinc-800 mt-0.5">
+                  <div className="h-4 w-6 shrink-0 flex items-center justify-center rounded border border-zinc-200/80 dark:border-zinc-700/55 overflow-hidden bg-zinc-100 dark:bg-zinc-800 mt-0.5">
                     <img
                       src={getFlagUrl(country.code, "w40")}
                       alt={getFlagAltText(country.name)}
@@ -1482,7 +1482,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       >
         <button
           onClick={handleZoomIn}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom in (or press +)"
           title="Zoom in (+)"
         >
@@ -1492,7 +1492,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </button>
         <button
           onClick={handleZoomOut}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom out (or press -)"
           title="Zoom out (-)"
         >
@@ -1503,7 +1503,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         <button
           onClick={handleReset}
           disabled={isDefaultView}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
           aria-label="Show the whole world (or press 0)"
           title="Show the whole world (0)"
         >
@@ -1528,12 +1528,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
           <div
-            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200 pb-1 dark:border-zinc-700 cursor-pointer legend-content-slide"
+            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
               setLegendOpen(false);
               setSelectedLegendScores([]); // Reset filter when closing legend
@@ -1604,7 +1604,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1631,12 +1631,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
           <div
-            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200 pb-1 dark:border-zinc-700 cursor-pointer legend-content-slide"
+            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
               setTopCountriesLegendOpen(false);
             }}
@@ -1691,7 +1691,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}

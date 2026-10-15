@@ -221,7 +221,7 @@ export const Modal: React.FC<ModalProps> = ({
           (4.875rem). Keep in step with the search bar's position and height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.875rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.875rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}
@@ -250,7 +250,7 @@ export const Modal: React.FC<ModalProps> = ({
           {/* Row 1: flag on the left, buttons on the right, centred on one line */}
           <div className="mb-3 flex items-center justify-between gap-3">
             {/* Flag with fixed dimensions to prevent layout shift */}
-            <div className="h-7 w-11 shrink-0 flex items-center justify-center rounded border border-zinc-200 dark:border-zinc-700 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
+            <div className="h-7 w-11 shrink-0 flex items-center justify-center rounded border border-zinc-200/80 dark:border-zinc-700/55 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
               {!flagError ? (
                 <img
                   src={getFlagUrl(country.code, "w80")}
@@ -266,7 +266,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectCountry(previousCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Previous country (up rank list)"
                   title="Previous country"
                 >
@@ -279,7 +279,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectCountry(nextCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Next country (down rank list)"
                   title="Next country"
                 >
@@ -292,7 +292,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={onShowOnMap}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Show country on map"
                   title="Show on map"
                 >
@@ -307,7 +307,7 @@ export const Modal: React.FC<ModalProps> = ({
                 ref={closeButtonRef}
                 type="button"
                 onClick={onClose}
-                className="hidden md:flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                className="hidden md:flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                 aria-label="Close"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -359,7 +359,7 @@ export const Modal: React.FC<ModalProps> = ({
           className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-sm leading-relaxed text-zinc-900 dark:text-white sm:px-5 md:pb-5"
         >
           {!hasData && (
-            <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-sm country-panel-content">
+            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-sm country-panel-content">
               <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
                 No data yet
               </h3>
@@ -395,7 +395,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
 
           {country.summary && (
-            <div className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50/80 dark:bg-zinc-800/60 p-2.5 text-sm stagger-last">
+            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-2.5 text-sm stagger-last">
               <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
                 Summary
               </h3>

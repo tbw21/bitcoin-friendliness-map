@@ -5,6 +5,23 @@
   --foreground: #171717;
 }
 
+/* The interface greys (Tailwind's "zinc", used by the panels, legends, buttons and search) are
+   tinted towards the chart's navy: halfway between Tailwind's neutral zinc and its blue-grey
+   slate, so the controls belong to the sea behind them without turning blue. */
+@theme {
+  --color-zinc-50: oklch(98.45% 0.0015 248);
+  --color-zinc-100: oklch(96.75% 0.004 248);
+  --color-zinc-200: oklch(92.45% 0.0085 255);
+  --color-zinc-300: oklch(87% 0.014 253);
+  --color-zinc-400: oklch(70.45% 0.0275 257);
+  --color-zinc-500: oklch(55.3% 0.031 257);
+  --color-zinc-600: oklch(44.4% 0.03 257);
+  --color-zinc-700: oklch(37.1% 0.0285 257);
+  --color-zinc-800: oklch(27.65% 0.0235 260);
+  --color-zinc-900: oklch(20.9% 0.024 266);
+  --color-zinc-950: oklch(13.5% 0.0235 265);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

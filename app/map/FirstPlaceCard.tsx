@@ -19,7 +19,7 @@ export default function FirstPlaceCard({
     // Leaves room on phones for the zoom buttons at the right edge
     <div className="mt-2 flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
       <div
-        className={`ui-grain grid overflow-hidden rounded-lg border border-zinc-200 bg-white/95 shadow-lg backdrop-blur transition-[grid-template-columns] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-zinc-700 dark:bg-zinc-900/95 motion-reduce:transition-none ${
+        className={`ui-grain grid overflow-hidden rounded-lg border border-zinc-200/80 bg-white/95 shadow-lg backdrop-blur transition-[grid-template-columns] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-zinc-700/55 dark:bg-zinc-900/95 motion-reduce:transition-none ${
           collapsed ? "grid-cols-[auto_0fr]" : "grid-cols-[auto_1fr]"
         }`}
       >
