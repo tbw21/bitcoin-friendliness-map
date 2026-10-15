@@ -218,11 +218,11 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Fixed height on small screens so the sheet's top edge stays put whatever the content length;
           only the section under the header scrolls. The top edge sits 8px below the search bar,
           where the first-place card and the zoom buttons start, so the sheet covers them:
-          16px + 52px bar + 8px = 76px (4.75rem). Keep in step with the search bar's position and
+          16px + 58px bar + 8px = 82px (5.125rem). Keep in step with the search bar's position and
           height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.75rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className="ui-grain flex flex-col w-full h-[calc(100dvh-5.125rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}
