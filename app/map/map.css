@@ -35,11 +35,12 @@
 }
 
 /* Base country shape styles - borders take the map background colour (--map-bg, set in page.tsx) */
-/* Borders are a fixed 1 screen pixel at any zoom and on any screen size (vector-effect keeps the
-   width out of the map's scaling). Neighbours share one border line, see scripts/clean-borders.py */
+/* Border width in screen pixels (vector-effect keeps it out of the map's scaling): a fine 0.67px
+   on the whole world, growing to 1px by about 4x zoom and staying there however far you zoom in.
+   Neighbours share one border line, see scripts/clean-borders.py */
 .map-container svg path.country-shape {
   stroke: var(--map-bg) !important;
-  stroke-width: 1px !important;
+  stroke-width: min(1px, calc(0.55px + 0.12px * var(--map-zoom, 1))) !important;
   vector-effect: non-scaling-stroke;
   transition: fill 220ms ease-out, fill-opacity 260ms ease-out, stroke 220ms ease-out !important;
   fill-opacity: 0.95 !important;
