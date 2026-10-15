@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import Medal from "./Medal";
+import Trophy from "./Trophy";
 
 // First place gets its own card under the search bar: no country reaches the top colour band, so
 // the leader cannot be recognised by colour alone. It starts open so everyone sees it; the x
-// slides it away to the left until only the medal is left, and the medal brings it back.
+// slides it away to the left until only the trophy is left, and the trophy brings it back.
 export default function FirstPlaceCard({
   name,
   onOpen,
@@ -30,7 +30,7 @@ export default function FirstPlaceCard({
           aria-label={collapsed ? `Show the most Bitcoin-friendly country: ${name}` : `${name}, the most Bitcoin-friendly country. Open details`}
           aria-expanded={!collapsed}
         >
-          <Medal className="h-8 w-8 shrink-0" />
+          <Trophy className="h-9 w-9 shrink-0" />
         </button>
         <div className="flex min-w-0 items-start">
           <button
@@ -38,12 +38,17 @@ export default function FirstPlaceCard({
             onClick={onOpen}
             tabIndex={collapsed ? -1 : 0}
             aria-hidden={collapsed}
-            className="min-w-0 self-center py-1.5 pr-1 text-left cursor-pointer"
+            // Optical alignment: the two lines are set tight so the text (top of the capitals to the
+            // last baseline) spans no more than the trophy does, and sit a hair low because the
+            // trophy's weight is in its bowl and plinth. Measured for these sizes.
+            className="min-w-0 translate-y-[0.75px] self-center py-1.5 pr-1 text-left cursor-pointer"
           >
-            <span className="block truncate font-chart-caption text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
+            <span className="block truncate font-chart-caption text-[1.0625rem] leading-[1.05] tracking-[0.02em] text-zinc-900 dark:text-white">
               {name}
             </span>
-            <span className="block whitespace-nowrap text-xs text-zinc-600 dark:text-zinc-300">Most Bitcoin-friendly</span>
+            <span className="mt-[2px] block whitespace-nowrap text-xs leading-[1.15] text-zinc-600 dark:text-zinc-300">
+              Most Bitcoin-friendly
+            </span>
           </button>
           <button
             type="button"
