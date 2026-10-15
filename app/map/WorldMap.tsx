@@ -1447,7 +1447,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
         {topCountries[0] && (
           <FirstPlaceCard
-            code={topCountries[0].code}
             name={topCountries[0].name}
             onOpen={() => handleSelectCountry(topCountries[0].code)}
           />
@@ -1469,9 +1468,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           On wide screens the country panel docks to the right edge and the controls sit on its left side.
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
           (same distance, duration and easing) instead of travelling across the map behind it. */}
+      {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
+          (1rem from the top + 2.875rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
         key={selectedCode ? "docked" : "free"}
-        className={`absolute top-20 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
+        className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? `md:right-[25rem] lg:right-[29rem] map-controls-docked ${
                 sheetPeek ? "" : "max-md:invisible max-md:opacity-0"
