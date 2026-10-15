@@ -25,12 +25,12 @@ export default function FirstPlaceCard({
       >
         <Award className="h-[26px] w-[37px] shrink-0" />
         {/* As tall as the search bar (58px); the two lines (top of the capitals to the last
-            baseline) are centred on the award, with about 10px above and below. Measured. */}
+            baseline) are centred on the award, with about 12px above and below. Measured. */}
         <span className="min-w-0 translate-y-[0.4px]">
           <span className="block truncate font-chart-title text-[1.25rem] leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
             {name}
           </span>
-          <span className="mt-[5px] block whitespace-nowrap text-sm leading-none text-zinc-600 dark:text-zinc-300">
+          <span className="mt-px block whitespace-nowrap text-sm leading-none text-zinc-600 dark:text-zinc-300">
             No.1 most Bitcoin-friendly
           </span>
         </span>
