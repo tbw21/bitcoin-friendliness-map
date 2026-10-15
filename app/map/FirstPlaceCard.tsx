@@ -20,14 +20,14 @@ export default function FirstPlaceCard({
       <button
         type="button"
         onClick={onOpen}
-        className="ui-grain flex h-[46px] min-w-0 items-center gap-[10px] rounded-lg border border-zinc-200/80 bg-white/95 pl-[14px] pr-[13px] text-left shadow-lg backdrop-blur transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900/95 dark:hover:bg-zinc-900 cursor-pointer"
+        className="ui-grain flex h-12 min-w-0 items-center gap-3 rounded-lg border border-zinc-200/80 bg-white/95 px-4 text-left shadow-lg backdrop-blur transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900/95 dark:hover:bg-zinc-900 cursor-pointer"
         aria-label={`${name}, the most Bitcoin-friendly country. Open details`}
       >
         {/* The award is a little taller than the capitals of the name and shares their centre (the
-            name is moved down 2.5px: Kepler sits its capitals above the middle of the line).
+            name is moved down 2.25px: Kepler sits its capitals above the middle of the line).
             About 14px of space at the left and right edges. Measured for these sizes. */}
-        <Award className="h-[19px] w-[27px] shrink-0" />
-        <span className="min-w-0 translate-y-[2.55px] truncate font-chart-title text-[1.25rem] leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
+        <Award className="h-5 w-7 shrink-0" />
+        <span className="min-w-0 translate-y-[2.25px] truncate font-chart-title text-base leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
           {name}
         </span>
       </button>

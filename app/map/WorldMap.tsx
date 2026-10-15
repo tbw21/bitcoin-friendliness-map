@@ -63,7 +63,7 @@ function getCountryLabel(code: string): string {
 function ScoreChip({ score, label }: { score: number; label: string }) {
   return (
     <span
-      className="ml-auto shrink-0 inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-zinc-700 dark:text-zinc-200"
+      className="ml-auto shrink-0 inline-flex items-center gap-1 text-base font-semibold tabular-nums text-zinc-700 dark:text-zinc-200"
       aria-label={score ? `Score ${label} out of 5` : "No data"}
     >
       <span
@@ -1404,7 +1404,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search countries..."
-            className={`w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 px-4 py-2.5 text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
+            className={`w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 px-4 py-[11px] text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
               searchQuery ? "pr-[4.5rem]" : "pr-10"
             }`}
           />
@@ -1465,7 +1465,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                   }`}
                 >
                   {/* Flag */}
-                  <div className="h-4 w-6 shrink-0 flex items-center justify-center rounded border border-zinc-200/80 dark:border-zinc-700/55 overflow-hidden bg-zinc-100 dark:bg-zinc-800 mt-0.5">
+                  <div className="h-4 w-6 shrink-0 flex items-center justify-center rounded border border-zinc-200/80 dark:border-zinc-700/55 overflow-hidden bg-zinc-100 dark:bg-zinc-800 mt-1">
                     <img
                       src={getFlagUrl(country.code, "w40")}
                       alt={getFlagAltText(country.name)}
@@ -1476,7 +1476,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                     <div className="font-medium text-zinc-900 dark:text-white">
                       {country.name}
                     </div>
-                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
+                    <div className="text-base text-zinc-500 dark:text-zinc-400">
                       {country.code}
                     </div>
                   </div>
@@ -1512,10 +1512,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
           (same distance, duration and easing) instead of travelling across the map behind it. */}
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
-          (1rem from the top + 2.875rem search bar + 0.5rem); from sm up they line up with the bar */}
+          (1rem from the top + 3rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
         key={selectedCode ? "docked" : "free"}
-        className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
+        className={`absolute top-[4.5rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
             : "map-controls-free"
@@ -1523,7 +1523,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       >
         <button
           onClick={handleZoomIn}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom in (or press +)"
           title="Zoom in (+)"
         >
@@ -1533,7 +1533,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </button>
         <button
           onClick={handleZoomOut}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
           aria-label="Zoom out (or press -)"
           title="Zoom out (-)"
         >
@@ -1544,7 +1544,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         <button
           onClick={handleReset}
           disabled={isDefaultView}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-md shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
           aria-label="Show the whole world (or press 0)"
           title="Show the whole world (0)"
         >
@@ -1569,12 +1569,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[208px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
           <div
-            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
+            className="mb-2 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
               setLegendOpen(false);
               setSelectedLegendScores([]); // Reset filter when closing legend
@@ -1590,7 +1590,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             }}
             aria-label="Minimize legend"
           >
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
               Filter by Scores
             </span>
             <div className="shrink-0 text-zinc-500 dark:text-zinc-400">
@@ -1599,7 +1599,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </svg>
             </div>
           </div>
-          <ul className="space-y-0.5 text-[0.9375rem] legend-content-slide stagger-children">
+          <ul className="space-y-1 text-base legend-content-slide stagger-children">
             {legendEntries.map((entry) => (
               <li
                 key={entry.score}
@@ -1632,7 +1632,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                 aria-pressed={selectedLegendScores.includes(entry.score)}
               >
                 <span
-                  className="h-2.5 w-2.5 shrink-0 rounded-full ring-1 ring-black/20 dark:ring-0"
+                  className="h-3 w-3 shrink-0 rounded-full ring-1 ring-black/20 dark:ring-0"
                   style={{ backgroundColor: `var(--score-${entry.score})` }}
                   aria-hidden="true"
                 />
@@ -1645,7 +1645,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1658,7 +1658,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1672,12 +1672,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[208px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
           <div
-            className="mb-1.5 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
+            className="mb-2 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
               setTopCountriesLegendOpen(false);
             }}
@@ -1692,7 +1692,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             aria-label="Minimize top countries legend"
           >
             <div className="flex flex-col">
-              <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
+              <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
                 Top 5 Countries
               </span>
             </div>
@@ -1702,7 +1702,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </svg>
             </div>
           </div>
-          <ul className="space-y-0.5 text-[0.9375rem] legend-content-slide stagger-children">
+          <ul className="space-y-1 text-base legend-content-slide stagger-children">
             {/* Like a search result: opens the country and centres it on the map */}
             {topCountries.map((country) => (
               <li
@@ -1733,7 +1733,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1746,7 +1746,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1762,7 +1762,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {hoveredCountryData && (
         <div
           ref={tooltipRef}
-          className="map-tooltip fixed left-0 top-0 pointer-events-none z-50 bg-black/80 text-white text-sm px-2 py-1 rounded shadow-lg"
+          className="map-tooltip fixed left-0 top-0 pointer-events-none z-50 bg-black/80 text-white text-base px-2 py-1 rounded shadow-lg"
           style={{
             display: "inline-flex",
             flexDirection: "row",

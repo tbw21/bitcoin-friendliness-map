@@ -218,18 +218,18 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Fixed height on small screens so the sheet's top edge stays put whatever the content length;
           only the section under the header scrolls. The top edge sits 8px below the search bar,
           where the first-place card and the zoom buttons start, so the sheet covers them:
-          16px + 46px bar + 8px = 70px (4.375rem). Keep in step with the search bar's position and
+          16px + 48px bar + 8px = 72px (4.5rem). Keep in step with the search bar's position and
           height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.375rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className="ui-grain flex flex-col w-full h-[calc(100dvh-4.5rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}
       >
         {/* Header: stays in place; on the sheet it is also the drag area */}
         <div
-          className="shrink-0 px-4 pb-1 touch-none sm:px-5 md:touch-auto md:pt-5"
+          className="shrink-0 px-4 pb-1 touch-none sm:px-6 md:touch-auto md:pt-6"
           onPointerDown={handleDragStart}
           onPointerMove={handleDragMove}
           onPointerUp={handleDragEnd}
@@ -241,11 +241,11 @@ export const Modal: React.FC<ModalProps> = ({
             ref={handleRef}
             type="button"
             onClick={handleHandleClick}
-            className="flex w-full items-center justify-center pt-2.5 pb-3 cursor-grab md:hidden"
+            className="flex w-full items-center justify-center pt-3 pb-3 cursor-grab md:hidden"
             aria-label={sheetState === "peek" ? "Expand details" : "Close details"}
             title={sheetState === "peek" ? "Drag up or tap to expand" : "Drag down or tap to close"}
           >
-            <span className="h-1.5 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
+            <span className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
           </button>
 
           {/* Row 1: flag on the left, buttons on the right, centred on one line */}
@@ -262,12 +262,12 @@ export const Modal: React.FC<ModalProps> = ({
                 />
               ) : null}
             </div>
-            <div className="flex justify-end gap-1.5 shrink-0">
+            <div className="flex justify-end gap-2 shrink-0">
               {previousCode && onSelectCountry && (
                 <button
                   type="button"
                   onClick={() => onSelectCountry(previousCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Previous country (up rank list)"
                   title="Previous country"
                 >
@@ -280,7 +280,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectCountry(nextCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Next country (down rank list)"
                   title="Next country"
                 >
@@ -293,7 +293,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={onShowOnMap}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Show country on map"
                   title="Show on map"
                 >
@@ -308,7 +308,7 @@ export const Modal: React.FC<ModalProps> = ({
                 ref={closeButtonRef}
                 type="button"
                 onClick={onClose}
-                className="hidden md:flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-md border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                className="hidden md:flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                 aria-label="Close"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -320,15 +320,15 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Row 2: country name with its score pill; the pill drops below the name when it does not fit beside it */}
           <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <h2 className="font-chart-display min-w-0 text-[1.875rem] leading-none sm:text-[2.125rem] text-zinc-900 dark:text-white">
+            <h2 className="font-chart-display min-w-0 text-[1.75rem] leading-none sm:text-[2rem] text-zinc-900 dark:text-white">
               {formattedName}
             </h2>
             {/* Optical alignment: Kepler's letters sit above the middle of the heading's line box, so
                 a box-centred pill looks low. Nudge it up to the middle of the letters (halfway
-                between the centre of the capitals and of the lowercase), measured for the 30px and
-                34px heading sizes. */}
+                between the centre of the capitals and of the lowercase), measured for the 28px and
+                32px heading sizes. */}
             <span
-              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold whitespace-nowrap shrink-0 -translate-y-[1.65px] sm:-translate-y-[1.9px] ${
+              className={`inline-flex items-center rounded-full border px-3 py-1 text-base font-semibold whitespace-nowrap shrink-0 -translate-y-[1.4px] sm:-translate-y-[2.45px] ${
                 hasData ? "text-zinc-900 dark:text-white" : "text-white"
               }`}
               style={
@@ -342,7 +342,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
 
           {/* Rank, capital, population underneath the heading+buttons row */}
-          <div key={`meta-${countryCode}`} className="mb-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed country-panel-content">
+          <div key={`meta-${countryCode}`} className="mb-2 text-base text-zinc-600 dark:text-zinc-400 leading-6 country-panel-content">
           {country.rankGlobal && (
             <span className="inline-block mr-3">
               Rank #{country.rankGlobal}
@@ -357,14 +357,14 @@ export const Modal: React.FC<ModalProps> = ({
         {/* Scrolls on its own when the content is taller than the space under the header */}
         <div
           key={`body-${countryCode}`}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-sm leading-relaxed text-zinc-900 dark:text-white sm:px-5 md:pb-5"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-base leading-6 text-zinc-900 dark:text-white sm:px-6 md:pb-6"
         >
           {!hasData && (
-            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-sm country-panel-content">
-              <h3 className="mb-1 text-sm font-semibold text-zinc-900 dark:text-white">
+            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-base country-panel-content">
+              <h3 className="mb-1 text-base font-semibold text-zinc-900 dark:text-white">
                 No data yet
               </h3>
-              <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p className="text-base leading-6 text-zinc-600 dark:text-zinc-400">
                 This country or territory has not been scored yet.
               </p>
             </div>
@@ -377,12 +377,12 @@ export const Modal: React.FC<ModalProps> = ({
               const band = Math.min(5, Math.max(1, Math.round(area.score ?? 3)));
               const textClass = getScoreTextClass(band);
               return (
-                <div key={area.key} className="rounded-lg border p-2.5" style={scoreTint(band)}>
+                <div key={area.key} className="rounded-lg border p-3" style={scoreTint(band)}>
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <div className={`text-sm font-semibold ${textClass}`}>{area.label}</div>
+                    <div className={`text-base font-semibold ${textClass}`}>{area.label}</div>
                     {area.score !== null && (
                       <span
-                        className={`shrink-0 whitespace-nowrap text-sm font-bold tabular-nums ${textClass}`}
+                        className={`shrink-0 whitespace-nowrap text-base font-bold tabular-nums ${textClass}`}
                         aria-label={`Score ${area.score} out of 5`}
                       >
                         {area.score} <span className="font-medium opacity-70">/ 5</span>
@@ -396,11 +396,11 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
 
           {country.summary && (
-            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-2.5 text-sm stagger-last">
-              <h3 className="mb-1 text-sm font-semibold text-zinc-900 dark:text-white">
+            <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-base stagger-last">
+              <h3 className="mb-1 text-base font-semibold text-zinc-900 dark:text-white">
                 Summary
               </h3>
-              <p className="text-base leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-400">
+              <p className="text-base leading-6 whitespace-pre-line text-zinc-600 dark:text-zinc-400">
                 {country.summary}
               </p>
             </div>
