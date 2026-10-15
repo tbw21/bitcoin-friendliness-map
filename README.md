@@ -95,7 +95,12 @@ score, ties in alphabetical order, which is also how the summaries in the data c
 
   ```bash
   python3 scripts/reproject-map.py public/world_modified_hover.svg public/world_equal_earth.svg
+  python3 scripts/clean-borders.py public/world_equal_earth.svg public/world_equal_earth.svg
   ```
+
+  The second step (needs Node; it fetches mapshaper with npx) gives neighbouring countries one
+  shared border line, so no gaps or overlaps show between them when zoomed in, and rounds off
+  sharp corners slightly.
 
 ## Link preview image
 

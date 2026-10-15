@@ -35,10 +35,12 @@
 }
 
 /* Base country shape styles - borders take the map background colour (--map-bg, set in page.tsx) */
-/* stroke-width divided by --map-zoom so borders stay constant in screen pixels when SVG is scaled */
+/* Borders are a fixed 1 screen pixel at any zoom and on any screen size (vector-effect keeps the
+   width out of the map's scaling). Neighbours share one border line, see scripts/clean-borders.py */
 .map-container svg path.country-shape {
   stroke: var(--map-bg) !important;
-  stroke-width: calc(0.5 / var(--map-zoom, 1)) !important;
+  stroke-width: 1px !important;
+  vector-effect: non-scaling-stroke;
   transition: fill 220ms ease-out, fill-opacity 260ms ease-out, stroke 220ms ease-out !important;
   fill-opacity: 0.95 !important;
   outline: none !important;
@@ -60,7 +62,7 @@
 /* White outline so the open country stands out on every score colour */
 .map-container svg path.country-shape.selected-country {
   stroke: #ffffff !important;
-  stroke-width: calc(0.9 / var(--map-zoom, 1)) !important;
+  stroke-width: 1.5px !important;
 }
 
 /* Bitcoin friendliness score colours come from the active palette (--score-N, set in page.tsx) */
@@ -439,7 +441,7 @@
 
 .map-container.legend-filter-active svg path.country-shape:not(.filtered-out):not(.selected-country) {
   stroke: rgba(236, 242, 248, 0.6) !important;
-  stroke-width: calc(0.7 / var(--map-zoom, 1)) !important;
+  stroke-width: 1px !important;
 }
 
 /* Water lining: three smooth rings following the coast, fading out to sea. They also make
