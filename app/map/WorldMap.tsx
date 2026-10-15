@@ -985,6 +985,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     // Express the current view relative to the baked one (see bakedViewRef)
     const baked = bakedViewRef.current;
     const k = zoom / baked.zoom;
+    // How much the map is stretched as a picture on top of its drawn (baked) size. Country borders
+    // have a fixed screen width that only accounts for the drawn size, so they divide by this to
+    // stay that width while a zoom glides (map.css, --map-stretch)
+    root.style.setProperty("--map-stretch", String(k));
     const tx = clampedPanX - k * baked.panX;
     const ty = clampedPanY - k * baked.panY;
     const transform = `translate(${tx}px, ${ty}px) scale(${k})`;
@@ -1019,6 +1023,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       svg.setAttribute("viewBox", `${left} ${top} ${boxW / (zoom * scale)} ${boxH / (zoom * scale)}`);
       bakedViewRef.current = { zoom, panX: clampedPanX, panY: clampedPanY };
       svg.style.setProperty("transform", "translate(0px, 0px) scale(1)", "important");
+      root.style.setProperty("--map-stretch", "1");
     };
     bakeNowRef.current = bake;
     if (bakeTimerRef.current !== null) window.clearTimeout(bakeTimerRef.current);

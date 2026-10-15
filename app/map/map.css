@@ -40,7 +40,7 @@
    Neighbours share one border line, see scripts/clean-borders.py */
 .map-container svg path.country-shape {
   stroke: var(--map-bg) !important;
-  stroke-width: min(1px, calc(0.55px + 0.12px * var(--map-zoom, 1))) !important;
+  stroke-width: calc(min(1px, calc(0.55px + 0.12px * var(--map-zoom, 1))) / var(--map-stretch, 1)) !important;
   vector-effect: non-scaling-stroke;
   transition: fill 220ms ease-out, fill-opacity 260ms ease-out, stroke 220ms ease-out !important;
   fill-opacity: 0.95 !important;
@@ -63,7 +63,7 @@
 /* White outline so the open country stands out on every score colour */
 .map-container svg path.country-shape.selected-country {
   stroke: #ffffff !important;
-  stroke-width: 1.5px !important;
+  stroke-width: calc(1.5px / var(--map-stretch, 1)) !important;
 }
 
 /* Bitcoin friendliness score colours come from the active palette (--score-N, set in page.tsx) */
@@ -163,9 +163,17 @@
   initial-value: 1;
 }
 
+@property --map-stretch {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
 /* Programmatic moves (zoom buttons, reset, locate, double-click) glide instead of jumping */
 .map-container[data-animating="true"] {
-  transition: --map-zoom 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    --map-zoom 550ms cubic-bezier(0.22, 1, 0.36, 1),
+    --map-stretch 550ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .map-container[data-animating="true"] svg {
@@ -454,7 +462,7 @@
 
 .map-container.legend-filter-active svg path.country-shape:not(.filtered-out):not(.selected-country) {
   stroke: rgba(236, 242, 248, 0.6) !important;
-  stroke-width: 1px !important;
+  stroke-width: calc(1px / var(--map-stretch, 1)) !important;
 }
 
 /* Water lining: three smooth rings following the coast, fading out to sea. They also make
