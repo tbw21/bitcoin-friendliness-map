@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getCountry, getCountriesByRank, formatScore } from "@/data/countriesCsv";
+import Medal from "./Medal";
 import { getFlagUrl, getFlagAltText } from "@/lib/flags";
 import { legendEntries } from "@/data/legend";
 
@@ -343,7 +344,8 @@ export const Modal: React.FC<ModalProps> = ({
           {/* Rank, capital, population underneath the heading+buttons row */}
           <div key={`meta-${countryCode}`} className="mb-2 text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed country-panel-content">
           {country.rankGlobal && (
-            <span className="inline-block mr-3">
+            <span className="mr-3 inline-flex items-center gap-1 align-middle">
+              {country.rankGlobal === 1 && <Medal className="-my-1 h-5 w-5" />}
               Rank #{country.rankGlobal}
               {totalRanked > 0 ? ` of ${totalRanked}` : ""}
             </span>
