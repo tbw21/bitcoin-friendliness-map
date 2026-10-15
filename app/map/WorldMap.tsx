@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from "react"
 import { getCountry, getAllCountriesArray, initializeCountries, formatScore } from "@/data/countriesCsv";
 import { legendEntries } from "@/data/legend";
 import { getFlagUrl, getFlagAltText } from "@/lib/flags";
-import Medal from "./Medal";
+import FirstPlaceCard from "./FirstPlaceCard";
 import "./map.css";
 
 export interface WorldMapProps {
@@ -1445,30 +1445,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           )}
         </div>
 
-        {/* First place gets its own card under the search bar: no country reaches the top band,
-            so the leader is not recognisable by colour alone */}
         {topCountries[0] && (
-          <button
-            type="button"
-            onClick={() => handleSelectCountry(topCountries[0].code)}
-            className="ui-grain mt-2 flex w-fit max-w-full items-center gap-2.5 rounded-lg border border-zinc-200 bg-white/95 py-1.5 pl-2 pr-3.5 text-left shadow-lg backdrop-blur transition-colors hover:bg-white dark:border-zinc-700 dark:bg-zinc-900/95 dark:hover:bg-zinc-900 cursor-pointer"
-            aria-label={`Number 1: ${topCountries[0].name}, score ${topCountries[0].scoreLabel} out of 5. Open details`}
-          >
-            <Medal className="h-8 w-8 shrink-0" />
-            <img
-              src={getFlagUrl(topCountries[0].code, "w40")}
-              alt=""
-              className="h-4 w-6 shrink-0 rounded-[2px] object-cover ring-1 ring-black/10"
-            />
-            <span className="min-w-0">
-              <span className="block font-chart-caption text-[1.0625rem] leading-tight tracking-[0.02em] text-zinc-900 dark:text-white">
-                {topCountries[0].name}
-              </span>
-              <span className="block text-xs text-zinc-600 dark:text-zinc-300">
-                No. 1 most Bitcoin-friendly · {topCountries[0].scoreLabel} / 5
-              </span>
-            </span>
-          </button>
+          <FirstPlaceCard
+            code={topCountries[0].code}
+            name={topCountries[0].name}
+            onOpen={() => handleSelectCountry(topCountries[0].code)}
+          />
         )}
       </div>
 
@@ -1698,10 +1680,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                 }}
                 aria-label={`Open ${country.name} details`}
               >
-                {country.rank === 1 && <Medal className="-my-1 h-5 w-5 shrink-0" />}
                 <span className="min-w-0 truncate font-medium text-zinc-800 dark:text-zinc-200">
-                  {country.rank === 1 ? "" : `${country.rank}. `}
-                  {country.name}
+                  {country.rank}. {country.name}
                 </span>
                 <ScoreChip score={country.score} label={country.scoreLabel} />
               </li>
