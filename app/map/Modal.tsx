@@ -328,7 +328,7 @@ export const Modal: React.FC<ModalProps> = ({
                 between the centre of the capitals and of the lowercase), measured for the 30px and
                 34px heading sizes. */}
             <span
-              className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold whitespace-nowrap shrink-0 -translate-y-[1.65px] sm:-translate-y-[1.9px] ${
+              className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold whitespace-nowrap shrink-0 -translate-y-[1.65px] sm:-translate-y-[1.9px] ${
                 hasData ? "text-zinc-900 dark:text-white" : "text-white"
               }`}
               style={
@@ -361,10 +361,10 @@ export const Modal: React.FC<ModalProps> = ({
         >
           {!hasData && (
             <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-sm country-panel-content">
-              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
+              <h3 className="mb-1 text-sm font-semibold text-zinc-900 dark:text-white">
                 No data yet
               </h3>
-              <p className="text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
+              <p className="text-base leading-relaxed text-zinc-600 dark:text-zinc-400">
                 This country or territory has not been scored yet.
               </p>
             </div>
@@ -379,17 +379,17 @@ export const Modal: React.FC<ModalProps> = ({
               return (
                 <div key={area.key} className="rounded-lg border p-2.5" style={scoreTint(band)}>
                   <div className="mb-1 flex items-center justify-between gap-2">
-                    <div className={`text-[0.7rem] font-semibold uppercase tracking-wide ${textClass}`}>{area.label}</div>
+                    <div className={`text-sm font-semibold ${textClass}`}>{area.label}</div>
                     {area.score !== null && (
                       <span
-                        className={`shrink-0 whitespace-nowrap text-xs font-bold tabular-nums ${textClass}`}
+                        className={`shrink-0 whitespace-nowrap text-sm font-bold tabular-nums ${textClass}`}
                         aria-label={`Score ${area.score} out of 5`}
                       >
                         {area.score} <span className="font-medium opacity-70">/ 5</span>
                       </span>
                     )}
                   </div>
-                  <p className={`text-sm sm:text-[0.9rem] ${textClass}`}>{area.text || "—"}</p>
+                  <p className={`text-base ${textClass}`}>{area.text || "—"}</p>
                 </div>
               );
             })}
@@ -397,10 +397,10 @@ export const Modal: React.FC<ModalProps> = ({
 
           {country.summary && (
             <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-2.5 text-sm stagger-last">
-              <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-zinc-900 dark:text-white">
+              <h3 className="mb-1 text-sm font-semibold text-zinc-900 dark:text-white">
                 Summary
               </h3>
-              <p className="text-sm leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-400">
+              <p className="text-base leading-relaxed whitespace-pre-line text-zinc-600 dark:text-zinc-400">
                 {country.summary}
               </p>
             </div>

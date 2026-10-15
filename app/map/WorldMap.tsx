@@ -64,7 +64,7 @@ function getCountryLabel(code: string): string {
 function ScoreChip({ score, label }: { score: number; label: string }) {
   return (
     <span
-      className="ml-auto shrink-0 inline-flex items-center gap-1 text-xs font-semibold tabular-nums text-zinc-700 dark:text-zinc-200"
+      className="ml-auto shrink-0 inline-flex items-center gap-1 text-sm font-semibold tabular-nums text-zinc-700 dark:text-zinc-200"
       aria-label={score ? `Score ${label} out of 5` : "No data"}
     >
       <span
@@ -1423,7 +1423,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                   key={country.code}
                   type="button"
                   onClick={() => handleSelectCountry(country.code)}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex items-start gap-2 cursor-pointer ${
+                  className={`w-full px-4 py-2 text-left text-base hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors flex items-start gap-2 cursor-pointer ${
                     index === selectedSearchIndex
                       ? "bg-zinc-100 dark:bg-zinc-800"
                       : ""
@@ -1441,7 +1441,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                     <div className="font-medium text-zinc-900 dark:text-white">
                       {country.name}
                     </div>
-                    <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
                       {country.code}
                     </div>
                   </div>
@@ -1535,7 +1535,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
@@ -1565,7 +1565,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </svg>
             </div>
           </div>
-          <ul className="space-y-0.5 text-[0.8125rem] legend-content-slide stagger-children">
+          <ul className="space-y-0.5 text-[0.9375rem] legend-content-slide stagger-children">
             {legendEntries.map((entry) => (
               <li
                 key={entry.score}
@@ -1611,7 +1611,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1638,7 +1638,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[210px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
@@ -1668,13 +1668,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               </svg>
             </div>
           </div>
-          <ul className="space-y-0.5 text-[0.8125rem] legend-content-slide stagger-children">
+          <ul className="space-y-0.5 text-[0.9375rem] legend-content-slide stagger-children">
+            {/* Like a search result: opens the country and centres it on the map */}
             {topCountries.map((country) => (
               <li
                 key={country.code}
                 className="flex items-center gap-2 cursor-pointer rounded px-1 py-1 transition-colors duration-150 bg-transparent ring-0 hover:bg-zinc-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-0"
                 onClick={(e) => {
-                  onSelectCountry(country.code);
+                  handleSelectCountry(country.code);
                   const el = e.currentTarget as HTMLElement;
                   setTimeout(() => el.blur(), 0);
                 }}
@@ -1683,7 +1684,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    onSelectCountry(country.code);
+                    handleSelectCountry(country.code);
                   }
                 }}
                 aria-label={`Open ${country.name} details`}
@@ -1698,7 +1699,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[210px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-2.5 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1727,7 +1728,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {hoveredCountryData && (
         <div
           ref={tooltipRef}
-          className="map-tooltip fixed left-0 top-0 pointer-events-none z-50 bg-black/80 text-white text-xs px-2 py-1 rounded shadow-lg"
+          className="map-tooltip fixed left-0 top-0 pointer-events-none z-50 bg-black/80 text-white text-sm px-2 py-1 rounded shadow-lg"
           style={{
             display: "inline-flex",
             flexDirection: "row",
