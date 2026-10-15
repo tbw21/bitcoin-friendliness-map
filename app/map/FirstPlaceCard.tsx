@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import Award from "./Award";
 
-// First place gets its own card under the search bar: no country reaches the top colour band, so
+// First place gets its own card under the search bar (WorldMap.tsx passes whichever country
+// ranks first in the data): no country reaches the top colour band, so
 // the leader cannot be recognised by colour alone. It starts open so everyone sees it; the x
 // slides it away to the left until only the award is left, and the award brings it back.
 export default function FirstPlaceCard({
@@ -42,11 +43,11 @@ export default function FirstPlaceCard({
             // award (top of the capitals to the last baseline). Measured for these sizes.
             className="min-w-0 translate-y-[1.15px] self-center py-1.5 pr-1 text-left cursor-pointer"
           >
-            <span className="block truncate font-chart-caption text-[1.0625rem] leading-[1.05] tracking-[0.02em] text-zinc-900 dark:text-white">
+            <span className="block truncate font-chart-legend text-[1.0625rem] leading-[1.05] tracking-[0.02em] text-zinc-900 dark:text-white">
               {name}
             </span>
             <span className="mt-[2px] block whitespace-nowrap text-xs leading-[1.15] text-zinc-600 dark:text-zinc-300">
-              Most Bitcoin-friendly
+              No.1 most Bitcoin-friendly
             </span>
           </button>
           <button

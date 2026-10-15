@@ -326,12 +326,6 @@
 }
 
 @font-face {
-  font-family: "Kepler Caption";
-  src: url("/fonts/KeplerStd-Capt.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
   font-family: "Kepler Subhead Semicondensed";
   src: url("/fonts/KeplerStd-MediumScnSubh.otf") format("opentype");
   font-display: swap;
@@ -366,17 +360,10 @@
   letter-spacing: 0.005em;
 }
 
-/* Small labels (the first-place card): the caption cut, upright, drawn to stay legible at small
-   sizes */
-.font-chart-caption {
-  font-family: "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
-  font-weight: 400;
-}
-
-/* Legend titles: the subhead cut (drawn for this size), semicondensed. Kepler has no regular
+/* Small headings (legend titles and the first-place card): the subhead cut (drawn for this size), semicondensed. Kepler has no regular
    weight in this width, so it is the medium one */
 .font-chart-legend {
-  font-family: "Kepler Subhead Semicondensed", "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-family: "Kepler Subhead Semicondensed", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
