@@ -320,8 +320,8 @@
 /* Brand typeface: Kepler (Adobe). Five cuts, each used at the size it was drawn for.
    The files are in /public/fonts. */
 @font-face {
-  font-family: "Kepler Display Condensed";
-  src: url("/fonts/KeplerStd-CnDisp.otf") format("opentype");
+  font-family: "Kepler Display Semicondensed";
+  src: url("/fonts/KeplerStd-ScnDisp.otf") format("opentype");
   font-display: swap;
 }
 
@@ -332,8 +332,8 @@
 }
 
 @font-face {
-  font-family: "Kepler Caption Semicondensed";
-  src: url("/fonts/KeplerStd-ScnCapt.otf") format("opentype");
+  font-family: "Kepler Subhead Semicondensed";
+  src: url("/fonts/KeplerStd-MediumScnSubh.otf") format("opentype");
   font-display: swap;
 }
 
@@ -359,9 +359,9 @@
   font-display: swap;
 }
 
-/* Headings: the condensed display cut, as in the wordmark */
+/* Headings (the country's name in its details): the semicondensed display cut */
 .font-chart-display {
-  font-family: "Kepler Display Condensed", "Kepler Std", Didot, "Bodoni 72", Georgia, serif;
+  font-family: "Kepler Display Semicondensed", "Kepler Std", Didot, "Bodoni 72", Georgia, serif;
   font-weight: 400;
   letter-spacing: 0.005em;
 }
@@ -373,9 +373,10 @@
   font-weight: 400;
 }
 
-/* Legend titles: the same caption cut, semicondensed */
+/* Legend titles: the subhead cut (drawn for this size), semicondensed. Kepler has no regular
+   weight in this width, so it is the medium one */
 .font-chart-legend {
-  font-family: "Kepler Caption Semicondensed", "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-family: "Kepler Subhead Semicondensed", "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
