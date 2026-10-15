@@ -26,7 +26,7 @@ export default function FirstPlaceCard({
         <button
           type="button"
           onClick={collapsed ? () => setCollapsed(false) : onOpen}
-          className="flex items-center py-1.5 pl-2 pr-2 cursor-pointer"
+          className="flex items-center py-1.5 pl-3 pr-3 cursor-pointer"
           aria-label={collapsed ? `Show the most Bitcoin-friendly country: ${name}` : `${name}, the most Bitcoin-friendly country. Open details`}
           aria-expanded={!collapsed}
         >

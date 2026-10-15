@@ -326,8 +326,14 @@
 }
 
 @font-face {
-  font-family: "Kepler Subhead Condensed";
-  src: url("/fonts/KeplerStd-CnSubh.otf") format("opentype");
+  font-family: "Kepler Caption";
+  src: url("/fonts/KeplerStd-Capt.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Kepler Caption Semicondensed";
+  src: url("/fonts/KeplerStd-ScnCapt.otf") format("opentype");
   font-display: swap;
 }
 
@@ -360,10 +366,16 @@
   letter-spacing: 0.005em;
 }
 
-/* Small headings (legend titles, the first-place card): the condensed subhead cut, drawn for this
-   size range and narrow like the display headings */
+/* Small labels (the first-place card): the caption cut, upright, drawn to stay legible at small
+   sizes */
 .font-chart-caption {
-  font-family: "Kepler Subhead Condensed", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-family: "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+/* Legend titles: the same caption cut, semicondensed */
+.font-chart-legend {
+  font-family: "Kepler Caption Semicondensed", "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
