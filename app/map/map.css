@@ -363,7 +363,13 @@
   letter-spacing: 0.005em;
 }
 
-/* Small headings (legend titles and the first-place card): the subhead cut (drawn for this size), semicondensed. Kepler has no regular
+/* The first-place card's country name: the subhead cut at normal width */
+.font-chart-title {
+  font-family: "Kepler Subhead", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+/* Small headings (legend titles): the subhead cut (drawn for this size), semicondensed. Kepler has no regular
    weight in this width, so it is the medium one */
 .font-chart-legend {
   font-family: "Kepler Subhead Semicondensed", "Kepler Std", Georgia, "Times New Roman", serif;
