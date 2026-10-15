@@ -9,7 +9,8 @@ import "./map.css";
 
 export interface WorldMapProps {
   selectedCode: string | null;
-  onSelectCountry: (code: string) => void;
+  /** fromList: chosen from search, the top-5 list or the first-place card (opens the details in full) */
+  onSelectCountry: (code: string, fromList?: boolean) => void;
   zoomToCountryCode?: string | null;
   onZoomToCountryDone?: () => void;
   /** Set when the previous/next arrows move to another country: bring it into view */
@@ -19,8 +20,6 @@ export interface WorldMapProps {
   onClearHighlightOnly?: () => void;
   /** Called when the empty map (not a country) is clicked while a country's details are open */
   onClearSelection?: () => void;
-  /** True while the phone bottom sheet is in its "peek" position (map visible above it) */
-  sheetPeek?: boolean;
 }
 
 function getCountryClasses(
@@ -232,7 +231,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   highlightOnlyCode = null,
   onClearHighlightOnly,
   onClearSelection,
-  sheetPeek = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -243,6 +241,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   // The open country and when it was opened, for the click handler (a click on it closes it)
   const selectedCodeRef = useRef<string | null>(null);
   const selectedAtRef = useRef(0);
+  // When a click last closed the open country (see the double-click handler)
+  const closedByClickAtRef = useRef(0);
   useEffect(() => {
     selectedCodeRef.current = selectedCode;
     selectedAtRef.current = Date.now();
@@ -558,7 +558,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         Math.pow(event.clientX - clickStartPos.x, 2) +
         Math.pow(event.clientY - clickStartPos.y, 2)
       );
-      const isClick = clickDuration < 200 && clickDistance < 5;
+      // A slow, deliberate press still counts as a click; only movement makes it a drag
+      const isClick = clickDuration < 600 && clickDistance < 5;
 
       if (isClick) {
         const target = event.target;
@@ -569,6 +570,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             // Clicking the open country closes its details. Not right after it opened: that is
             // the second click of a double-click (zoom), which should leave it open.
             if (Date.now() - selectedAtRef.current > 400) {
+              closedByClickAtRef.current = Date.now();
               onClearHighlightOnlyRef.current?.();
               onClearSelectionRef.current?.();
             }
@@ -719,6 +721,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleDoubleClick = (event: MouseEvent) => {
       event.preventDefault();
+      // The first click of this double-click closed the open country and the second opened it
+      // again: that is someone clicking the country, not asking to zoom, so leave the view alone
+      if (Date.now() - closedByClickAtRef.current < 700) return;
       
       if (!containerRef.current || !svgRef.current) return;
       
@@ -1273,9 +1278,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     setSelectedSearchIndex(-1);
   }, [searchQuery, allCountries]);
 
-  // Handle search selection: open the country and centre it on the map, like a double-click
+  // Handle search selection: open the country and centre it on the map, like a double-click.
+  // Also used by the top-5 list and the first-place card.
   const handleSelectCountry = useCallback((code: string) => {
-    onSelectCountry(code);
+    onSelectCountry(code, true);
     setSearchQuery("");
     setSearchResults([]);
     setSelectedSearchIndex(-1);
@@ -1471,7 +1477,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       <div ref={mapGrainRef} className="map-grain" aria-hidden="true" />
       
       {/* Zoom controls - positioned below search bar on mobile when search bar is full width */}
-      {/* On small screens the controls are hidden while the country sheet is up (it covers them anyway).
+      {/* On small screens the country sheet slides up over the controls (it reaches to just under the
+          search bar), so they stay put underneath it.
           On wide screens the country panel docks to the right edge and the controls sit on its left side.
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
           (same distance, duration and easing) instead of travelling across the map behind it. */}
@@ -1481,9 +1488,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         key={selectedCode ? "docked" : "free"}
         className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
-            ? `md:right-[25rem] lg:right-[29rem] map-controls-docked ${
-                sheetPeek ? "" : "max-md:invisible max-md:opacity-0"
-              }`
+            ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
             : "map-controls-free"
         }`}
       >

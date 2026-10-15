@@ -70,9 +70,12 @@ export default function MapPage() {
   }, []);
   const handleStepDone = useCallback(() => setStepToCountryCode(null), []);
 
-  const handleSelectCountry = useCallback((code: string) => {
+  // A country picked from search, the top-5 list or the first-place card always opens with its
+  // details in full (on phones the sheet may still be at "peek" from an earlier locate)
+  const handleSelectCountry = useCallback((code: string, fromList?: boolean) => {
     setHighlightOnlyCode(null);
     setSelectedCode(code);
+    if (fromList) setSheetState("full");
   }, []);
 
   return (
@@ -99,7 +102,6 @@ export default function MapPage() {
           highlightOnlyCode={highlightOnlyCode}
           onClearHighlightOnly={() => setHighlightOnlyCode(null)}
           onClearSelection={handleCloseModal}
-          sheetPeek={sheetState === "peek"}
         />
       </main>
 
