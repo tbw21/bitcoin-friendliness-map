@@ -63,8 +63,12 @@ Bitcoin Living Index spreadsheet:
 
 ```bash
 pip install openpyxl
-python3 scripts/import-living-index.py path/to/Bitcoin_Living_Index.xlsx public/bitcoin-living-index.csv
+python3 scripts/import-living-index.py path/to/Bitcoin_Living_Index.xlsx public/bitcoin-living-index.csv public/bitcoin-living-index.csv
 ```
+
+The last argument is the current file: any capital or population missing from the new
+spreadsheet is kept from it. Populations are shortened for display ("39,232,003 (2023 est.)"
+becomes "39.2M").
 
 The map picks up the new file on the next load; no code changes are needed.
 
@@ -77,7 +81,7 @@ The file is semicolon-separated and UTF-8.
 | `alpha_3`, `numeric` | Other ISO codes (not used by the map) |
 | `tax`, `tax_score` | Assessment text and 0–5 score. The same pair exists for `banking`, `legal`, `residency`, `spending`, `community`, `privacy` and `stability` |
 | `capital`, `population` | Shown as written |
-| `overall_score` | Overall score out of 5, two decimals. Worked out by the import script from the eight scores: tax 20%, banking 15%, legal 15%, residency 12%, spending 12%, privacy 10%, community 8%, stability 8% |
+| `overall_score` | Overall score out of 5, two decimals, relative to the best country (which gets 5.0). Worked out by the import script: a weighted average of the eight scores (tax 20%, banking 15%, legal 15%, residency 12%, spending 12%, privacy 10%, community 8%, stability 8%), divided by the best country's average and multiplied by 5 |
 | `summary` | Free text shown under the eight areas |
 | `detail` | How much research is behind the row. Loaded but not currently shown |
 
