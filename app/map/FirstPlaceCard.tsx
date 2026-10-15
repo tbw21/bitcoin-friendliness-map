@@ -5,8 +5,8 @@ import Award from "./Award";
 
 // First place gets its own card next to the search bar (WorldMap.tsx passes whichever country
 // ranks first in the data): no country reaches the top colour band on its own merit, so the
-// leader gets named. A heading on the map, "No.1 most Bitcoin-friendly:", and under it a card
-// as tall as the search bar with the award and the country's name. Clicking it opens the country.
+// leader gets named: a card as tall as the search bar with the award and the country's name
+// (screen readers get "the most Bitcoin-friendly country" spelled out). Clicking it opens it.
 export default function FirstPlaceCard({
   name,
   onOpen,
@@ -16,10 +16,7 @@ export default function FirstPlaceCard({
 }) {
   return (
     // On phones it sits under the search bar and leaves room for the zoom buttons at the right edge
-    <div className="flex max-w-[calc(100%-3.25rem)] flex-col items-start sm:max-w-full">
-      <span className="mb-1.5 text-sm font-semibold leading-[18px] text-white [text-shadow:0_1px_3px_rgba(0,8,20,0.9)]">
-        No.1 most Bitcoin-friendly:
-      </span>
+    <div className="flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
       <button
         type="button"
         onClick={onOpen}

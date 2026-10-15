@@ -1397,7 +1397,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           selectedCode ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
         }`}
       >
-        <div className="ui-grain relative w-full rounded-lg sm:mt-6 sm:w-[38ch] sm:max-w-full">
+        <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
           <input
             ref={searchInputRef}
             type="text"
@@ -1512,11 +1512,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
           (same distance, duration and easing) instead of travelling across the map behind it. */}
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
-          (1rem from the top + 2.875rem search bar + 0.5rem); from sm up they line up with the bar,
-          which sits 1.5rem lower there to leave room for the first-place card's heading */}
+          (1rem from the top + 2.875rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
         key={selectedCode ? "docked" : "free"}
-        className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-10 ${
+        className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
             : "map-controls-free"
