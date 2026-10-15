@@ -266,6 +266,30 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     );
   }, []);
   const [topCountriesLegendOpen, setTopCountriesLegendOpen] = useState(false);
+
+  // Open legends fold away when you click or tap anywhere outside them (the map, the search bar,
+  // the details panel). A drag that starts outside, such as panning the map, does not count.
+  useEffect(() => {
+    if (!legendOpen && !topCountriesLegendOpen) return;
+    let start: { x: number; y: number; outside: boolean } | null = null;
+    const onDown = (event: PointerEvent) => {
+      const target = event.target as Element | null;
+      start = { x: event.clientX, y: event.clientY, outside: !target?.closest("[data-map-legends]") };
+    };
+    const onUp = (event: PointerEvent) => {
+      if (start?.outside && Math.hypot(event.clientX - start.x, event.clientY - start.y) < 6) {
+        setLegendOpen(false);
+        setTopCountriesLegendOpen(false);
+      }
+      start = null;
+    };
+    window.addEventListener("pointerdown", onDown, true);
+    window.addEventListener("pointerup", onUp, true);
+    return () => {
+      window.removeEventListener("pointerdown", onDown, true);
+      window.removeEventListener("pointerup", onUp, true);
+    };
+  }, [legendOpen, topCountriesLegendOpen]);
   const [topCountries, setTopCountries] = useState<Array<{ code: string; name: string; rank: number; score: number; scoreLabel: string }>>([]);
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   // When the last touch happened: browsers follow a tap with made-up mouse events, which must not
