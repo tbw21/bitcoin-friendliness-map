@@ -30,7 +30,7 @@ export default function FirstPlaceCard({
           aria-label={collapsed ? `Show the most Bitcoin-friendly country: ${name}` : `${name}, the most Bitcoin-friendly country. Open details`}
           aria-expanded={!collapsed}
         >
-          <Award className="h-[29px] w-[41px] shrink-0" />
+          <Award className="h-[22px] w-[31px] shrink-0" />
         </button>
         <div className="flex min-w-0 items-start">
           <button
@@ -38,10 +38,9 @@ export default function FirstPlaceCard({
             onClick={onOpen}
             tabIndex={collapsed ? -1 : 0}
             aria-hidden={collapsed}
-            // Optical alignment: the award is drawn exactly as tall as the text from the top of the
-            // capitals to the last baseline (29px), and the two lines are set tight to keep it so.
-            // Measured for these sizes.
-            className="min-w-0 translate-y-[0.75px] self-center py-1.5 pr-1 text-left cursor-pointer"
+            // Optical alignment: the two lines are set tight and the text block is centred on the
+            // award (top of the capitals to the last baseline). Measured for these sizes.
+            className="min-w-0 translate-y-[1.15px] self-center py-1.5 pr-1 text-left cursor-pointer"
           >
             <span className="block truncate font-chart-caption text-[1.0625rem] leading-[1.05] tracking-[0.02em] text-zinc-900 dark:text-white">
               {name}

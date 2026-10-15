@@ -326,8 +326,8 @@
 }
 
 @font-face {
-  font-family: "Kepler Caption";
-  src: url("/fonts/KeplerStd-Capt.otf") format("opentype");
+  font-family: "Kepler Subhead Condensed";
+  src: url("/fonts/KeplerStd-CnSubh.otf") format("opentype");
   font-display: swap;
 }
 
@@ -360,9 +360,10 @@
   letter-spacing: 0.005em;
 }
 
-/* Small labels: the caption cut, upright, which is drawn to stay legible at small sizes */
+/* Small headings (legend titles, the first-place card): the condensed subhead cut, drawn for this
+   size range and narrow like the display headings */
 .font-chart-caption {
-  font-family: "Kepler Caption", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-family: "Kepler Subhead Condensed", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
