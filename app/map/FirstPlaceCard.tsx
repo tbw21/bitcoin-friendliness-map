@@ -17,8 +17,8 @@ export default function FirstPlaceCard({
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    // Leaves room on phones for the zoom buttons at the right edge
-    <div className="mt-2 flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
+    // On phones it sits under the search bar and leaves room for the zoom buttons at the right edge
+    <div className="flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
       <div
         className={`ui-grain grid overflow-hidden rounded-lg border border-zinc-200/80 bg-white/95 shadow-lg backdrop-blur transition-[grid-template-columns] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] dark:border-zinc-700/55 dark:bg-zinc-900/95 motion-reduce:transition-none ${
           collapsed ? "grid-cols-[auto_0fr]" : "grid-cols-[auto_1fr]"
@@ -27,7 +27,7 @@ export default function FirstPlaceCard({
         <button
           type="button"
           onClick={collapsed ? () => setCollapsed(false) : onOpen}
-          className="flex items-center py-1.5 pl-3 pr-3 cursor-pointer"
+          className="flex items-center py-[5px] pl-[11px] pr-[11px] cursor-pointer"
           aria-label={collapsed ? `Show the most Bitcoin-friendly country: ${name}` : `${name}, the most Bitcoin-friendly country. Open details`}
           aria-expanded={!collapsed}
         >
@@ -41,7 +41,7 @@ export default function FirstPlaceCard({
             aria-hidden={collapsed}
             // Optical alignment: the two lines are set tight and the text block is centred on the
             // award (top of the capitals to the last baseline). Measured for these sizes.
-            className="min-w-0 translate-y-[1.15px] self-center py-1.5 pr-1 text-left cursor-pointer"
+            className="min-w-0 translate-y-[1.15px] self-center py-[5px] pr-1 text-left cursor-pointer"
           >
             <span className="block truncate font-chart-legend text-[1.0625rem] leading-[1.05] tracking-[0.02em] text-zinc-900 dark:text-white">
               {name}

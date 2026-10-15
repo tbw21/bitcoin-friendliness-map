@@ -1353,9 +1353,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
   return (
     <>
-      {/* Search bar */}
-      <div data-map-search className="absolute top-4 left-4 right-4 z-20 sm:right-auto sm:w-full sm:max-w-[38ch]">
-        <div className="ui-grain relative rounded-lg">
+      {/* Search bar, with the first-place card beside it where there is room and under it where
+          there is not. The row stops short of the zoom buttons (and, with a country open on wide
+          screens, of the docked buttons left of the details panel). */}
+      <div
+        data-map-search
+        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-start gap-2 sm:right-[4.5rem] ${
+          selectedCode ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
+        }`}
+      >
+        <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
           <input
             ref={searchInputRef}
             type="text"
