@@ -27,7 +27,7 @@ export default function FirstPlaceCard({
         {/* As tall as the search bar (62px). The same space (about 14px) below the last baseline,
             above the capitals, to the right of the text and to the left of the award, as in the
             mock-up; the two lines and the award share one centre line. Measured. */}
-        <span className="min-w-0 translate-y-[0.4px]">
+        <span className="min-w-0 translate-y-[0.55px]">
           <span className="block truncate font-chart-title text-[1.25rem] leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
             {name}
           </span>

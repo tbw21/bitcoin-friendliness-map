@@ -363,9 +363,15 @@
   letter-spacing: 0.005em;
 }
 
-/* The first-place card's country name: the subhead cut at normal width */
+/* The first-place card's country name: the subhead cut, extended (one step wider than normal) */
+@font-face {
+  font-family: "Kepler Subhead Extended";
+  src: url("/fonts/KeplerStd-ExtSubh.otf") format("opentype");
+  font-display: swap;
+}
+
 .font-chart-title {
-  font-family: "Kepler Subhead", "Kepler Std", Georgia, "Times New Roman", serif;
+  font-family: "Kepler Subhead Extended", "Kepler Subhead", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
