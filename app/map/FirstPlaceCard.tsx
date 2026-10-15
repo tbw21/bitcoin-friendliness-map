@@ -24,10 +24,10 @@ export default function FirstPlaceCard({
         aria-label={`${name}, the most Bitcoin-friendly country. Open details`}
       >
         {/* The award is a little taller than the capitals of the name and shares their centre (the
-            name is moved down 2.25px: Kepler sits its capitals above the middle of the line).
+            name is moved down 1.9px: Kepler sits its capitals above the middle of the line).
             About 14px of space at the left and right edges. Measured for these sizes. */}
         <Award className="h-5 w-7 shrink-0" />
-        <span className="min-w-0 translate-y-[2.25px] truncate font-chart-title text-base leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
+        <span className="min-w-0 translate-y-[1.9px] truncate font-chart-title text-[1.125rem] leading-none tracking-[0.01em] text-zinc-900 dark:text-white">
           {name}
         </span>
       </button>

@@ -328,7 +328,7 @@ export const Modal: React.FC<ModalProps> = ({
                 between the centre of the capitals and of the lowercase), measured for the 28px and
                 32px heading sizes. */}
             <span
-              className={`inline-flex items-center rounded-full border px-3 py-1 text-base font-semibold whitespace-nowrap shrink-0 -translate-y-[1.4px] sm:-translate-y-[2.45px] ${
+              className={`inline-flex items-center rounded-full border px-3 py-[5px] text-sm font-semibold whitespace-nowrap shrink-0 -translate-y-[1.4px] sm:-translate-y-[2.45px] ${
                 hasData ? "text-zinc-900 dark:text-white" : "text-white"
               }`}
               style={

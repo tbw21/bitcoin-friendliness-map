@@ -1476,7 +1476,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                     <div className="font-medium text-zinc-900 dark:text-white">
                       {country.name}
                     </div>
-                    <div className="text-base text-zinc-500 dark:text-zinc-400">
+                    <div className="text-sm text-zinc-500 dark:text-zinc-400">
                       {country.code}
                     </div>
                   </div>
@@ -1590,7 +1590,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             }}
             aria-label="Minimize legend"
           >
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.125rem] leading-6 tracking-[0.02em] text-zinc-700 dark:text-white">
               Filter by Scores
             </span>
             <div className="shrink-0 text-zinc-500 dark:text-zinc-400">
@@ -1645,7 +1645,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1658,7 +1658,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.125rem] leading-6 tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Filter by Scores
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1692,7 +1692,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             aria-label="Minimize top countries legend"
           >
             <div className="flex flex-col">
-              <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-700 dark:text-white">
+              <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.125rem] leading-6 tracking-[0.02em] text-zinc-700 dark:text-white">
                 Top 5 Countries
               </span>
             </div>
@@ -1733,7 +1733,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1746,7 +1746,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           aria-label="Open top countries legend"
         >
           <div className="flex items-center justify-between gap-1">
-            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-base leading-tight tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
+            <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.125rem] leading-6 tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Top 5 Countries
             </span>
             <svg className="h-4 w-4 shrink-0 text-zinc-500 dark:text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
