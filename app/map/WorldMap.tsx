@@ -1397,14 +1397,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           selectedCode ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
         }`}
       >
-        <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
+        <div className="ui-grain relative w-full rounded-lg sm:mt-6 sm:w-[38ch] sm:max-w-full">
           <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search countries..."
-            className={`w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 px-4 py-[18px] text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
+            className={`w-full rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-white/95 dark:bg-zinc-900/95 px-4 py-2.5 text-base shadow-lg backdrop-blur focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-600 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 ${
               searchQuery ? "pr-[4.5rem]" : "pr-10"
             }`}
           />
@@ -1512,10 +1512,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
           (same distance, duration and easing) instead of travelling across the map behind it. */}
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
-          (1rem from the top + 3.875rem search bar + 0.5rem); from sm up they line up with the bar */}
+          (1rem from the top + 2.875rem search bar + 0.5rem); from sm up they line up with the bar,
+          which sits 1.5rem lower there to leave room for the first-place card's heading */}
       <div
         key={selectedCode ? "docked" : "free"}
-        className={`absolute top-[5.375rem] right-4 flex flex-col gap-2 z-10 sm:top-4 ${
+        className={`absolute top-[4.375rem] right-4 flex flex-col gap-2 z-10 sm:top-10 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
             : "map-controls-free"

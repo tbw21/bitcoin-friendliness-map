@@ -36,7 +36,9 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     ".next-nautical/types/**/*.ts",
-    ".next-nautical/dev/types/**/*.ts"
+    ".next-nautical/dev/types/**/*.ts",
+    ".next-variant/types/**/*.ts",
+    ".next-variant/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
