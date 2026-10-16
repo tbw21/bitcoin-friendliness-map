@@ -238,14 +238,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const highlightOnlyCodeRef = useRef<string | null>(null);
   const onClearHighlightOnlyRef = useRef<(() => void) | undefined>(undefined);
   const onClearSelectionRef = useRef<(() => void) | undefined>(undefined);
-  // The open country and when it was opened, for the click handler (a click on it closes it)
+  // The open country, for the click handler (a click on it closes it)
   const selectedCodeRef = useRef<string | null>(null);
-  const selectedAtRef = useRef(0);
-  // When a click last closed the open country (see the double-click handler)
-  const closedByClickAtRef = useRef(0);
   useEffect(() => {
     selectedCodeRef.current = selectedCode;
-    selectedAtRef.current = Date.now();
   }, [selectedCode]);
   const [zoom, setZoom] = useState(1);
   const [panX, setPanX] = useState(0);
@@ -503,6 +499,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     let clickStartTime = 0;
     let clickStartPos = { x: 0, y: 0 };
+    // A single click waits this long before it opens or closes anything, so that a double-click
+    // (which only zooms) never also opens or closes the details
+    const CLICK_DELAY = 250;
+    let pendingClick: number | null = null;
 
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button !== 0) return;
@@ -588,27 +588,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const isClick = clickDuration < 600 && clickDistance < 5;
 
       if (isClick) {
+        // Second click of a double-click: cancel the first click's pending action; the dblclick
+        // handler does the zooming
+        if (event.detail >= 2) {
+          if (pendingClick !== null) window.clearTimeout(pendingClick);
+          pendingClick = null;
+          return;
+        }
         const target = event.target;
         const code = getCountryCode(target);
-        if (code) {
-          if (target instanceof SVGElement) target.blur();
-          if (code === selectedCodeRef.current) {
-            // Clicking the open country closes its details. Not right after it opened: that is
-            // the second click of a double-click (zoom), which should leave it open.
-            if (Date.now() - selectedAtRef.current > 400) {
-              closedByClickAtRef.current = Date.now();
+        const onMap = root.contains(target as Node);
+        if (target instanceof SVGElement) target.blur();
+        if (pendingClick !== null) window.clearTimeout(pendingClick);
+        pendingClick = window.setTimeout(() => {
+          pendingClick = null;
+          if (code) {
+            if (code === selectedCodeRef.current) {
+              // Clicking the open country closes its details
               onClearHighlightOnlyRef.current?.();
               onClearSelectionRef.current?.();
+            } else {
+              // Any other country opens (page.tsx also drops the pin highlight)
+              onSelectCountry(code);
             }
-          } else {
-            // Any other country opens straight away (page.tsx also drops the pin highlight)
-            onSelectCountry(code);
+          } else if (onMap) {
+            // Click on the sea: close the open country's details (no-op when none is open)
+            onClearHighlightOnlyRef.current?.();
+            onClearSelectionRef.current?.();
           }
-        } else if (root.contains(target as Node)) {
-          // Click on the sea: close the open country's details (no-op when none is open)
-          onClearHighlightOnlyRef.current?.();
-          onClearSelectionRef.current?.();
-        }
+        }, CLICK_DELAY);
       }
     };
 
@@ -747,9 +755,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleDoubleClick = (event: MouseEvent) => {
       event.preventDefault();
-      // The first click of this double-click closed the open country and the second opened it
-      // again: that is someone clicking the country, not asking to zoom, so leave the view alone
-      if (Date.now() - closedByClickAtRef.current < 700) return;
+      // A double-click only ever zooms (never opens or closes anything; see CLICK_DELAY):
+      //  - on a country: zoom in on it, or back out to the whole world if it is already the one
+      //    zoomed in on
+      //  - on the sea: back out to the whole world
       
       if (!containerRef.current || !svgRef.current) return;
       
@@ -776,26 +785,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           setPanY(0);
           return;
         }
-        // Otherwise zoom to it with the same centring as the panel's locate button.
-        // Wait a frame so the panel opened by the first click is laid out and its width is known.
-        requestAnimationFrame(() => zoomToPathRef.current?.(target));
-      } else {
-        // Double-click on empty space: zoom in at that point
-        const rect = containerRef.current.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
-        
-        const svgX = (mouseX - currentPanX) / currentZoom;
-        const svgY = (mouseY - currentPanY) / currentZoom;
-        
-        const newZoom = Math.min(getMaxZoom(containerRef.current), currentZoom * 1.25);
-        const newPanX = mouseX - svgX * newZoom;
-        const newPanY = mouseY - svgY * newZoom;
-        
+        // Otherwise zoom to it with the same centring as the panel's locate button
+        zoomToPathRef.current?.(target);
+      } else if (currentZoom > 1 || currentPanX !== 0 || currentPanY !== 0) {
+        // Double-click on the sea: back out to the whole world
+        zoomedToRef.current = null;
         startAnimation();
-        setZoom(newZoom);
-        setPanX(newPanX);
-        setPanY(newPanY);
+        setZoom(1);
+        setPanX(0);
+        setPanY(0);
       }
     };
 
@@ -949,6 +947,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       window.removeEventListener("mouseup", handleMouseUp);
       root.removeEventListener("wheel", handleWheel);
       root.removeEventListener("dblclick", handleDoubleClick);
+      if (pendingClick !== null) window.clearTimeout(pendingClick);
       root.removeEventListener("touchstart", handleTouchStart);
       root.removeEventListener("touchmove", handleTouchMove);
       root.removeEventListener("touchend", handleTouchEnd);
