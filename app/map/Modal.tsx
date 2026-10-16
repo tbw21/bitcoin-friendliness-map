@@ -138,13 +138,13 @@ export const Modal: React.FC<ModalProps> = ({
     };
   }, [onClose, onSelectCountry, previousCode, nextCode]);
 
-  // Below the md breakpoint (768px) the panel is a bottom sheet: it slides up from the bottom edge and can
+  // Below 640px (the "dock" variant) the panel is a bottom sheet: it slides up from the bottom edge and can
   // be dragged down by its handle/header to close. From md up it is the docked side panel.
   const panelRef = useRef<HTMLDivElement | null>(null);
   const handleRef = useRef<HTMLButtonElement | null>(null);
   const dragRef = useRef<{ startY: number; startTime: number; dragging: boolean; base: number } | null>(null);
   const suppressClickRef = useRef(false);
-  const isSheet = () => !window.matchMedia("(min-width: 768px)").matches;
+  const isSheet = () => !window.matchMedia("(min-width: 40rem)").matches;
 
   // Closing: page.tsx plays the exit (the sheet slides down, the docked panel slides out to the
   // right) and then removes the details
@@ -245,7 +245,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none md:items-stretch md:justify-end"
+      className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none dock:items-stretch dock:justify-end"
       role="dialog"
       aria-label={`Details for ${formattedName}`}
     >
@@ -256,14 +256,14 @@ export const Modal: React.FC<ModalProps> = ({
           height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className={`ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md ${closing ? "country-panel-exit" : ""}`}
+        className={`ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter dock:h-auto dock:w-[var(--panel-w)] dock:rounded-none dock:border-y-0 dock:border-l ${closing ? "country-panel-exit" : ""}`}
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}
       >
         {/* Header: stays in place; on the sheet it is also the drag area */}
         <div
-          className="shrink-0 px-4 pb-1 touch-none sm:px-6 md:touch-auto md:pt-6"
+          className="shrink-0 px-4 pb-1 touch-none sm:px-6 dock:touch-auto dock:pt-6"
           onPointerDown={handleDragStart}
           onPointerMove={handleDragMove}
           onPointerUp={handleDragEnd}
@@ -275,7 +275,7 @@ export const Modal: React.FC<ModalProps> = ({
             ref={handleRef}
             type="button"
             onClick={handleHandleClick}
-            className="flex w-full items-center justify-center pt-3 pb-3 cursor-grab md:hidden"
+            className="flex w-full items-center justify-center pt-3 pb-3 cursor-grab dock:hidden"
             aria-label={sheetState === "peek" ? "Expand details" : "Close details"}
             title={sheetState === "peek" ? "Drag up or tap to expand" : "Drag down or tap to close"}
           >
@@ -301,7 +301,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectCountry(previousCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 dock:h-9 dock:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Previous country (up rank list)"
                   title="Previous country"
                 >
@@ -314,7 +314,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={() => onSelectCountry(nextCode)}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 dock:h-9 dock:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Next country (down rank list)"
                   title="Next country"
                 >
@@ -327,7 +327,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={onShowOnMap}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 dock:h-9 dock:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Show country on map"
                   title="Show on map"
                 >
@@ -341,7 +341,7 @@ export const Modal: React.FC<ModalProps> = ({
                 <button
                   type="button"
                   onClick={onCompare}
-                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  className="flex h-10 w-10 dock:h-9 dock:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                   aria-label="Compare with other countries"
                   title="Compare"
                 >
@@ -358,7 +358,7 @@ export const Modal: React.FC<ModalProps> = ({
                 ref={closeButtonRef}
                 type="button"
                 onClick={closeAnimated}
-                className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                className="flex h-10 w-10 dock:h-9 dock:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                 aria-label="Close"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -407,7 +407,7 @@ export const Modal: React.FC<ModalProps> = ({
         {/* Scrolls on its own when the content is taller than the space under the header */}
         <div
           key={`body-${countryCode}`}
-          className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-base leading-6 text-zinc-900 dark:text-white sm:px-6 md:pb-6"
+          className="flex-1 min-h-0 overflow-y-auto overscroll-contain space-y-4 px-4 pt-1 pb-[max(1rem,env(safe-area-inset-bottom))] text-base leading-6 text-zinc-900 dark:text-white sm:px-6 dock:pb-6"
         >
           {!hasData && (
             <div className="rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50/80 dark:bg-zinc-800/60 p-3 text-base country-panel-content">
@@ -421,7 +421,7 @@ export const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Key dimensions */}
-          <div className={`grid gap-3 sm:grid-cols-2 md:grid-cols-1 stagger-children ${hasData ? "" : "hidden"}`}>
+          <div className={`grid gap-3 stagger-children ${hasData ? "" : "hidden"}`}>
             {country.areas.map((area) => {
               // Scores run 0 to 5; the tints only exist for bands 1 to 5, so 0 uses the lowest
               const band = Math.min(5, Math.max(1, Math.round(area.score ?? 3)));
@@ -445,7 +445,6 @@ export const Modal: React.FC<ModalProps> = ({
                 {/* Panama, the top country, gets a second call to action right after "Moving here" */}
                 {area.key === "residency" && country.code === "PA" && (
                   <PlanBCta
-                    className="sm:col-span-2 md:col-span-1"
                     title="Make Panama your Plan B"
                     text="We take care of your Panama residency from start to finish. You only send us the documents."
                     label="See how it works"

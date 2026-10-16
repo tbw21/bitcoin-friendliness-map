@@ -88,7 +88,8 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
   };
 
   const columns = `minmax(6.5rem, 1fr) repeat(${countries.length}, minmax(2.5rem, 3.5rem))`;
-  const bestRing = "ring-2 ring-inset ring-zinc-900/60 dark:ring-white/80";
+  // The best cell keeps its band colour; only its 1px border turns white (dark) / ink (light)
+  const bestStyle = (tint: React.CSSProperties): React.CSSProperties => ({ ...tint, borderColor: "var(--best-border)" });
 
   const overallValues = countries.map((c) => (c.hasData ? c.scoreExact ?? c.score : null));
   const overallBest = bestOf(overallValues);
@@ -97,7 +98,7 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
     <SidePanel label="Compare countries" title="Compare" onClose={onClose} closing={closing}>
       <p className="mb-4 text-base text-zinc-600 dark:text-zinc-400">
         Pick up to {MAX_COMPARE} countries to see their scores side by side.
-        <span className="hidden md:inline"> You can also click countries on the map.</span>
+        <span className="hidden dock:inline"> You can also click countries on the map.</span>
       </p>
 
       {/* Chosen countries, in column order, each with a remove button. On phones they stay on one
@@ -172,7 +173,7 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
         </button>
       ) : (
         <>
-          <div role="table" aria-label="Scores side by side" className="grid gap-1" style={{ gridTemplateColumns: columns }}>
+          <div role="table" aria-label="Scores side by side" className="grid max-w-[26rem] gap-1" style={{ gridTemplateColumns: columns }}>
             {/* Column heads: flag and country code (the full names are in the list above) */}
             <div role="row" className="contents">
               <div role="columnheader" />
@@ -185,7 +186,7 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
                   className="flex flex-col items-center gap-1 pb-1"
                 >
                   <Flag code={c.code} className="h-4 w-6" />
-                  <span className="text-sm font-semibold text-zinc-600 dark:text-zinc-400">{c.code}</span>
+                  <span className="text-sm text-zinc-600 dark:text-zinc-400">{c.code}</span>
                 </div>
               ))}
             </div>
@@ -200,10 +201,14 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
                   key={c.code}
                   role="cell"
                   title={c.hasData ? legendEntries.find((e) => e.score === c.score)?.label : "No data"}
-                  className={`flex min-h-10 items-center justify-center rounded-md border text-base font-semibold tabular-nums ${
-                    overallValues[i] !== null && overallValues[i] === overallBest ? bestRing : ""
-                  }`}
-                  style={c.hasData ? scoreTint(c.score) : undefined}
+                  className="flex min-h-10 items-center justify-center rounded-md border text-base font-semibold tabular-nums"
+                  style={
+                    !c.hasData
+                      ? undefined
+                      : overallValues[i] !== null && overallValues[i] === overallBest
+                        ? bestStyle(scoreTint(c.score))
+                        : scoreTint(c.score)
+                  }
                 >
                   {c.hasData ? formatScore(c) : "—"}
                 </div>
@@ -258,9 +263,11 @@ export const ComparePanel: React.FC<ComparePanelProps> = ({ codes, onAdd, onRemo
                         onClick={() => setOpenRow(isOpen ? null : area.key)}
                         aria-label={`${displayName(countries[i].name)}: ${score === null ? "no data" : `${score} out of 5`}`}
                         className={`flex min-h-10 items-center justify-center rounded-md border text-base tabular-nums cursor-pointer ${
-                          score !== null && score === best ? `${bestRing} font-bold` : ""
+                          score !== null && score === best ? "font-bold" : ""
                         }`}
-                        style={score !== null ? scoreTint(band(score)) : undefined}
+                        style={
+                          score === null ? undefined : score === best ? bestStyle(scoreTint(band(score))) : scoreTint(band(score))
+                        }
                       >
                         {score ?? "—"}
                       </button>

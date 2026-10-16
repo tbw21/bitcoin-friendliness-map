@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Side panels (country details, compare, how it works) dock on the right from this width; below
+   it they are bottom sheets. Keep in step with DOCK_QUERY in app/map and the media queries in
+   app/map/map.css. */
+@custom-variant dock (@media (width >= 40rem));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -48,6 +53,8 @@ body {
 body {
   background: var(--background);
   color: var(--foreground);
+  /* No lone words on the last line of a paragraph or list item */
+  text-wrap: pretty;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 

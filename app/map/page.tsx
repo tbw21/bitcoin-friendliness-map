@@ -86,7 +86,7 @@ export default function MapPage() {
     setExitingCode(null);
     setExitingTool(null);
   };
-  const exitDuration = () => (window.matchMedia("(min-width: 768px)").matches ? 160 : 240); // --dur-exit(-sheet) in map.css
+  const exitDuration = () => (window.matchMedia("(min-width: 40rem)").matches ? 160 : 240); // --dur-exit(-sheet) in map.css
   const closeToolPanel = useCallback(() => {
     const panel = toolPanelRef.current;
     if (!panel) return;
@@ -142,7 +142,7 @@ export default function MapPage() {
     // Side panel (wide screens): details stay open, the country is centred beside the panel.
     // Bottom sheet (phones): the sheet drops to its "peek" height and the country is centred
     // in the free space above it.
-    if (!window.matchMedia("(min-width: 768px)").matches) setSheetState("peek");
+    if (!window.matchMedia("(min-width: 40rem)").matches) setSheetState("peek");
     setZoomToCountryCode(selectedCode);
   };
 

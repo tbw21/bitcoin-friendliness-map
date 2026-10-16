@@ -144,7 +144,7 @@ const SHEET_PEEK_FRACTION = 1 / 3;
 // below it the legends (taller when expanded) or the bottom sheet when it is peeking. The country panel reports its state in data-sheet-state.
 // (The sheet's own position is not measured because it may still be sliding into place.)
 function getVerticalInsets(root: HTMLElement): { top: number; bottom: number } {
-  if (window.matchMedia("(min-width: 768px)").matches) return { top: 0, bottom: 0 };
+  if (window.matchMedia("(min-width: 40rem)").matches) return { top: 0, bottom: 0 };
   const rootRect = root.getBoundingClientRect();
   // Pan and zoom are measured inside the map's padding, so take the padding off both insets
   const padding = parseFloat(getComputedStyle(root).paddingTop) || 0;
@@ -1596,7 +1596,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       <div
         data-map-search
         className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 sm:right-[4.5rem] ${
-          docked ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
+          docked ? "dock:right-[calc(var(--panel-w)+4.5rem)]" : ""
         }`}
       >
         <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
@@ -1721,7 +1721,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         key={docked ? "docked" : "free"}
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           docked
-            ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
+            ? "dock:right-[calc(var(--panel-w)+1rem)] map-controls-docked"
             : hasDocked
               ? "map-controls-free"
               : "map-controls-load"
@@ -1735,29 +1735,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         <div
           aria-hidden="true"
           inert
-          className="absolute top-4 right-[25rem] z-10 hidden flex-col gap-2 lg:right-[29rem] md:flex map-controls-exit"
+          className="absolute top-4 right-[calc(var(--panel-w)+1rem)] z-10 hidden flex-col gap-2 dock:flex map-controls-exit"
         >
           {renderControlButtons(false)}
         </div>
       )}
 
-      {/* Feedback and bug reports, bottom right (from sm up; on phones it sits in the button column) */}
-      <div
-        key={docked ? "feedback-docked" : "feedback-free"}
-        className={`absolute bottom-4 right-4 z-10 hidden sm:block ${
-          docked ? "md:right-[25rem] lg:right-[29rem] map-controls-docked" : hasDocked ? "map-controls-free" : "map-controls-load"
-        }`}
-      >
-        <a
-          href={`mailto:${FEEDBACK_EMAIL}`}
-          onClick={prepareFeedbackLink}
-          className="ui-grain flex h-10 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/90 pl-2 pr-3 text-base text-zinc-900 shadow-sm transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
-          aria-label="Send feedback or report a bug"
-        >
-          {feedbackIcon}
-          Feedback
-        </a>
-      </div>
 
       {/* Legends share one bottom row while both fit. Each is never narrower than its own content
           (min-w-max): a folded legend its title, arrow and padding, an open one its widest line.
@@ -1766,12 +1749,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           its own minimum; only when the two minimums together don't fit do they stack. The open
           top-5 list is the exception: its minimum is 192px and long names are cut short with an
           ellipsis instead, so it can stay beside the other legend. From sm up each is 256px. */}
+      {/* The bottom row: the legends on the left, the feedback button on the right (from sm up; on
+          phones it sits in the button column). The legends wrap onto a second line when the row
+          is too narrow for both, and the feedback button drops its word when the row is narrow
+          (a container query on the row, not the screen), so nothing ever overlaps. */}
+      <div
+        className={`@container absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none ${
+          docked ? "dock:right-[calc(var(--panel-w)+1rem)]" : ""
+        }`}
+      >
       <div
         data-map-legends
-        className={`absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none sm:right-auto sm:flex-nowrap ${
-          // Tablet widths with the panel docked leave room for only one legend column
-          docked ? "md:max-lg:flex-col md:max-lg:items-start" : ""
-        }`}
+        className="flex flex-1 flex-wrap items-end gap-2 pointer-events-none"
       >
       {/* Legend overlay - minimized or expanded */}
       {legendOpen ? (
@@ -2010,6 +1999,22 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       )}
 
+      </div>
+
+      {/* Feedback and bug reports */}
+      {/* (When even the bare icon has no room beside the legends it takes its own line, on the right) */}
+      <div className="ml-auto hidden shrink-0 pointer-events-auto sm:block">
+        <a
+          href={`mailto:${FEEDBACK_EMAIL}`}
+          onClick={prepareFeedbackLink}
+          className="ui-grain flex h-10 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/90 pl-2 pr-3 text-base text-zinc-900 shadow-sm transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 @max-[41rem]:w-10 @max-[41rem]:justify-center @max-[41rem]:px-0"
+          aria-label="Send feedback or report a bug"
+          title="Feedback"
+        >
+          {feedbackIcon}
+          <span className="@max-[41rem]:sr-only">Feedback</span>
+        </a>
+      </div>
       </div>
 
       {/* Tooltip */}

@@ -178,6 +178,9 @@
                  speeds up, so the slide reads at once and is over quickly; the docked panel
                  gets the shorter --dur-exit, the full-height phone sheet --dur-exit-sheet */
 :root {
+  /* Width of a docked side panel: grows with the screen, between 320px and 448px, so a smaller
+     screen keeps more of the map in view. Docking starts at 640px (the "dock" variant). */
+  --panel-w: clamp(20rem, 42vw, 28rem);
   --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-move: 700ms;
   --ease-enter: cubic-bezier(0.32, 0.72, 0, 1);
@@ -230,7 +233,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 40rem) {
   .country-panel-exit {
     animation-name: panelSlideOut !important;
     animation-duration: var(--dur-exit) !important;
@@ -250,7 +253,7 @@
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 40rem) {
   .country-panel-enter {
     animation-name: panelSlideIn;
   }
@@ -266,7 +269,7 @@
 /* Bottom sheet resting positions (phones). "peek" leaves a third of the screen covered so the
    map above stays visible; the fraction matches SHEET_PEEK_FRACTION in Modal.tsx / WorldMap.tsx.
    Moving between positions is animated; dragging overrides this with an inline transform. */
-@media (max-width: 767px) {
+@media (max-width: 39.999rem) {
   [data-country-panel] {
     transition: transform var(--dur-enter) var(--ease-enter);
   }
@@ -279,7 +282,7 @@
 /* Zoom controls travel with the docked panel: the same slide-in when it opens and, when it
    closes, a copy takes the same slide-out (distance, duration and easing) while the buttons slide
    in from the left to the window edge */
-@media (min-width: 768px) {
+@media (min-width: 40rem) {
   .map-controls-docked {
     animation: panelSlideIn var(--dur-enter) var(--ease-enter) both;
   }
@@ -708,12 +711,15 @@
 :root {
   --tint-fill: 42%;
   --tint-border: 75%;
+  /* Border of the best score in each row of the comparison */
+  --best-border: rgb(24 24 27 / 0.75);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --tint-fill: 25%;
     --tint-border: 50%;
+    --best-border: rgb(255 255 255 / 0.9);
   }
 }
 
