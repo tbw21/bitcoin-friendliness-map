@@ -169,15 +169,30 @@
   initial-value: 1;
 }
 
+/* Motion tokens.
+   --ease-move   the map's own glides (double-click zoom, locate, zoom buttons, reset): an
+                 ease-in-out, so the view starts and lands softly, like a camera move
+   --ease-enter  things arriving (the details panel/sheet sliding in, the controls docking with
+                 it): a fast start that settles gently
+   --ease-exit   things leaving (the sheet sliding away): a gentle start that speeds up */
+:root {
+  --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-move: 700ms;
+  --ease-enter: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-enter: 400ms;
+  --ease-exit: cubic-bezier(0.32, 0, 0.67, 0);
+  --dur-exit: 240ms;
+}
+
 /* Programmatic moves (zoom buttons, reset, locate, double-click) glide instead of jumping */
 .map-container[data-animating="true"] {
   transition:
-    --map-zoom 550ms cubic-bezier(0.22, 1, 0.36, 1),
-    --map-stretch 550ms cubic-bezier(0.22, 1, 0.36, 1);
+    --map-zoom var(--dur-move) var(--ease-move),
+    --map-stretch var(--dur-move) var(--ease-move);
 }
 
 .map-container[data-animating="true"] svg {
-  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--dur-move) var(--ease-move);
   will-change: transform;
 }
 
@@ -196,7 +211,7 @@
    that slides in from the right when docked. Fill is "backwards" only, so once the entrance has
    played the sheet's own transform (drag to dismiss) is free to take over. */
 .country-panel-enter {
-  animation: panelRiseIn 340ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: panelRiseIn var(--dur-enter) var(--ease-enter) backwards;
 }
 
 @keyframes panelRiseIn {
@@ -208,7 +223,6 @@
 @media (min-width: 768px) {
   .country-panel-enter {
     animation-name: panelSlideIn;
-    animation-duration: 320ms;
   }
 }
 
@@ -224,7 +238,7 @@
    Moving between positions is animated; dragging overrides this with an inline transform. */
 @media (max-width: 767px) {
   [data-country-panel] {
-    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform var(--dur-enter) var(--ease-enter);
   }
 
   [data-country-panel][data-sheet-state="peek"] {
@@ -236,7 +250,7 @@
    to the window edge when it closes (the panel itself disappears without an exit animation) */
 @media (min-width: 768px) {
   .map-controls-docked {
-    animation: panelSlideIn 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: panelSlideIn var(--dur-enter) var(--ease-enter) both;
   }
 
   .map-controls-free {
@@ -661,7 +675,7 @@
 
 /* Glide in step with the map during animated moves */
 .map-grain[data-animating="true"] {
-  transition: background-position 550ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background-position var(--dur-move) var(--ease-move);
 }
 
 .ui-grain {

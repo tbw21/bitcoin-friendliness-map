@@ -113,9 +113,9 @@ export const Modal: React.FC<ModalProps> = ({
       onClose();
       return;
     }
-    panel.style.transition = "transform 220ms cubic-bezier(0.4, 0, 1, 1)";
+    panel.style.transition = "transform var(--dur-exit) var(--ease-exit)"; // map.css motion tokens
     panel.style.transform = "translateY(100%)";
-    window.setTimeout(onClose, 220);
+    window.setTimeout(onClose, 240);
   }, [onClose]);
 
   // The sheet rests at one of three positions: full (0), peek, or closed (its own height).

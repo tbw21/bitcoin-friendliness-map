@@ -335,7 +335,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     if (animationTimerRef.current !== null) window.clearTimeout(animationTimerRef.current);
     root.setAttribute("data-animating", "true");
     mapGrainRef.current?.setAttribute("data-animating", "true");
-    animationTimerRef.current = window.setTimeout(stopAnimation, 600);
+    // A little longer than the glide (--dur-move in map.css)
+    animationTimerRef.current = window.setTimeout(stopAnimation, 760);
   }, [stopAnimation]);
 
   // Keep refs in sync with state
@@ -501,7 +502,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     let clickStartPos = { x: 0, y: 0 };
     // A single click waits this long before it opens or closes anything, so that a double-click
     // (which only zooms) never also opens or closes the details
-    const CLICK_DELAY = 250;
+    const CLICK_DELAY = 180;
     let pendingClick: number | null = null;
 
     const handleMouseDown = (event: MouseEvent) => {
