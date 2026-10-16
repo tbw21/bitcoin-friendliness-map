@@ -1558,8 +1558,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </button>
       </div>
 
-      {/* Legends share one bottom row while there is room for both. Each has a minimum width (larger
-          when expanded), so on a narrow screen they stack instead of squeezing their text. */}
+      {/* Legends share one bottom row while both fit. Each is never narrower than its own content
+          (min-w-max): a folded legend its title, arrow and padding, an open one its widest line.
+          On phones they start from equal halves and grow from there (flex 1 1 0%), so an open
+          legend takes the width its list needs and the folded one beside it gives way down to
+          its own minimum; only when the two minimums together don't fit do they stack. From sm
+          up each is 240px (or wider if its content needs it). */}
       <div
         data-map-legends
         className={`absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none sm:right-auto sm:flex-nowrap ${
@@ -1571,7 +1575,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[208px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
@@ -1647,7 +1651,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1674,7 +1678,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto flex-1 min-w-[208px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 p-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
@@ -1735,7 +1739,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto flex-1 min-w-[160px] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}
