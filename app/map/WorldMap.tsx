@@ -240,6 +240,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const onClearSelectionRef = useRef<(() => void) | undefined>(undefined);
   // The open country, for the click handler (a click on it closes it)
   const selectedCodeRef = useRef<string | null>(null);
+  // Whether a panel has been docked yet: the zoom controls only slide back to the edge after a
+  // panel closes; on first load they just fade in with the map
+  const [hasDocked, setHasDocked] = useState(false);
+  useEffect(() => {
+    if (selectedCode) setHasDocked(true);
+  }, [selectedCode]);
   useEffect(() => {
     selectedCodeRef.current = selectedCode;
   }, [selectedCode]);
@@ -1547,7 +1553,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
-            : "map-controls-free"
+            : hasDocked
+              ? "map-controls-free"
+              : "map-controls-load"
         }`}
       >
         <button
@@ -1622,8 +1630,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              {/* A cross in a filled circle (the usual "remove this filter" mark). The 13px circle
+                  is centred on the capitals, so it spans the word's cap height and reads as
+                  centred on it */}
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" fill="currentColor" />
+                <path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5" stroke="var(--map-bg)" strokeWidth={1.5} strokeLinecap="round" />
               </svg>
             </button>
           )}
@@ -1724,8 +1736,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              {/* A cross in a filled circle (the usual "remove this filter" mark). The 13px circle
+                  is centred on the capitals, so it spans the word's cap height and reads as
+                  centred on it */}
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.5" fill="currentColor" />
+                <path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5" stroke="var(--map-bg)" strokeWidth={1.5} strokeLinecap="round" />
               </svg>
             </button>
           )}

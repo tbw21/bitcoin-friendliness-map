@@ -49,29 +49,32 @@ export default function MapPage() {
     window.history.replaceState(null, "", url);
   }, [selectedCode]);
 
-  // Closing plays the panel's exit (slides out to the right / the sheet slides down, map.css
-  // .country-panel-exit) before the details are removed. Choosing a country meanwhile cancels it.
-  const [closing, setClosing] = useState(false);
+  // Closing clears the selection at once, so the map, the zoom buttons and the search bar move
+  // straight back to their full-width places, while the panel itself stays on screen just long
+  // enough to slide back out to the right / the sheet to drop away (map.css .country-panel-exit).
+  // Choosing a country meanwhile cancels the exit.
+  const [exitingCode, setExitingCode] = useState<string | null>(null);
   const closeTimerRef = useRef<number | null>(null);
   const cancelClosing = () => {
     if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = null;
-    setClosing(false);
+    setExitingCode(null);
   };
   const handleCloseModal = () => {
-    if (!selectedCode || closeTimerRef.current !== null) return;
-    const finish = () => {
-      closeTimerRef.current = null;
-      setClosing(false);
-      setSelectedCode(null);
-      setSheetState("full");
-    };
+    if (!selectedCode) return;
+    cancelClosing();
+    setSelectedCode(null);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      finish();
+      setSheetState("full");
       return;
     }
-    setClosing(true);
-    closeTimerRef.current = window.setTimeout(finish, 240); // --dur-exit in map.css
+    setExitingCode(selectedCode);
+    const exitMs = window.matchMedia("(min-width: 768px)").matches ? 160 : 240; // --dur-exit(-sheet) in map.css
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      setExitingCode(null);
+      setSheetState("full");
+    }, exitMs);
   };
 
   const handleShowOnMap = () => {
@@ -144,15 +147,15 @@ export default function MapPage() {
         />
       )}
 
-      {selectedCode && (
+      {(selectedCode ?? exitingCode) && (
         <Modal
-          countryCode={selectedCode}
+          countryCode={(selectedCode ?? exitingCode)!}
           onClose={handleCloseModal}
           onShowOnMap={handleShowOnMap}
           onSelectCountry={handleStepCountry}
           sheetState={sheetState}
           onSheetStateChange={setSheetState}
-          closing={closing}
+          closing={!selectedCode}
         />
       )}
     </div>

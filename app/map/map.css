@@ -174,14 +174,17 @@
                  ease-in-out, so the view starts and lands softly, like a camera move
    --ease-enter  things arriving (the details panel/sheet sliding in, the controls docking with
                  it): a fast start that settles gently
-   --ease-exit   things leaving (the sheet sliding away): a gentle start that speeds up */
+   --ease-exit   things leaving (the panel sliding back out): moves from the first frame and
+                 speeds up, so the slide reads at once and is over quickly; the docked panel
+                 gets the shorter --dur-exit, the full-height phone sheet --dur-exit-sheet */
 :root {
   --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-move: 700ms;
   --ease-enter: cubic-bezier(0.32, 0.72, 0, 1);
   --dur-enter: 400ms;
-  --ease-exit: cubic-bezier(0.32, 0, 0.67, 0);
-  --dur-exit: 240ms;
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --dur-exit: 160ms;
+  --dur-exit-sheet: 240ms;
 }
 
 /* Programmatic moves (zoom buttons, reset, locate, double-click) glide instead of jumping */
@@ -217,7 +220,7 @@
 /* Leaving: the sheet slides down off the screen, the docked panel slides a little to the right
    as it fades (the reverse of its entrance) */
 .country-panel-exit {
-  animation: panelSinkOut var(--dur-exit) var(--ease-exit) forwards !important;
+  animation: panelSinkOut var(--dur-exit-sheet) var(--ease-exit) forwards !important;
   pointer-events: none !important;
 }
 
@@ -230,6 +233,7 @@
 @media (min-width: 768px) {
   .country-panel-exit {
     animation-name: panelSlideOut !important;
+    animation-duration: var(--dur-exit) !important;
   }
 }
 
@@ -272,15 +276,27 @@
   }
 }
 
-/* Zoom controls travel with the docked panel: identical slide-in when it opens, a plain fade back
-   to the window edge when it closes (the panel itself disappears without an exit animation) */
+/* Zoom controls travel with the docked panel: identical slide-in when it opens; when it closes
+   they are back at the window edge at once, arriving with a short slide in the panel's direction
+   while the panel slides out, so the two read as one movement */
 @media (min-width: 768px) {
   .map-controls-docked {
     animation: panelSlideIn var(--dur-enter) var(--ease-enter) both;
   }
 
-  .map-controls-free {
+  .map-controls-load {
     animation: mapFadeIn 220ms ease-out both;
+  }
+
+  .map-controls-free {
+    animation: controlsFollowOut var(--dur-enter) var(--ease-enter) both;
+  }
+}
+
+@keyframes controlsFollowOut {
+  from {
+    opacity: 0;
+    transform: translateX(-32px);
   }
 }
 
@@ -343,6 +359,7 @@
   .country-panel-content,
   .search-results-enter,
   .map-controls-docked,
+  .map-controls-load,
   .map-controls-free,
   .stagger-children > *,
   .stagger-last,
