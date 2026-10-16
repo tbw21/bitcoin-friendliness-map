@@ -13,6 +13,8 @@ export interface ModalProps {
   /** Bottom sheet position on phones; ignored by the docked side panel */
   sheetState?: "full" | "peek";
   onSheetStateChange?: (state: "full" | "peek") => void;
+  /** True while the details are on their way out (page.tsx plays the exit, then removes them) */
+  closing?: boolean;
 }
 
 // Share of the screen height the sheet covers in its "peek" position. Keep in step with
@@ -58,6 +60,7 @@ export const Modal: React.FC<ModalProps> = ({
   onShowOnMap,
   onSelectCountry,
   sheetState = "full",
+  closing = false,
   onSheetStateChange,
 }) => {
   const country = getCountry(countryCode);
@@ -105,17 +108,10 @@ export const Modal: React.FC<ModalProps> = ({
   const suppressClickRef = useRef(false);
   const isSheet = () => !window.matchMedia("(min-width: 768px)").matches;
 
-  // Slide the sheet off the bottom edge, then close. The docked panel just closes.
+  // Closing: page.tsx plays the exit (the sheet slides down, the docked panel slides out to the
+  // right) and then removes the details
   const closeAnimated = useCallback(() => {
-    const panel = panelRef.current;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (!panel || !isSheet() || reduceMotion) {
-      onClose();
-      return;
-    }
-    panel.style.transition = "transform var(--dur-exit) var(--ease-exit)"; // map.css motion tokens
-    panel.style.transform = "translateY(100%)";
-    window.setTimeout(onClose, 240);
+    onClose();
   }, [onClose]);
 
   // The sheet rests at one of three positions: full (0), peek, or closed (its own height).
@@ -222,7 +218,7 @@ export const Modal: React.FC<ModalProps> = ({
           height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className="ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md"
+        className={`ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter md:h-auto md:max-w-sm md:rounded-none md:border-y-0 md:border-l lg:max-w-md ${closing ? "country-panel-exit" : ""}`}
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}

@@ -49,9 +49,29 @@ export default function MapPage() {
     window.history.replaceState(null, "", url);
   }, [selectedCode]);
 
+  // Closing plays the panel's exit (slides out to the right / the sheet slides down, map.css
+  // .country-panel-exit) before the details are removed. Choosing a country meanwhile cancels it.
+  const [closing, setClosing] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+  const cancelClosing = () => {
+    if (closeTimerRef.current !== null) window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+    setClosing(false);
+  };
   const handleCloseModal = () => {
-    setSelectedCode(null);
-    setSheetState("full");
+    if (!selectedCode || closeTimerRef.current !== null) return;
+    const finish = () => {
+      closeTimerRef.current = null;
+      setClosing(false);
+      setSelectedCode(null);
+      setSheetState("full");
+    };
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      finish();
+      return;
+    }
+    setClosing(true);
+    closeTimerRef.current = window.setTimeout(finish, 240); // --dur-exit in map.css
   };
 
   const handleShowOnMap = () => {
@@ -65,6 +85,7 @@ export default function MapPage() {
 
   // Previous/next arrows in the details: select the country and have the map bring it into view
   const handleStepCountry = useCallback((code: string) => {
+    cancelClosing();
     setSelectedCode(code);
     setStepToCountryCode(code);
   }, []);
@@ -73,6 +94,7 @@ export default function MapPage() {
   // A country picked from search, the top-5 list or the first-place card always opens with its
   // details in full (on phones the sheet may still be at "peek" from an earlier locate)
   const handleSelectCountry = useCallback((code: string, fromList?: boolean) => {
+    cancelClosing();
     setHighlightOnlyCode(null);
     setSelectedCode(code);
     if (fromList) setSheetState("full");
@@ -130,6 +152,7 @@ export default function MapPage() {
           onSelectCountry={handleStepCountry}
           sheetState={sheetState}
           onSheetStateChange={setSheetState}
+          closing={closing}
         />
       )}
     </div>

@@ -316,6 +316,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   // and the transform reset, so the browser redraws the shapes crisply at that zoom.
   const bakedViewRef = useRef({ zoom: 1, panX: 0, panY: 0 });
   const bakeTimerRef = useRef<number | null>(null);
+  // The transform last applied, relative to which baked view (for gliding zooms, see below)
+  const appliedViewRef = useRef<{ tx: number; ty: number; k: number; baked: { zoom: number; panX: number; panY: number } } | null>(null);
   const bakeNowRef = useRef<(() => void) | null>(null);
   // Latest zoomToPath (defined further down), for the event listeners attached once
   const zoomToPathRef = useRef<((path: SVGPathElement, keepZoom?: boolean) => void) | null>(null);
@@ -500,10 +502,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     let clickStartTime = 0;
     let clickStartPos = { x: 0, y: 0 };
-    // A single click waits this long before it opens or closes anything, so that a double-click
-    // (which only zooms) never also opens or closes the details
-    const CLICK_DELAY = 180;
-    let pendingClick: number | null = null;
+    // A click acts at once. If it turns out to be the first half of a double-click (which only
+    // zooms), the second click undoes what the first one opened or closed.
+    let undoLastClick: { at: number; undo: () => void } | null = null;
 
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button !== 0) return;
@@ -589,35 +590,35 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const isClick = clickDuration < 600 && clickDistance < 5;
 
       if (isClick) {
-        // Second click of a double-click: cancel the first click's pending action; the dblclick
+        // Second click of a double-click: put back what the first click changed; the dblclick
         // handler does the zooming
         if (event.detail >= 2) {
-          if (pendingClick !== null) window.clearTimeout(pendingClick);
-          pendingClick = null;
+          if (undoLastClick && Date.now() - undoLastClick.at < 600) undoLastClick.undo();
+          undoLastClick = null;
           return;
         }
         const target = event.target;
         const code = getCountryCode(target);
         const onMap = root.contains(target as Node);
         if (target instanceof SVGElement) target.blur();
-        if (pendingClick !== null) window.clearTimeout(pendingClick);
-        pendingClick = window.setTimeout(() => {
-          pendingClick = null;
-          if (code) {
-            if (code === selectedCodeRef.current) {
-              // Clicking the open country closes its details
-              onClearHighlightOnlyRef.current?.();
-              onClearSelectionRef.current?.();
-            } else {
-              // Any other country opens (page.tsx also drops the pin highlight)
-              onSelectCountry(code);
-            }
-          } else if (onMap) {
-            // Click on the sea: close the open country's details (no-op when none is open)
+        const before = selectedCodeRef.current;
+        const restore = () => (before ? onSelectCountry(before) : onClearSelectionRef.current?.());
+        if (code) {
+          if (code === before) {
+            // Clicking the open country closes its details
             onClearHighlightOnlyRef.current?.();
             onClearSelectionRef.current?.();
+          } else {
+            // Any other country opens (page.tsx also drops the pin highlight)
+            onSelectCountry(code);
           }
-        }, CLICK_DELAY);
+          undoLastClick = { at: Date.now(), undo: restore };
+        } else if (onMap) {
+          // Click on the sea: close the open country's details (no-op when none is open)
+          onClearHighlightOnlyRef.current?.();
+          onClearSelectionRef.current?.();
+          undoLastClick = before ? { at: Date.now(), undo: restore } : null;
+        }
       }
     };
 
@@ -756,7 +757,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
     const handleDoubleClick = (event: MouseEvent) => {
       event.preventDefault();
-      // A double-click only ever zooms (never opens or closes anything; see CLICK_DELAY):
+      // A double-click only ever zooms (never opens or closes anything; see undoLastClick):
       //  - on a country: zoom in on it, or back out to the whole world if it is already the one
       //    zoomed in on
       //  - on the sea: back out to the whole world
@@ -948,7 +949,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       window.removeEventListener("mouseup", handleMouseUp);
       root.removeEventListener("wheel", handleWheel);
       root.removeEventListener("dblclick", handleDoubleClick);
-      if (pendingClick !== null) window.clearTimeout(pendingClick);
       root.removeEventListener("touchstart", handleTouchStart);
       root.removeEventListener("touchmove", handleTouchMove);
       root.removeEventListener("touchend", handleTouchEnd);
@@ -1017,9 +1017,34 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     root.style.setProperty("--map-stretch", String(k));
     const tx = clampedPanX - k * baked.panX;
     const ty = clampedPanY - k * baked.panY;
-    const transform = `translate(${tx}px, ${ty}px) scale(${k})`;
-    svg.style.setProperty("transform", transform, "important");
-    svg.style.setProperty("transform-origin", "0 0", "important");
+    const prev = appliedViewRef.current;
+    if (
+      root.hasAttribute("data-animating") &&
+      prev &&
+      prev.baked === baked &&
+      Math.abs(prev.k - k) > 1e-4
+    ) {
+      // A gliding zoom: interpolating the move and the scale separately makes the map swing out
+      // and back on its way. Instead, zoom about the one point that stays put between the old
+      // view and the new: with the transform origin there, only the scale changes during the
+      // glide and everything travels in a straight line towards or away from it.
+      const fx = (tx - prev.tx) / (prev.k - k);
+      const fy = (ty - prev.ty) / (prev.k - k);
+      const cx = prev.tx - fx * (1 - prev.k);
+      const cy = prev.ty - fy * (1 - prev.k);
+      // Same picture as now, re-expressed around that point (without a transition) ...
+      svg.style.setProperty("transition", "none", "important");
+      svg.style.setProperty("transform-origin", `${fx}px ${fy}px`, "important");
+      svg.style.setProperty("transform", `translate(${cx}px, ${cy}px) scale(${prev.k})`, "important");
+      void svg.getBoundingClientRect();
+      // ... then glide the scale alone
+      svg.style.removeProperty("transition");
+      svg.style.setProperty("transform", `translate(${cx}px, ${cy}px) scale(${k})`, "important");
+    } else {
+      svg.style.setProperty("transform", `translate(${tx}px, ${ty}px) scale(${k})`, "important");
+      svg.style.setProperty("transform-origin", "0 0", "important");
+    }
+    appliedViewRef.current = { tx, ty, k, baked };
     svg.style.setProperty("max-width", "none", "important");
     svg.style.setProperty("max-height", "none", "important");
 
@@ -1049,7 +1074,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       svg.setAttribute("viewBox", `${left} ${top} ${boxW / (zoom * scale)} ${boxH / (zoom * scale)}`);
       bakedViewRef.current = { zoom, panX: clampedPanX, panY: clampedPanY };
       svg.style.setProperty("transform", "translate(0px, 0px) scale(1)", "important");
+      svg.style.setProperty("transform-origin", "0 0", "important");
       root.style.setProperty("--map-stretch", "1");
+      appliedViewRef.current = { tx: 0, ty: 0, k: 1, baked: bakedViewRef.current };
     };
     bakeNowRef.current = bake;
     if (bakeTimerRef.current !== null) window.clearTimeout(bakeTimerRef.current);
@@ -1573,6 +1600,19 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         }`}
       >
       {/* Legend overlay - minimized or expanded */}
+      {/* With a score filter on, a "Clear filter" text button sits just above the score legend
+          (open or folded), so the filter can be removed without opening the legend. The score
+          legend is always the first one, top left of this row, which is where this lines up. */}
+      {selectedLegendScores.length > 0 && (
+        <button
+          type="button"
+          onClick={() => setSelectedLegendScores([])}
+          className="pointer-events-auto absolute bottom-full left-0 mb-2 rounded px-3 text-sm font-semibold text-white underline-offset-4 [text-shadow:0_1px_3px_rgba(0,8,20,0.9)] hover:underline focus-visible:underline focus:outline-none cursor-pointer"
+          aria-label="Clear the score filter"
+        >
+          Clear filter
+        </button>
+      )}
       {legendOpen ? (
         <div
           ref={legendRef}
@@ -1583,8 +1623,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           <div
             className="mb-2 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
-              setLegendOpen(false);
-              setSelectedLegendScores([]); // Reset filter when closing legend
+              setLegendOpen(false); // the filter stays on; "Clear filter" above the legend removes it
             }}
             role="button"
             tabIndex={0}
@@ -1592,7 +1631,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 setLegendOpen(false);
-                setSelectedLegendScores([]);
               }
             }}
             aria-label="Minimize legend"

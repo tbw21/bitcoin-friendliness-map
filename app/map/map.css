@@ -214,6 +214,32 @@
   animation: panelRiseIn var(--dur-enter) var(--ease-enter) backwards;
 }
 
+/* Leaving: the sheet slides down off the screen, the docked panel slides a little to the right
+   as it fades (the reverse of its entrance) */
+.country-panel-exit {
+  animation: panelSinkOut var(--dur-exit) var(--ease-exit) forwards !important;
+  pointer-events: none !important;
+}
+
+@keyframes panelSinkOut {
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@media (min-width: 768px) {
+  .country-panel-exit {
+    animation-name: panelSlideOut !important;
+  }
+}
+
+@keyframes panelSlideOut {
+  to {
+    opacity: 0;
+    transform: translateX(32px);
+  }
+}
+
 @keyframes panelRiseIn {
   from {
     transform: translateY(100%);
