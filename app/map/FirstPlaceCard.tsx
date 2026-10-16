@@ -5,8 +5,8 @@ import Award from "./Award";
 
 // First place gets its own card next to the search bar (WorldMap.tsx passes whichever country
 // ranks first in the data): no country reaches the top colour band on its own merit, so the
-// leader gets named: a card with the award and the country's name, 40px tall (a little less than
-// the search bar, because a capitalised name with no descenders looks roomier than it is)
+// leader gets named: a card with the award and the country's name, 40px tall like the search bar
+// and the zoom buttons
 // (screen readers get "the most Bitcoin-friendly country" spelled out). Clicking it opens it.
 export default function FirstPlaceCard({
   name,
