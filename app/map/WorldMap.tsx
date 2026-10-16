@@ -258,7 +258,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const lastPanPointRef = useRef({ x: 0, y: 0 });
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
   // Both legends start folded on every screen size, so the map gets the space
-  const [legendOpen, setLegendOpen] = useState(false);
+  // The score legend starts open so the colours are explained from the start; the top-5 list
+  // starts folded
+  const [legendOpen, setLegendOpen] = useState(true);
   const [selectedLegendScores, setSelectedLegendScores] = useState<number[]>([]);
   const toggleLegendScore = useCallback((score: number) => {
     setSelectedLegendScores((prev) =>
@@ -1776,9 +1778,24 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           <img
             src={getFlagUrl(hoveredCountryData.code, "w40")}
             alt={getFlagAltText(hoveredCountryData.name)}
-            style={{ width: 12, height: 8, objectFit: "cover", borderRadius: 1, flexShrink: 0, display: "block" }}
+            style={{ width: 16, height: 12, objectFit: "cover", borderRadius: 2, flexShrink: 0, display: "block" }}
           />
           <span style={{ flexShrink: 0, whiteSpace: "nowrap" }}>{formatCountryName(hoveredCountryData.name)}</span>
+          {/* Its band and score, with the band's colour */}
+          <span style={{ flexShrink: 0, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 8 }} className="text-zinc-300">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 9999,
+                flexShrink: 0,
+                background: hoveredCountryData.hasData ? `var(--score-${hoveredCountryData.score})` : "var(--no-data)",
+              }}
+            />
+            {hoveredCountryData.hasData
+              ? `${legendEntries.find((e) => e.score === hoveredCountryData.score)?.label ?? ""} · ${formatScore(hoveredCountryData)}`
+              : "No data"}
+          </span>
         </div>
       )}
     </>

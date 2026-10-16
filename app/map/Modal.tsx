@@ -303,12 +303,13 @@ export const Modal: React.FC<ModalProps> = ({
                   </svg>
                 </button>
               )}
-              {/* Close button: docked panel only (the sheet closes by its handle) */}
+              {/* Close button, to the right of the others (on phones the sheet slides away, as when
+                  it is dragged down) */}
               <button
                 ref={closeButtonRef}
                 type="button"
-                onClick={onClose}
-                className="hidden md:flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                onClick={closeAnimated}
+                className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
                 aria-label="Close"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
