@@ -514,6 +514,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     // A click acts at once. If it turns out to be the first half of a double-click (which only
     // zooms), the second click undoes what the first one opened or closed.
     let undoLastClick: { at: number; undo: () => void } | null = null;
+    let pendingUndo: (() => void) | null = null;
 
     const handleMouseDown = (event: MouseEvent) => {
       if (event.button !== 0) return;
@@ -600,9 +601,21 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
       if (isClick) {
         // Second click of a double-click: put back what the first click changed; the dblclick
-        // handler does the zooming
+        // handler does the zooming. The undo waits until the dblclick has been delivered:
+        // reopening a country re-orders the map's shapes, and a shape that moves between the
+        // press and the release gets no click or dblclick from the browser.
         if (event.detail >= 2) {
-          if (undoLastClick && Date.now() - undoLastClick.at < 600) undoLastClick.undo();
+          if (undoLastClick && Date.now() - undoLastClick.at < 600) {
+            const { undo } = undoLastClick;
+            let done = false;
+            pendingUndo = () => {
+              if (done) return;
+              done = true;
+              pendingUndo = null;
+              undo();
+            };
+            window.setTimeout(() => pendingUndo?.(), 100); // in case no dblclick follows
+          }
           undoLastClick = null;
           return;
         }
@@ -770,7 +783,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       //  - on a country: zoom in on it, or back out to the whole world if it is already the one
       //    zoomed in on
       //  - on the sea: back out to the whole world
-      
+      pendingUndo?.();
+
       if (!containerRef.current || !svgRef.current) return;
       
       const currentZoom = zoomRef.current;
