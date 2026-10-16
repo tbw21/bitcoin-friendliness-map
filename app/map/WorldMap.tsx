@@ -1394,7 +1394,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           screens, of the docked buttons left of the details panel). */}
       <div
         data-map-search
-        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-start gap-2 sm:right-[4.5rem] ${
+        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 sm:right-[4.5rem] ${
           selectedCode ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
         }`}
       >
