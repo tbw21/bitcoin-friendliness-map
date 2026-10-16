@@ -1548,18 +1548,17 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           search bar), so they stay put underneath it.
           On wide screens the country panel docks to the right edge and the controls sit on its left side.
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
-          (same distance, duration and easing) instead of travelling across the map behind it,
-          and leave with its slide-out before fading in again at the window edge. */}
+          (same distance, duration and easing) instead of travelling across the map behind it.
+          On closing they slide in from the left to the window edge while a copy leaves with the
+          panel's slide-out. */}
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
           (1rem from the top + 2.5rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
-        key={selectedCode || panelClosing ? "docked" : "free"}
+        key={selectedCode ? "docked" : "free"}
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
-            : panelClosing
-              ? "md:right-[25rem] lg:right-[29rem] map-controls-exit"
-              : hasDocked
+            : hasDocked
               ? "map-controls-free"
               : "map-controls-load"
         }`}
@@ -1598,6 +1597,49 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           </svg>
         </button>
       </div>
+      {/* While the panel slides out, a copy of the buttons leaves with it from their docked place
+          (wide screens only), as the real ones slide in to the window edge from the left */}
+      {panelClosing && (
+        <div
+          aria-hidden="true"
+          inert
+          className="absolute top-4 right-[25rem] z-10 hidden flex-col gap-2 lg:right-[29rem] md:flex map-controls-exit"
+        >
+            <button
+              onClick={handleZoomIn}
+              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              aria-label="Zoom in (or press +)"
+              title="Zoom in (+)"
+            >
+              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+              </svg>
+            </button>
+            <button
+              onClick={handleZoomOut}
+              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+              aria-label="Zoom out (or press -)"
+              title="Zoom out (-)"
+            >
+              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+              </svg>
+            </button>
+            <button
+              onClick={handleReset}
+              disabled={isDefaultView}
+              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
+              aria-label="Show the whole world (or press 0)"
+              title="Show the whole world (0)"
+            >
+              {/* Globe: "back to the whole world" (circular arrows read as reload) */}
+              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <circle cx="12" cy="12" r="9" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
+              </svg>
+            </button>
+        </div>
+      )}
 
       {/* Legends share one bottom row while both fit. Each is never narrower than its own content
           (min-w-max): a folded legend its title, arrow and padding, an open one its widest line.
