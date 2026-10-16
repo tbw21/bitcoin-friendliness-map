@@ -1561,8 +1561,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           (min-w-max): a folded legend its title, arrow and padding, an open one its widest line.
           On phones they start from equal halves and grow from there (flex 1 1 0%), so an open
           legend takes the width its list needs and the folded one beside it gives way down to
-          its own minimum; only when the two minimums together don't fit do they stack. From sm
-          up each is 240px (or wider if its content needs it). */}
+          its own minimum; only when the two minimums together don't fit do they stack. The open
+          top-5 list is the exception: its minimum is 192px and long names are cut short with an
+          ellipsis instead, so it can stay beside the other legend. From sm up each is 256px. */}
       <div
         data-map-legends
         className={`absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none sm:right-auto sm:flex-nowrap ${
@@ -1574,7 +1575,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
@@ -1650,7 +1651,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1677,7 +1678,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-[192px] flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
@@ -1728,7 +1729,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
                 }}
                 aria-label={`Open ${country.name} details`}
               >
-                <span className="min-w-0 truncate font-medium text-zinc-800 dark:text-zinc-200">
+                {/* Long names are cut short with an ellipsis where the legend runs out of room (the
+                    full name shows on hover and is in the row's label for screen readers) */}
+                <span className="min-w-0 truncate font-medium text-zinc-800 dark:text-zinc-200" title={country.name}>
                   {country.rank}. {country.name}
                 </span>
                 <ScoreChip score={country.score} label={country.scoreLabel} />
@@ -1738,7 +1741,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[240px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setTopCountriesLegendOpen(true)}
           role="button"
           tabIndex={0}
