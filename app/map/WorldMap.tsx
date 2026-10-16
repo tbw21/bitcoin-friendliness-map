@@ -1600,26 +1600,33 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         }`}
       >
       {/* Legend overlay - minimized or expanded */}
-      {/* With a score filter on, a "Clear filter" text button sits just above the score legend
-          (open or folded), so the filter can be removed without opening the legend. The score
-          legend is always the first one, top left of this row, which is where this lines up. */}
-      {selectedLegendScores.length > 0 && (
-        <button
-          type="button"
-          onClick={() => setSelectedLegendScores([])}
-          className="pointer-events-auto absolute bottom-full left-0 mb-2 rounded px-3 text-sm font-semibold text-white underline-offset-4 [text-shadow:0_1px_3px_rgba(0,8,20,0.9)] hover:underline focus-visible:underline focus:outline-none cursor-pointer"
-          aria-label="Clear the score filter"
-        >
-          Clear filter
-        </button>
-      )}
       {legendOpen ? (
         <div
           ref={legendRef}
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="relative ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Score legend"
         >
+          {/* With a score filter on, a "Clear" text button sits just above the score legend's right
+              edge (open or folded), so the filter can be removed without opening the legend. Placed from
+              the legend's outer edge (past its 1px border): 8px above it, flush right */}
+          {selectedLegendScores.length > 0 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedLegendScores([]);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              className="absolute bottom-full -right-px mb-[9px] flex items-center gap-1 rounded px-3 text-sm font-normal text-white underline-offset-4 [text-shadow:0_1px_3px_rgba(0,8,20,0.9)] hover:underline focus-visible:underline focus:outline-none cursor-pointer"
+              aria-label="Clear the score filter"
+            >
+              Clear
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
           <div
             className="mb-2 flex items-start justify-between gap-2 border-b border-zinc-200/80 pb-1 dark:border-zinc-700/55 cursor-pointer legend-content-slide"
             onClick={() => {
@@ -1690,7 +1697,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className="relative ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1702,6 +1709,26 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           }}
           aria-label="Open legend"
         >
+          {/* With a score filter on, a "Clear" text button sits just above the score legend's right
+              edge (open or folded), so the filter can be removed without opening the legend. Placed from
+              the legend's outer edge (past its 1px border): 8px above it, flush right */}
+          {selectedLegendScores.length > 0 && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedLegendScores([]);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              className="absolute bottom-full -right-px mb-[9px] flex items-center gap-1 rounded px-3 text-sm font-normal text-white underline-offset-4 [text-shadow:0_1px_3px_rgba(0,8,20,0.9)] hover:underline focus-visible:underline focus:outline-none cursor-pointer"
+              aria-label="Clear the score filter"
+            >
+              Clear
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
           <div className="flex items-center justify-between gap-1">
             <span className="font-chart-legend min-w-0 truncate whitespace-nowrap text-[1.125rem] leading-6 tracking-[0.02em] text-zinc-900 dark:text-white translate-y-[1.75px]">
               Filter by Scores
