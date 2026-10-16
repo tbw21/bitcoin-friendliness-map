@@ -26,24 +26,6 @@ export const AREAS: Array<{ key: string; label: string }> = [
   { key: "stability", label: "Stability" },
 ];
 
-// Band names as used in the legend (data/legend.ts), for wording inside summaries
-const BAND_WORDS: Record<BitcoinScore, string> = {
-  1: "hostile",
-  2: "unfriendly",
-  3: "neutral",
-  4: "friendly",
-  5: "very friendly",
-};
-
-/**
- * The summaries in the data describe a country's standing in their own words ("Ranked 50th out
- * of 249 countries (good)"). Swap that word for the band name the map uses for the same country,
- * so the summary, the badge and the legend all say the same thing.
- */
-function withBandWording(summary: string, band: BitcoinScore): string {
-  return summary.replace(/^(Ranked \d+\w* out of \d+ countries) \([a-z ]+\)/, `$1 (${BAND_WORDS[band]})`);
-}
-
 export interface CountryData {
   code: string;
   name: string;
@@ -207,7 +189,7 @@ async function initializeCountries(): Promise<void> {
             text: (cols[area.iText] || "").trim(),
             score: parseDecimal(cols[area.iScore]),
           })),
-          summary: withBandWording((cols[iSummary] || "").trim(), band),
+          summary: (cols[iSummary] || "").trim(),
           capital: capital ? normalizeCapital(capital) || null : null,
           population: optionalText(cols[iPopulation]),
           detail: optionalText(cols[iDetail]),
@@ -215,8 +197,7 @@ async function initializeCountries(): Promise<void> {
         };
       }
 
-      // Rank: overall score descending, then name ascending. This is the order the summaries in
-      // the data use ("Ranked 4th out of 249 countries"), so the two always agree.
+      // Rank: overall score descending, then name ascending.
       // Countries without data are not ranked.
       const countriesArray = Object.values(out).filter((country) => country.hasData);
       countriesArray.sort((a, b) => {
