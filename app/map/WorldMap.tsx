@@ -20,6 +20,8 @@ export interface WorldMapProps {
   onClearHighlightOnly?: () => void;
   /** Called when the empty map (not a country) is clicked while a country's details are open */
   onClearSelection?: () => void;
+  // True while the details panel slides out after closing (the selection is already cleared)
+  panelClosing?: boolean;
 }
 
 function getCountryClasses(
@@ -231,6 +233,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   highlightOnlyCode = null,
   onClearHighlightOnly,
   onClearSelection,
+  panelClosing = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -1545,15 +1548,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           search bar), so they stay put underneath it.
           On wide screens the country panel docks to the right edge and the controls sit on its left side.
           They are re-mounted on dock/undock so they arrive with the panel's own slide-in
-          (same distance, duration and easing) instead of travelling across the map behind it. */}
+          (same distance, duration and easing) instead of travelling across the map behind it,
+          and leave with its slide-out before fading in again at the window edge. */}
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
           (1rem from the top + 2.5rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
-        key={selectedCode ? "docked" : "free"}
+        key={selectedCode || panelClosing ? "docked" : "free"}
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           selectedCode
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
-            : hasDocked
+            : panelClosing
+              ? "md:right-[25rem] lg:right-[29rem] map-controls-exit"
+              : hasDocked
               ? "map-controls-free"
               : "map-controls-load"
         }`}
@@ -1630,12 +1636,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              {/* A cross in a filled circle (the usual "remove this filter" mark). The 13px circle
-                  is centred on the capitals, so it spans the word's cap height and reads as
-                  centred on it */}
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.5" fill="currentColor" />
-                <path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5" stroke="var(--map-bg)" strokeWidth={1.5} strokeLinecap="round" />
+              {/* A cross in an outlined circle (the usual "remove this filter" mark). The circle
+                  is centred on the capitals, so it reads as centred on the word */}
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinecap="round" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M6 6l4 4M10 6l-4 4" />
               </svg>
             </button>
           )}
@@ -1736,12 +1741,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              {/* A cross in a filled circle (the usual "remove this filter" mark). The 13px circle
-                  is centred on the capitals, so it spans the word's cap height and reads as
-                  centred on it */}
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.5" fill="currentColor" />
-                <path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5" stroke="var(--map-bg)" strokeWidth={1.5} strokeLinecap="round" />
+              {/* A cross in an outlined circle (the usual "remove this filter" mark). The circle
+                  is centred on the capitals, so it reads as centred on the word */}
+              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinecap="round" aria-hidden="true">
+                <circle cx="8" cy="8" r="6.25" />
+                <path d="M6 6l4 4M10 6l-4 4" />
               </svg>
             </button>
           )}

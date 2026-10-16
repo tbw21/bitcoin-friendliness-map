@@ -276,27 +276,22 @@
   }
 }
 
-/* Zoom controls travel with the docked panel: identical slide-in when it opens; when it closes
-   they are back at the window edge at once, arriving with a short slide in the panel's direction
-   while the panel slides out, so the two read as one movement */
+/* Zoom controls travel with the docked panel: the same slide-in when it opens and the same
+   slide-out when it closes (distance, duration and easing), then a plain fade in at the window
+   edge once the panel has gone */
 @media (min-width: 768px) {
   .map-controls-docked {
     animation: panelSlideIn var(--dur-enter) var(--ease-enter) both;
   }
 
-  .map-controls-load {
-    animation: mapFadeIn 220ms ease-out both;
+  .map-controls-exit {
+    animation: panelSlideOut var(--dur-exit) var(--ease-exit) forwards;
+    pointer-events: none;
   }
 
+  .map-controls-load,
   .map-controls-free {
-    animation: controlsFollowOut var(--dur-enter) var(--ease-enter) both;
-  }
-}
-
-@keyframes controlsFollowOut {
-  from {
-    opacity: 0;
-    transform: translateX(-32px);
+    animation: mapFadeIn 220ms ease-out both;
   }
 }
 
@@ -360,6 +355,7 @@
   .search-results-enter,
   .map-controls-docked,
   .map-controls-load,
+  .map-controls-exit,
   .map-controls-free,
   .stagger-children > *,
   .stagger-last,

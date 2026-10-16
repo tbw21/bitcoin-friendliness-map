@@ -49,9 +49,10 @@ export default function MapPage() {
     window.history.replaceState(null, "", url);
   }, [selectedCode]);
 
-  // Closing clears the selection at once, so the map, the zoom buttons and the search bar move
-  // straight back to their full-width places, while the panel itself stays on screen just long
-  // enough to slide back out to the right / the sheet to drop away (map.css .country-panel-exit).
+  // Closing clears the selection at once, so the map and the search bar move straight back to
+  // their full-width places, while the panel stays on screen just long enough to slide back out
+  // to the right / the sheet to drop away (map.css .country-panel-exit); the docked zoom buttons
+  // slide out with it (panelClosing) and then fade in at the window edge.
   // Choosing a country meanwhile cancels the exit.
   const [exitingCode, setExitingCode] = useState<string | null>(null);
   const closeTimerRef = useRef<number | null>(null);
@@ -127,6 +128,7 @@ export default function MapPage() {
           highlightOnlyCode={highlightOnlyCode}
           onClearHighlightOnly={() => setHighlightOnlyCode(null)}
           onClearSelection={handleCloseModal}
+          panelClosing={!selectedCode && exitingCode !== null}
         />
       </main>
 
