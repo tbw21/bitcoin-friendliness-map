@@ -22,13 +22,27 @@ export interface WorldMapProps {
   onClearSelection?: () => void;
   // True while the details panel slides out after closing (the selection is already cleared)
   panelClosing?: boolean;
+  /** A side panel (country details, compare or info) is docked on the right on wide screens */
+  docked?: boolean;
+  /** Countries being compared; null when the compare panel is closed. While comparing, a click on
+      a country adds it to (or takes it out of) the comparison instead of opening its details. */
+  compareCodes?: string[] | null;
+  onToggleCompareCountry?: (code: string) => void;
+  onOpenCompare?: () => void;
+  onOpenInfo?: () => void;
+  compareOpen?: boolean;
+  infoOpen?: boolean;
 }
+
+// Where feedback and bug reports go (the visitor's own email app opens with the details filled in)
+const FEEDBACK_EMAIL = "info@thebitcoinway.com";
 
 function getCountryClasses(
   code: string,
   selectedCode: string | null,
   selectedLegendScores: number[],
-  highlightOnlyCode: string | null
+  highlightOnlyCode: string | null,
+  compareCodes: string[] | null = null
 ): string {
   const data = getCountry(code);
   const base = ["country-shape"];
@@ -39,8 +53,12 @@ function getCountryClasses(
   // The open country (also when located with the pin button) keeps its full colour and gets a
   // white outline. Every other country is toned down but keeps its own score colour, so the
   // open one stands out and the colours can still be read while stepping between countries.
+  // While comparing, the compared countries are the ones that stand out.
   const openCode = selectedCode ?? highlightOnlyCode;
-  if (openCode === code) {
+  if (compareCodes) {
+    if (compareCodes.includes(code)) base.push("selected-country");
+    else if (compareCodes.length > 0) base.push("dimmed");
+  } else if (openCode === code) {
     base.push("selected-country");
   } else if (openCode !== null) {
     base.push("dimmed");
@@ -234,6 +252,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   onClearHighlightOnly,
   onClearSelection,
   panelClosing = false,
+  docked = false,
+  compareCodes = null,
+  onToggleCompareCountry,
+  onOpenCompare,
+  onOpenInfo,
+  compareOpen = false,
+  infoOpen = false,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -247,8 +272,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   // panel closes; on first load they just fade in with the map
   const [hasDocked, setHasDocked] = useState(false);
   useEffect(() => {
-    if (selectedCode) setHasDocked(true);
-  }, [selectedCode]);
+    if (docked) setHasDocked(true);
+  }, [docked]);
+  // Compare mode, for the click handler
+  const compareCodesRef = useRef<string[] | null>(null);
+  const onToggleCompareRef = useRef<((code: string) => void) | undefined>(undefined);
+  useEffect(() => {
+    compareCodesRef.current = compareCodes;
+    onToggleCompareRef.current = onToggleCompareCountry;
+  }, [compareCodes, onToggleCompareCountry]);
   useEffect(() => {
     selectedCodeRef.current = selectedCode;
   }, [selectedCode]);
@@ -262,10 +294,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const isPanningRef = useRef(false);
   const lastPanPointRef = useRef({ x: 0, y: 0 });
   const [hoveredCountry, setHoveredCountry] = useState<string | null>(null);
-  // Both legends start folded on every screen size, so the map gets the space
-  // The score legend starts open so the colours are explained from the start; the top-5 list
-  // starts folded
-  const [legendOpen, setLegendOpen] = useState(true);
+  // Both legends start folded, so the map gets the space
+  const [legendOpen, setLegendOpen] = useState(false);
   const [selectedLegendScores, setSelectedLegendScores] = useState<number[]>([]);
   const toggleLegendScore = useCallback((score: number) => {
     setSelectedLegendScores((prev) =>
@@ -431,7 +461,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const rawId = path.id;
       if (!rawId) return;
       const code = rawId.toUpperCase();
-      const className = getCountryClasses(code, selectedCode, selectedLegendScores, highlightOnlyCode);
+      const className = getCountryClasses(code, selectedCode, selectedLegendScores, highlightOnlyCode, compareCodes);
       path.setAttribute("class", className);
     });
 
@@ -453,10 +483,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       unfiltered.forEach((path) => svg.appendChild(path));
     }
 
-    // Selected country goes last so its outline is not covered by neighbours
-    const selectedPath = paths.find((path) => path.classList.contains("selected-country"));
-    if (selectedPath) svg.appendChild(selectedPath);
-  }, [selectedLegendScores, highlightOnlyCode, selectedCode, svgMarkup]);
+    // Selected countries go last so their outlines are not covered by neighbours
+    paths.filter((path) => path.classList.contains("selected-country")).forEach((path) => svg.appendChild(path));
+  }, [selectedLegendScores, highlightOnlyCode, selectedCode, compareCodes, svgMarkup]);
 
 
   // Capture SVG ref whenever markup changes (for zoom/pan transforms)
@@ -623,6 +652,14 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         const code = getCountryCode(target);
         const onMap = root.contains(target as Node);
         if (target instanceof SVGElement) target.blur();
+        // Comparing: a country goes into the comparison or comes out of it; the sea does nothing
+        if (compareCodesRef.current) {
+          if (code) {
+            onToggleCompareRef.current?.(code);
+            undoLastClick = { at: Date.now(), undo: () => onToggleCompareRef.current?.(code) };
+          }
+          return;
+        }
         const before = selectedCodeRef.current;
         const restore = () => (before ? onSelectCountry(before) : onClearSelectionRef.current?.());
         if (code) {
@@ -1438,6 +1475,119 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     return () => legend.removeEventListener("wheel", handleWheel);
   }, [topCountriesLegendOpen]);
 
+  // Shared look of the round-cornered buttons in the right-hand column
+  const controlButtonClass =
+    "ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer";
+
+  // Feedback: the visitor's email app opens with a subject and the page details filled in, so a
+  // bug report says where it happened. The link is built at the moment of the click.
+  const prepareFeedbackLink = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    const open = selectedCode ? getCountry(selectedCode).name : null;
+    const body = [
+      "Hi,",
+      "",
+      "(Write your feedback here, or describe what went wrong and what you expected.)",
+      "",
+      "",
+      "---",
+      `Page: ${window.location.href}`,
+      open ? `Country open: ${open}` : null,
+      `Screen: ${window.innerWidth} × ${window.innerHeight}`,
+      `Browser: ${navigator.userAgent}`,
+    ]
+      .filter((line) => line !== null)
+      .join("\n");
+    event.currentTarget.href = `mailto:${FEEDBACK_EMAIL}?subject=${encodeURIComponent(
+      "Bitcoin Friendliness Map: feedback"
+    )}&body=${encodeURIComponent(body)}`;
+  };
+  const feedbackIcon = (
+    <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+      <path strokeLinejoin="round" d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v8a2.5 2.5 0 01-2.5 2.5H10l-4.5 3.5V17h0A1.5 1.5 0 014 15.5z" />
+      <path strokeLinecap="round" d="M8.5 9h7M8.5 12.5h4.5" />
+    </svg>
+  );
+
+  // The buttons in the right-hand column: zoom in, zoom out, whole world, how it works, compare
+  // (and feedback on phones)
+  const renderControlButtons = (withFeedback: boolean) => (
+    <>
+        <button
+          onClick={handleZoomIn}
+          className={controlButtonClass}
+          aria-label="Zoom in (or press +)"
+          title="Zoom in"
+        >
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className={controlButtonClass}
+          aria-label="Zoom out (or press -)"
+          title="Zoom out"
+        >
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+          </svg>
+        </button>
+        <button
+          onClick={handleReset}
+          disabled={isDefaultView}
+          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
+          aria-label="Show the whole world (or press 0)"
+          title="Show the whole world"
+        >
+          {/* Globe: "back to the whole world" (circular arrows read as reload) */}
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
+          </svg>
+        </button>
+        <button
+          onClick={onOpenInfo}
+          className={`${controlButtonClass} ${infoOpen ? "ring-2 ring-zinc-400 dark:ring-zinc-500" : ""}`}
+          aria-label="How the map works and how it was scored"
+          aria-pressed={infoOpen}
+          title="How it works"
+        >
+          {/* "i" in a circle */}
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" d="M12 11v5.5" />
+            <circle cx="12" cy="7.75" r="0.6" fill="currentColor" />
+          </svg>
+        </button>
+        <button
+          onClick={onOpenCompare}
+          className={`${controlButtonClass} ${compareOpen ? "ring-2 ring-zinc-400 dark:ring-zinc-500" : ""}`}
+          aria-label="Compare countries"
+          aria-pressed={compareOpen}
+          title="Compare countries"
+        >
+          {/* Bars of different heights: scores side by side */}
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <rect x="4" y="10" width="4" height="10" rx="1" />
+            <rect x="10" y="4" width="4" height="16" rx="1" />
+            <rect x="16" y="13" width="4" height="7" rx="1" />
+          </svg>
+        </button>
+        {/* On phones the feedback button joins this column (the legends fill the bottom edge) */}
+        {withFeedback && (
+          <a
+            href={`mailto:${FEEDBACK_EMAIL}`}
+            onClick={prepareFeedbackLink}
+            className={`${controlButtonClass} sm:hidden`}
+            aria-label="Send feedback or report a bug"
+            title="Feedback"
+          >
+            {feedbackIcon}
+          </a>
+        )}
+    </>
+  );
+
   return (
     <>
       {/* Search bar, with the first-place card beside it where there is room and under it where
@@ -1446,7 +1596,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       <div
         data-map-search
         className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 sm:right-[4.5rem] ${
-          selectedCode ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
+          docked ? "md:right-[28.5rem] lg:right-[32.5rem]" : ""
         }`}
       >
         <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
@@ -1568,48 +1718,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
           (1rem from the top + 2.5rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
-        key={selectedCode ? "docked" : "free"}
+        key={docked ? "docked" : "free"}
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
-          selectedCode
+          docked
             ? "md:right-[25rem] lg:right-[29rem] map-controls-docked"
             : hasDocked
               ? "map-controls-free"
               : "map-controls-load"
         }`}
       >
-        <button
-          onClick={handleZoomIn}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-          aria-label="Zoom in (or press +)"
-          title="Zoom in (+)"
-        >
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-          aria-label="Zoom out (or press -)"
-          title="Zoom out (-)"
-        >
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
-          </svg>
-        </button>
-        <button
-          onClick={handleReset}
-          disabled={isDefaultView}
-          className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
-          aria-label="Show the whole world (or press 0)"
-          title="Show the whole world (0)"
-        >
-          {/* Globe: "back to the whole world" (circular arrows read as reload) */}
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-            <circle cx="12" cy="12" r="9" />
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
-          </svg>
-        </button>
+        {renderControlButtons(true)}
       </div>
       {/* While the panel slides out, a copy of the buttons leaves with it from their docked place
           (wide screens only), as the real ones slide in to the window edge from the left */}
@@ -1619,41 +1737,27 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           inert
           className="absolute top-4 right-[25rem] z-10 hidden flex-col gap-2 lg:right-[29rem] md:flex map-controls-exit"
         >
-            <button
-              onClick={handleZoomIn}
-              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              aria-label="Zoom in (or press +)"
-              title="Zoom in (+)"
-            >
-              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-            </button>
-            <button
-              onClick={handleZoomOut}
-              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
-              aria-label="Zoom out (or press -)"
-              title="Zoom out (-)"
-            >
-              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
-              </svg>
-            </button>
-            <button
-              onClick={handleReset}
-              disabled={isDefaultView}
-              className="ui-grain flex h-10 w-10 items-center justify-center bg-white/90 hover:bg-white border border-zinc-200/80 rounded-lg shadow-sm dark:bg-zinc-900 dark:border-zinc-700/55 dark:hover:bg-zinc-800 transition-[background-color,opacity] cursor-pointer disabled:cursor-default disabled:opacity-40"
-              aria-label="Show the whole world (or press 0)"
-              title="Show the whole world (0)"
-            >
-              {/* Globe: "back to the whole world" (circular arrows read as reload) */}
-              <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-                <circle cx="12" cy="12" r="9" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
-              </svg>
-            </button>
+          {renderControlButtons(false)}
         </div>
       )}
+
+      {/* Feedback and bug reports, bottom right (from sm up; on phones it sits in the button column) */}
+      <div
+        key={docked ? "feedback-docked" : "feedback-free"}
+        className={`absolute bottom-4 right-4 z-10 hidden sm:block ${
+          docked ? "md:right-[25rem] lg:right-[29rem] map-controls-docked" : hasDocked ? "map-controls-free" : "map-controls-load"
+        }`}
+      >
+        <a
+          href={`mailto:${FEEDBACK_EMAIL}`}
+          onClick={prepareFeedbackLink}
+          className="ui-grain flex h-10 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/90 pl-2 pr-3 text-base text-zinc-900 shadow-sm transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
+          aria-label="Send feedback or report a bug"
+        >
+          {feedbackIcon}
+          Feedback
+        </a>
+      </div>
 
       {/* Legends share one bottom row while both fit. Each is never narrower than its own content
           (min-w-max): a folded legend its title, arrow and padding, an open one its widest line.
@@ -1666,7 +1770,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         data-map-legends
         className={`absolute bottom-4 left-4 right-4 z-10 flex flex-wrap items-end gap-2 pointer-events-none sm:right-auto sm:flex-nowrap ${
           // Tablet widths with the panel docked leave room for only one legend column
-          selectedCode ? "md:max-lg:flex-col md:max-lg:items-start" : ""
+          docked ? "md:max-lg:flex-col md:max-lg:items-start" : ""
         }`}
       >
       {/* Legend overlay - minimized or expanded */}

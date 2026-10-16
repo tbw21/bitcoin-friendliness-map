@@ -15,6 +15,43 @@ export interface ModalProps {
   onSheetStateChange?: (state: "full" | "peek") => void;
   /** True while the details are on their way out (page.tsx plays the exit, then removes them) */
   closing?: boolean;
+  /** Opens the comparison with this country in it */
+  onCompare?: () => void;
+}
+
+// The Bitcoin Way's residency service. The link says where the visitor came from (the map, which
+// country, which spot in the panel), so leads can be traced back.
+const PLAN_B_URL = "https://www.thebitcoinway.com/services/plan-b-residency-programs";
+function planBLink(code: string, placement: string): string {
+  const params = new URLSearchParams({
+    utm_source: "bitcoin-friendliness-map",
+    utm_medium: "cta",
+    utm_campaign: "plan-b",
+    utm_content: `${code.toLowerCase()}-${placement}`,
+  });
+  return `${PLAN_B_URL}?${params}`;
+}
+
+// Call to action for the Plan B residency service: a short pitch and a link that opens the
+// service page in a new tab, so the map stays where it was
+function PlanBCta({ title, text, label, href, className = "" }: { title: string; text: string; label: string; href: string; className?: string }) {
+  return (
+    <div className={`rounded-lg border border-[#eb8500]/60 bg-[#eb8500]/10 p-3 ${className}`}>
+      <h3 className="mb-1 text-base font-semibold text-zinc-900 dark:text-white">{title}</h3>
+      <p className="mb-3 text-base leading-6 text-zinc-700 dark:text-zinc-300">{text}</p>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener"
+        className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#eb8500] px-4 text-base font-semibold text-zinc-950 transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900"
+      >
+        {label}
+        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
+    </div>
+  );
 }
 
 // Share of the screen height the sheet covers in its "peek" position. Keep in step with
@@ -22,7 +59,7 @@ export interface ModalProps {
 const SHEET_PEEK_FRACTION = 1 / 3;
 
 // Tinted background + border in the score's palette colour (badge and dimension cards)
-function scoreTint(score: number): React.CSSProperties {
+export function scoreTint(score: number): React.CSSProperties {
   return {
     // Strengths differ between light and dark mode (--tint-fill / --tint-border in map.css)
     backgroundColor: `color-mix(in srgb, var(--score-${score}) var(--tint-fill, 25%), transparent)`,
@@ -62,6 +99,7 @@ export const Modal: React.FC<ModalProps> = ({
   sheetState = "full",
   closing = false,
   onSheetStateChange,
+  onCompare,
 }) => {
   const country = getCountry(countryCode);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -299,6 +337,21 @@ export const Modal: React.FC<ModalProps> = ({
                   </svg>
                 </button>
               )}
+              {onCompare && (
+                <button
+                  type="button"
+                  onClick={onCompare}
+                  className="flex h-10 w-10 md:h-9 md:w-9 items-center justify-center rounded-lg border border-zinc-200/80 dark:border-zinc-700/55 bg-zinc-50 dark:bg-zinc-800 text-zinc-900 dark:text-white hover:opacity-80 transition-opacity cursor-pointer"
+                  aria-label="Compare with other countries"
+                  title="Compare"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <rect x="4" y="10" width="4" height="10" rx="1" />
+                    <rect x="10" y="4" width="4" height="16" rx="1" />
+                    <rect x="16" y="13" width="4" height="7" rx="1" />
+                  </svg>
+                </button>
+              )}
               {/* Close button, to the right of the others (on phones the sheet slides away, as when
                   it is dragged down) */}
               <button
@@ -374,7 +427,8 @@ export const Modal: React.FC<ModalProps> = ({
               const band = Math.min(5, Math.max(1, Math.round(area.score ?? 3)));
               const textClass = getScoreTextClass(band);
               return (
-                <div key={area.key} className="rounded-lg border p-3" style={scoreTint(band)}>
+                <React.Fragment key={area.key}>
+                <div className="rounded-lg border p-3" style={scoreTint(band)}>
                   <div className="mb-1 flex items-center justify-between gap-2">
                     <div className={`text-base font-semibold ${textClass}`}>{area.label}</div>
                     {area.score !== null && (
@@ -388,6 +442,17 @@ export const Modal: React.FC<ModalProps> = ({
                   </div>
                   <p className={`text-base ${textClass}`}>{area.text || "—"}</p>
                 </div>
+                {/* Panama, the top country, gets a second call to action right after "Moving here" */}
+                {area.key === "residency" && country.code === "PA" && (
+                  <PlanBCta
+                    className="sm:col-span-2 md:col-span-1"
+                    title="Make Panama your Plan B"
+                    text="We take care of your Panama residency from start to finish. You only send us the documents."
+                    label="See how it works"
+                    href={planBLink(country.code, "after-residency")}
+                  />
+                )}
+                </React.Fragment>
               );
             })}
           </div>
@@ -401,6 +466,16 @@ export const Modal: React.FC<ModalProps> = ({
                 {country.summary}
               </p>
             </div>
+          )}
+
+          {hasData && (
+            <PlanBCta
+              className="stagger-last"
+              title="Thinking about a second residency?"
+              text="We guide you through the whole process, one step at a time. You only provide the documents, and we handle the rest."
+              label="Explore Plan B residency"
+              href={planBLink(country.code, "end")}
+            />
           )}
         </div>
       </div>

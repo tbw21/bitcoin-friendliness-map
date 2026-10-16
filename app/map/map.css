@@ -686,9 +686,21 @@
   opacity: clamp(0, calc(1.4 - var(--map-zoom, 1) / 8), 1);
 }
 
-.map-container svg .chart-sea-label-small {
+.map-container svg .chart text.chart-sea-label.chart-sea-label-small {
   letter-spacing: 0.22em;
   opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(2 - var(--map-zoom, 1) / 25)), 1);
+}
+
+/* Phones show the whole world at about a third of the size, so the same lettering needs about
+   three times the zoom to reach the size it has on a wide screen: the fades follow that */
+@media (max-width: 639px) {
+  .map-container svg .chart text.chart-sea-label {
+    opacity: clamp(0, calc(1.4 - var(--map-zoom, 1) / 24), 1);
+  }
+
+  .map-container svg .chart text.chart-sea-label.chart-sea-label-small {
+    opacity: clamp(0, min(calc(var(--map-zoom, 1) / 6 - 0.6), calc(2 - var(--map-zoom, 1) / 75)), 1);
+  }
 }
 
 /* Score tints in the details panel (badge and the four cards): pale on the white panel of light
