@@ -13,6 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // Absolute addresses for the share image and links: SITE_URL is set where the app is hosted
+  // (on Webflow Cloud https://www.thebitcoinway.com); without it Next.js falls back to the
+  // deployment's own address (on Vercel) or localhost
+  ...(process.env.SITE_URL && { metadataBase: new URL(process.env.SITE_URL) }),
   title: "Bitcoin Friendliness Map",
   description: "Visualize bitcoin friendliness across locations",
 };

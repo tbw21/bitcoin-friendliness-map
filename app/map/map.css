@@ -398,19 +398,19 @@
    The files are in /public/fonts. */
 @font-face {
   font-family: "Kepler Display Semicondensed";
-  src: url("/fonts/KeplerStd-ScnDisp.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-ScnDisp.otf") format("opentype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Kepler Subhead Semicondensed";
-  src: url("/fonts/KeplerStd-MediumScnSubh.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-MediumScnSubh.otf") format("opentype");
   font-display: swap;
 }
 
 @font-face {
   font-family: "Kepler Subhead";
-  src: url("/fonts/KeplerStd-Subh.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-Subh.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -418,17 +418,20 @@
 
 @font-face {
   font-family: "Kepler Subhead Italic";
-  src: url("/fonts/KeplerStd-ItSubh.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-ItSubh.otf") format("opentype");
   font-style: italic; /* already an italic cut: stops the browser slanting it again */
   font-display: swap;
 }
 
 @font-face {
   font-family: "Kepler Caption Italic";
-  src: url("/fonts/KeplerStd-ItCapt.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-ItCapt.otf") format("opentype");
   font-style: italic; /* already an italic cut: stops the browser slanting it again */
   font-display: swap;
 }
+
+/* (Font files are referenced by relative path so the build bundles them and serves them under
+   the mount path on Webflow Cloud.) */
 
 /* Headings (the country's name in its details): the semicondensed display cut */
 .font-chart-display {
@@ -440,7 +443,7 @@
 /* The first-place card's country name: the subhead cut, extended (one step wider than normal) */
 @font-face {
   font-family: "Kepler Subhead Extended";
-  src: url("/fonts/KeplerStd-ExtSubh.otf") format("opentype");
+  src: url("../../public/fonts/KeplerStd-ExtSubh.otf") format("opentype");
   font-display: swap;
 }
 

@@ -44,3 +44,7 @@ next-env.d.ts
 # editor debug logs
 .cursor/
 
+
+# Webflow Cloud / OpenNext build output
+.open-next
+.wrangler

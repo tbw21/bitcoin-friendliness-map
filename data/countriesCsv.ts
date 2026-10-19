@@ -137,7 +137,7 @@ async function initializeCountries(): Promise<void> {
     try {
       // Fetch CSV from public directory
       // Use no-cache to ensure we always get the latest version
-      const response = await fetch("/bitcoin-living-index.csv", { cache: "no-store" });
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/bitcoin-living-index.csv`, { cache: "no-store" });
       if (!response.ok) {
         throw new Error(`Failed to load CSV: ${response.statusText}`);
       }
