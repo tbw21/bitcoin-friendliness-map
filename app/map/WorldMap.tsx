@@ -746,11 +746,10 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       }
     };
 
-    // Wheel input comes from three kinds of gesture, and all of them zoom (there are no zoom
-    // buttons; the map is moved by dragging):
-    //  - trackpad pinch (browsers report it as a wheel event with ctrlKey) -> follows the fingers
-    //  - trackpad two-finger slide up/down -> smooth zoom, in proportion to the slide
-    //  - mouse wheel -> a fixed step per notch
+    // Wheel input comes from three kinds of gesture:
+    //  - trackpad pinch (browsers report it as a wheel event with ctrlKey) -> zoom
+    //  - trackpad two-finger slide -> pan, like dragging
+    //  - mouse wheel -> zoom
     // A mouse wheel moves in whole notches (wheelDelta in multiples of 120, no sideways part);
     // anything else is treated as a trackpad. The verdict is held for the length of a gesture
     // so a fast swipe that happens to hit a notch-sized value does not flip to zooming.
@@ -781,8 +780,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       }
 
       const isPinch = event.ctrlKey;
-      const isTrackpadSlide = !isPinch && classifyWheel(event) === "trackpad";
-      if (isTrackpadSlide && event.deltaY === 0) return; // a purely sideways slide does nothing
+      if (!isPinch && classifyWheel(event) === "trackpad") {
+        // Two-finger slide: move the map with the fingers (limits are applied in getClampedPan)
+        setPanX((prev) => prev - event.deltaX);
+        setPanY((prev) => prev - event.deltaY);
+        return;
+      }
       
       const rect = containerRef.current.getBoundingClientRect();
       const currentZoom = zoomRef.current;
@@ -797,15 +800,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const svgX = (mouseX - currentPanX) / currentZoom;
       const svgY = (mouseY - currentPanY) / currentZoom;
       
-      // Pinch follows the fingers continuously, a two-finger slide zooms in proportion to how far
-      // it moves (slide up = zoom in, as with a mouse wheel), a mouse wheel zooms 5% per notch
-      const zoomFactor = isPinch
-        ? Math.exp(-event.deltaY * 0.01)
-        : isTrackpadSlide
-          ? Math.exp(-event.deltaY * 0.004)
-          : event.deltaY > 0
-            ? 0.95
-            : 1.05;
+      // Pinch follows the fingers continuously; a mouse wheel zooms 5% per notch
+      const zoomFactor = isPinch ? Math.exp(-event.deltaY * 0.01) : event.deltaY > 0 ? 0.95 : 1.05;
       const newZoom = Math.max(1, Math.min(getMaxZoom(containerRef.current), currentZoom * zoomFactor));
       
       // Adjust pan to keep the same SVG point under the mouse
@@ -1462,8 +1458,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   );
 
   // The buttons in the right-hand column: whole world, compare (and feedback on phones), and
-  // "how it works" at the bottom. Zooming is by scroll, pinch, double-click or the + and - keys,
-  // so there are no zoom buttons taking up room.
+  // "how it works" at the bottom. Zooming is by pinch, mouse wheel, double-click or the + and -
+  // keys, so there are no zoom buttons taking up room.
   const renderControlButtons = (withFeedback: boolean) => (
     <>
         <button
@@ -1719,12 +1715,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              {/* A cross in an outlined circle (the usual "remove this filter" mark). The circle
-                  is centred on the capitals, so it reads as centred on the word */}
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinecap="round" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.25" />
-                <path d="M6 6l4 4M10 6l-4 4" />
-              </svg>
             </button>
           )}
           <div
@@ -1824,12 +1814,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
               aria-label="Clear the score filter"
             >
               Clear
-              {/* A cross in an outlined circle (the usual "remove this filter" mark). The circle
-                  is centred on the capitals, so it reads as centred on the word */}
-              <svg className="h-4 w-4 shrink-0 [filter:drop-shadow(0_1px_2px_rgba(0,8,20,0.9))]" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinecap="round" aria-hidden="true">
-                <circle cx="8" cy="8" r="6.25" />
-                <path d="M6 6l4 4M10 6l-4 4" />
-              </svg>
             </button>
           )}
           <div className="flex items-center justify-between gap-1">
