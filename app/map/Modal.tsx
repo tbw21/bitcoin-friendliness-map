@@ -40,7 +40,9 @@ const PLAN_B_PHOTO = "https://cdn.prod.website-files.com/66ed44315e6f361d9b343f3
 
 function PlanBCta({ title, text, label, href, className = "" }: { title: string; text: string; label: string; href: string; className?: string }) {
   return (
-    <div className={`relative isolate overflow-hidden rounded-lg bg-[#001524] p-3 text-[#f2eee6] ${className}`}>
+    // Plain line breaking here: every line runs to the full width of the box (the app-wide
+    // text-wrap: pretty evens out the last lines, which in a short pitch reads as cut off)
+    <div className={`relative isolate overflow-hidden rounded-lg bg-[#001524] p-3 text-[#f2eee6] [text-wrap:wrap] ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={PLAN_B_PHOTO} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 -z-10 h-full w-full object-cover" />
       <div
