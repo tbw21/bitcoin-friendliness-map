@@ -746,10 +746,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       }
     };
 
-    // Wheel input comes from three kinds of gesture:
-    //  - trackpad pinch (browsers report it as a wheel event with ctrlKey) -> zoom
-    //  - trackpad two-finger slide -> pan, like dragging
-    //  - mouse wheel -> zoom
+    // Wheel input comes from three kinds of gesture, and all of them zoom (there are no zoom
+    // buttons; the map is moved by dragging):
+    //  - trackpad pinch (browsers report it as a wheel event with ctrlKey) -> follows the fingers
+    //  - trackpad two-finger slide up/down -> smooth zoom, in proportion to the slide
+    //  - mouse wheel -> a fixed step per notch
     // A mouse wheel moves in whole notches (wheelDelta in multiples of 120, no sideways part);
     // anything else is treated as a trackpad. The verdict is held for the length of a gesture
     // so a fast swipe that happens to hit a notch-sized value does not flip to zooming.
@@ -780,12 +781,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       }
 
       const isPinch = event.ctrlKey;
-      if (!isPinch && classifyWheel(event) === "trackpad") {
-        // Two-finger slide: move the map with the fingers (limits are applied in getClampedPan)
-        setPanX((prev) => prev - event.deltaX);
-        setPanY((prev) => prev - event.deltaY);
-        return;
-      }
+      const isTrackpadSlide = !isPinch && classifyWheel(event) === "trackpad";
+      if (isTrackpadSlide && event.deltaY === 0) return; // a purely sideways slide does nothing
       
       const rect = containerRef.current.getBoundingClientRect();
       const currentZoom = zoomRef.current;
@@ -800,8 +797,15 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       const svgX = (mouseX - currentPanX) / currentZoom;
       const svgY = (mouseY - currentPanY) / currentZoom;
       
-      // Pinch follows the fingers continuously; a mouse wheel zooms 5% per notch
-      const zoomFactor = isPinch ? Math.exp(-event.deltaY * 0.01) : event.deltaY > 0 ? 0.95 : 1.05;
+      // Pinch follows the fingers continuously, a two-finger slide zooms in proportion to how far
+      // it moves (slide up = zoom in, as with a mouse wheel), a mouse wheel zooms 5% per notch
+      const zoomFactor = isPinch
+        ? Math.exp(-event.deltaY * 0.01)
+        : isTrackpadSlide
+          ? Math.exp(-event.deltaY * 0.004)
+          : event.deltaY > 0
+            ? 0.95
+            : 1.05;
       const newZoom = Math.max(1, Math.min(getMaxZoom(containerRef.current), currentZoom * zoomFactor));
       
       // Adjust pan to keep the same SVG point under the mouse
