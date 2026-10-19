@@ -34,18 +34,27 @@ function planBLink(code: string, placement: string): string {
 
 // Call to action for the Plan B residency service: a short pitch and a link that opens the
 // service page in a new tab, so the map stays where it was
+// Background of the Plan B banner on thebitcoinway.com (.banner-webinar_*): the Panama photo from
+// the site's own CDN, under the same navy gradient, on the same navy base
+const PLAN_B_PHOTO = "https://cdn.prod.website-files.com/66ed44315e6f361d9b343f37/6ac756354bd6ed04e6960ae7_panama.avif";
+
 function PlanBCta({ title, text, label, href, className = "" }: { title: string; text: string; label: string; href: string; className?: string }) {
-  // The Bitcoin Way's colours (thebitcoinway.com): warm white box (--base-color-neutral--neutral-lighter),
-  // brand-orange pill button as on the website, text in the site's darkest navy
   return (
-    <div className={`rounded-lg bg-[#f2eee6] p-3 text-[#000f1a] ${className}`}>
+    <div className={`relative isolate overflow-hidden rounded-lg bg-[#001524] p-3 text-[#f2eee6] ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={PLAN_B_PHOTO} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 -z-10 h-full w-full object-cover" />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10"
+        style={{ background: "linear-gradient(90deg, rgba(0,21,36,0.92) 0%, rgba(0,21,36,0.8) 55%, rgba(0,21,36,0.6) 100%)" }}
+      />
       <h3 className="mb-1 text-base font-semibold">{title}</h3>
-      <p className="mb-3 text-base leading-6 text-[#2f2e2c]">{text}</p>
+      <p className="mb-3 text-base leading-6 opacity-80">{text}</p>
       <a
         href={href}
         target="_blank"
         rel="noopener"
-        className="inline-flex h-10 items-center gap-2 rounded-full bg-[#eb8500] px-5 text-base text-[#000f1a] transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f2eee6]"
+        className="inline-flex h-10 items-center gap-2 rounded-full bg-[#eb8500] px-5 text-base text-[#000f1a] transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#001524]"
       >
         {label}
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
