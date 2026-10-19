@@ -1,6 +1,8 @@
 // Country data: the Bitcoin Living Index, loaded from /public/bitcoin-living-index.csv
 // (made from the spreadsheet by scripts/import-living-index.py).
 
+import { withBasePath } from "@/lib/basePath";
+
 export type BitcoinScore = 1 | 2 | 3 | 4 | 5;
 
 /** One of the eight scored areas of a country */
@@ -137,7 +139,7 @@ async function initializeCountries(): Promise<void> {
     try {
       // Fetch CSV from public directory
       // Use no-cache to ensure we always get the latest version
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/bitcoin-living-index.csv`, { cache: "no-store" });
+      const response = await fetch(withBasePath("/bitcoin-living-index.csv"), { cache: "no-store" });
       if (!response.ok) {
         throw new Error(`Failed to load CSV: ${response.statusText}`);
       }

@@ -5,6 +5,7 @@ import { getCountry, getAllCountriesArray, initializeCountries, formatScore } fr
 import { legendEntries } from "@/data/legend";
 import { getFlagUrl, getFlagAltText } from "@/lib/flags";
 import FirstPlaceCard from "./FirstPlaceCard";
+import { withBasePath } from "@/lib/basePath";
 import "./map.css";
 
 export interface WorldMapProps {
@@ -405,7 +406,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   useEffect(() => {
     let isMounted = true;
 
-    fetch(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/world_equal_earth_nautical.svg`)
+    fetch(withBasePath("/world_equal_earth_nautical.svg"))
       .then((res) => (res.ok ? res.text() : Promise.reject(res.statusText)))
       .then((text) => {
         if (isMounted) {
