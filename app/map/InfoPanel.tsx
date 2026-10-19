@@ -66,8 +66,6 @@ function PanelButton({ label, children }: { label: string; children: React.React
   );
 }
 
-const ZOOM_IN = <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />;
-const ZOOM_OUT = <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />;
 const GLOBE = (
   <>
     <circle cx="12" cy="12" r="9" />
@@ -116,8 +114,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
     <>Click a country to read its details. Click it again, or the sea, to close them.</>,
     <>Double-click a country to zoom in on it. Double-click it again, or the sea, to zoom back out.</>,
     <>
-      Drag to move around, and scroll or pinch to zoom. <MapButton label="Zoom in" strokeWidth={2.5}>{ZOOM_IN}</MapButton>{" "}
-      and <MapButton label="Zoom out" strokeWidth={2.5}>{ZOOM_OUT}</MapButton> zoom too, and{" "}
+      Drag to move around, and scroll or pinch to zoom.{" "}
       <MapButton label="Show the whole world" strokeWidth={1.75}>{GLOBE}</MapButton> shows the whole world again.
     </>,
     <>

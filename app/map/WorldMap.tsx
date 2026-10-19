@@ -1281,57 +1281,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     return () => cancelAnimationFrame(rafId);
   }, [stepToCountryCode, onStepToCountryDone, zoomToPath]);
 
-  const handleZoomIn = () => {
-    if (!containerRef.current || !svgRef.current) {
-      return;
-    }
-    
-    const currentZoom = zoomRef.current;
-    const currentPanX = panXRef.current;
-    const currentPanY = panYRef.current;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const svgX = (centerX - currentPanX) / currentZoom;
-    const svgY = (centerY - currentPanY) / currentZoom;
-    
-    const newZoom = Math.min(getMaxZoom(containerRef.current), currentZoom * ZOOM_STEP);
-    const newPanX = centerX - svgX * newZoom;
-    const newPanY = centerY - svgY * newZoom;
-    
-    
-    startAnimation();
-    setZoom(newZoom);
-    setPanX(newPanX);
-    setPanY(newPanY);
-  };
-
-  const handleZoomOut = () => {
-    if (!containerRef.current || !svgRef.current) return;
-    
-    const currentZoom = zoomRef.current;
-    const currentPanX = panXRef.current;
-    const currentPanY = panYRef.current;
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const svgX = (centerX - currentPanX) / currentZoom;
-    const svgY = (centerY - currentPanY) / currentZoom;
-    
-    const newZoom = Math.max(1, currentZoom / ZOOM_STEP);
-    const newPanX = centerX - svgX * newZoom;
-    const newPanY = centerY - svgY * newZoom;
-    
-    startAnimation();
-    setZoom(newZoom);
-    setPanX(newPanX);
-    setPanY(newPanY);
-  };
-
   const handleReset = () => {
     // Back to the whole world also ends the "only this country" highlight left by the locate button
     onClearHighlightOnly?.();
@@ -1508,30 +1457,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     </svg>
   );
 
-  // The buttons in the right-hand column: zoom in, zoom out, whole world, how it works, compare
-  // (and feedback on phones)
+  // The buttons in the right-hand column: whole world, compare (and feedback on phones), and
+  // "how it works" at the bottom. Zooming is by scroll, pinch, double-click or the + and - keys,
+  // so there are no zoom buttons taking up room.
   const renderControlButtons = (withFeedback: boolean) => (
     <>
-        <button
-          onClick={handleZoomIn}
-          className={controlButtonClass}
-          aria-label="Zoom in (or press +)"
-          title="Zoom in"
-        >
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-          </svg>
-        </button>
-        <button
-          onClick={handleZoomOut}
-          className={controlButtonClass}
-          aria-label="Zoom out (or press -)"
-          title="Zoom out"
-        >
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
-          </svg>
-        </button>
         <button
           onClick={handleReset}
           disabled={isDefaultView}
@@ -1543,20 +1473,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
             <circle cx="12" cy="12" r="9" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3c2.5 2.5 3.75 5.5 3.75 9s-1.25 6.5-3.75 9c-2.5-2.5-3.75-5.5-3.75-9S9.5 5.5 12 3z" />
-          </svg>
-        </button>
-        <button
-          onClick={onOpenInfo}
-          className={`${controlButtonClass} ${infoOpen ? "ring-2 ring-zinc-400 dark:ring-zinc-500" : ""}`}
-          aria-label="How the map works and how it was scored"
-          aria-pressed={infoOpen}
-          title="How it works"
-        >
-          {/* "i" in a circle */}
-          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
-            <circle cx="12" cy="12" r="9" />
-            <path strokeLinecap="round" d="M12 11v5.5" />
-            <circle cx="12" cy="7.75" r="0.6" fill="currentColor" />
           </svg>
         </button>
         <button
@@ -1585,6 +1501,20 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             {feedbackIcon}
           </a>
         )}
+        <button
+          onClick={onOpenInfo}
+          className={`${controlButtonClass} ${infoOpen ? "ring-2 ring-zinc-400 dark:ring-zinc-500" : ""}`}
+          aria-label="How the map works and how it was scored"
+          aria-pressed={infoOpen}
+          title="How it works"
+        >
+          {/* "i" in a circle */}
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+            <circle cx="12" cy="12" r="9" />
+            <path strokeLinecap="round" d="M12 11v5.5" />
+            <circle cx="12" cy="7.75" r="0.6" fill="currentColor" />
+          </svg>
+        </button>
     </>
   );
 
