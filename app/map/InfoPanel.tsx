@@ -26,12 +26,15 @@ const WEIGHTS: Array<[string, number]> = [
 
 function Key({ children }: { children: React.ReactNode }) {
   return (
-    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded border border-zinc-300 bg-zinc-50 px-1 align-[-4px] font-sans text-sm font-semibold text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
+    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded border border-zinc-300 bg-zinc-50 px-1 align-[-0.08px] font-sans text-sm font-semibold text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
       {children}
     </kbd>
   );
 }
 
+/* Small copies of the real buttons, for the tips. Each is centred on the text's letters (halfway
+   between the cap height and the x-height, 4.9px above the baseline for 16px Helvetica Neue); the
+   vertical-align values differ because each kind of box finds its baseline differently. */
 /* Small copies of the real buttons, for the tips. The icons are the very same drawings (paths and
    stroke widths) as in WorldMap.tsx and Modal.tsx, in the same colours; only the size is smaller.
    Keep them in step when a button's icon changes. */
@@ -42,7 +45,7 @@ function MapButton({ label, children, strokeWidth }: { label: string; children: 
     <span
       role="img"
       aria-label={label}
-      className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200/80 bg-white/90 align-[-6px] shadow-sm dark:border-zinc-700/55 dark:bg-zinc-900"
+      className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200/80 bg-white/90 align-[-3.08px] shadow-sm dark:border-zinc-700/55 dark:bg-zinc-900"
     >
       <svg className="h-4 w-4 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={strokeWidth} aria-hidden="true">
         {children}
@@ -57,7 +60,7 @@ function PanelButton({ label, children }: { label: string; children: React.React
     <span
       role="img"
       aria-label={label}
-      className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200/80 bg-zinc-50 align-[-6px] text-zinc-900 dark:border-zinc-700/55 dark:bg-zinc-800 dark:text-white"
+      className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-zinc-200/80 bg-zinc-50 align-[-1.08px] text-zinc-900 dark:border-zinc-700/55 dark:bg-zinc-800 dark:text-white"
     >
       <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
         {children}
@@ -98,7 +101,7 @@ const CLOSE = <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6
 // The feedback button (bottom right): icon and word
 function FeedbackButton() {
   return (
-    <span className="inline-flex h-6 items-center gap-1 rounded-md border border-zinc-200/80 bg-white/90 pl-1 pr-2 align-[-6px] text-sm text-zinc-900 shadow-sm dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white">
+    <span className="inline-flex h-6 items-center gap-1 rounded-md border border-zinc-200/80 bg-white/90 pl-1 pr-2 align-[-3.08px] text-sm text-zinc-900 shadow-sm dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white">
       <svg className="h-4 w-4 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
         {SPEECH}
       </svg>
