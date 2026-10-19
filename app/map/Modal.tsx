@@ -35,15 +35,17 @@ function planBLink(code: string, placement: string): string {
 // Call to action for the Plan B residency service: a short pitch and a link that opens the
 // service page in a new tab, so the map stays where it was
 function PlanBCta({ title, text, label, href, className = "" }: { title: string; text: string; label: string; href: string; className?: string }) {
+  // The Bitcoin Way's colours (thebitcoinway.com): warm white box (--base-color-neutral--neutral-lighter),
+  // brand-orange pill button as on the website, text in the site's darkest navy
   return (
-    <div className={`rounded-lg border border-[#eb8500]/60 bg-[#eb8500]/10 p-3 ${className}`}>
-      <h3 className="mb-1 text-base font-semibold text-zinc-900 dark:text-white">{title}</h3>
-      <p className="mb-3 text-base leading-6 text-zinc-700 dark:text-zinc-300">{text}</p>
+    <div className={`rounded-lg bg-[#f2eee6] p-3 text-[#000f1a] ${className}`}>
+      <h3 className="mb-1 text-base font-semibold">{title}</h3>
+      <p className="mb-3 text-base leading-6 text-[#2f2e2c]">{text}</p>
       <a
         href={href}
         target="_blank"
         rel="noopener"
-        className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#eb8500] px-4 text-base font-semibold text-zinc-950 transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-zinc-900"
+        className="inline-flex h-10 items-center gap-2 rounded-full bg-[#eb8500] px-5 text-base text-[#000f1a] transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f2eee6]"
       >
         {label}
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">

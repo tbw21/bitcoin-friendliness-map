@@ -689,9 +689,10 @@
   opacity: clamp(0, calc(1.4 - var(--map-zoom, 1) / 8), 1);
 }
 
+/* Small seas: tighter lettering. On wide screens they fade out with the big ones; on phones they
+   fade in as you zoom (below). */
 .map-container svg .chart text.chart-sea-label.chart-sea-label-small {
   letter-spacing: 0.22em;
-  opacity: clamp(0, min(calc(var(--map-zoom, 1) / 2 - 0.6), calc(2 - var(--map-zoom, 1) / 25)), 1);
 }
 
 /* Phones show the whole world at about a third of the size, so the same lettering needs about
