@@ -7,12 +7,15 @@ import Award from "./Award";
 // ranks first in the data): no country reaches the top colour band on its own merit, so the
 // leader gets named: a card with the award and the country's name, 40px tall like the search bar
 // and the zoom buttons
-// (screen readers get "the most Bitcoin-friendly country" spelled out). Clicking it opens it.
+// (screen readers get "the most Bitcoin-friendly country" spelled out). Clicking it opens it;
+// clicking it again while it is open closes it and shows the whole world.
 export default function FirstPlaceCard({
   name,
+  isOpen = false,
   onOpen,
 }: {
   name: string;
+  isOpen?: boolean;
   onOpen: () => void;
 }) {
   return (
@@ -22,7 +25,11 @@ export default function FirstPlaceCard({
         type="button"
         onClick={onOpen}
         className="ui-grain flex h-10 min-w-0 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/95 px-3 text-left shadow-lg backdrop-blur transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900/95 dark:hover:bg-zinc-900 cursor-pointer"
-        aria-label={`${name}, the most Bitcoin-friendly country. Open details`}
+        aria-label={
+          isOpen
+            ? `${name}, the most Bitcoin-friendly country. Close details and show the whole world`
+            : `${name}, the most Bitcoin-friendly country. Open details`
+        }
       >
         {/* The award is a little taller than the capitals of the name and shares their centre (the
             name is moved down 2.4px: Kepler sits its capitals above the middle of the line).
