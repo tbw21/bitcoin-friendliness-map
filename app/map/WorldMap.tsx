@@ -682,10 +682,20 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       }
     };
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    // Keyboard shortcuts for zoom: + and - zoom, 0 shows the whole world. They work wherever the
+    // focus is on the page (the map rarely has it), except while typing in a field, and they leave
+    // the browser's own Cmd/Ctrl shortcuts (page zoom) alone.
+    const handleShortcutKey = (event: KeyboardEvent) => {
+      if (event.metaKey || event.ctrlKey || event.altKey) return;
       const target = event.target;
-      
-      // Keyboard shortcuts for zoom (work anywhere)
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return;
+      }
       if (event.key === "+" || event.key === "=") {
         event.preventDefault();
         if (!containerRef.current || !svgRef.current) return;
@@ -735,8 +745,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         setPanY(0);
         return;
       }
-      
-      // Enter/Space to select country (only when focused on a path)
+    };
+
+    // Enter/Space opens the country that has keyboard focus on the map
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target;
       if (!(target instanceof SVGPathElement)) return;
       const rawId = target.id;
       if (!rawId) return;
@@ -1045,6 +1058,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     root.addEventListener("touchmove", handleTouchMove, { passive: false });
     root.addEventListener("touchend", handleTouchEnd);
     svg.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keydown", handleShortcutKey);
 
     listenersAttachedRef.current = true;
 
@@ -1060,6 +1074,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       root.removeEventListener("touchmove", handleTouchMove);
       root.removeEventListener("touchend", handleTouchEnd);
       svg.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", handleShortcutKey);
       listenersAttachedRef.current = false;
     };
   }, [svgMarkup, onSelectCountry, startAnimation, stopAnimation]);
@@ -1589,11 +1604,13 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           screens, of the docked buttons left of the details panel). */}
       <div
         data-map-search
-        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 sm:right-[4.5rem] ${
+        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 pointer-events-none sm:right-[4.5rem] ${
           docked ? "dock:right-[calc(var(--panel-w)+4.5rem)]" : ""
         }`}
       >
-        <div className="ui-grain relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
+        {/* The row itself lets taps through (on phones it spans the width and would cover the
+            button column under the search bar); only the search field and the card take them */}
+        <div className="ui-grain pointer-events-auto relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
           <input
             ref={searchInputRef}
             type="text"
