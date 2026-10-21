@@ -1,4 +1,4 @@
-// The path the app is served under (on Webflow Cloud the mount path, e.g. "/map"; locally and on
+// The path the app is served under (on Webflow Cloud the mount path, e.g. "/apps/map"; locally and on
 // Vercel nothing). Files the browser code fetches itself (the map, the data) must carry it.
 //
 // Next.js builds its own basePath setting into the code as __NEXT_ROUTER_BASEPATH. That is the
