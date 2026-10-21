@@ -1453,7 +1453,9 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   const feedbackIcon = (
     <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
       <path strokeLinejoin="round" d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v8a2.5 2.5 0 01-2.5 2.5H10l-4.5 3.5V17h0A1.5 1.5 0 014 15.5z" />
-      <path strokeLinecap="round" d="M8.5 9h7M8.5 12.5h4.5" />
+      {/* Exclamation mark, centred in the bubble: "tell us / report a problem" rather than "chat" */}
+      <path strokeLinecap="round" d="M12 7v4" />
+      <circle cx="12" cy="13.75" r="0.9" fill="currentColor" stroke="none" />
     </svg>
   );
 

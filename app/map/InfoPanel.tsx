@@ -85,7 +85,9 @@ const BARS = (
 const SPEECH = (
   <>
     <path strokeLinejoin="round" d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v8a2.5 2.5 0 01-2.5 2.5H10l-4.5 3.5V17h0A1.5 1.5 0 014 15.5z" />
-    <path strokeLinecap="round" d="M8.5 9h7M8.5 12.5h4.5" />
+    {/* Exclamation mark, centred in the bubble: "tell us / report a problem" rather than "chat" */}
+      <path strokeLinecap="round" d="M12 7v4" />
+      <circle cx="12" cy="13.75" r="0.9" fill="currentColor" stroke="none" />
   </>
 );
 const PREVIOUS = <path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5M12 19l-7-7 7-7" />;
