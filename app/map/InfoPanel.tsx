@@ -24,9 +24,24 @@ const WEIGHTS: Array<[string, number]> = [
   ["Stability", 8],
 ];
 
-function Key({ children }: { children: React.ReactNode }) {
+// The + and - glyphs sit below the middle of the line in Helvetica, so on the keys they are drawn
+// as strokes, centred in the key
+const PLUS_KEY = (
+  <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
+    <path d="M6 1.5v9M1.5 6h9" />
+  </svg>
+);
+const MINUS_KEY = (
+  <svg className="h-3 w-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" aria-hidden="true">
+    <path d="M1.5 6h9" />
+  </svg>
+);
+
+// A key cap. Keys drawn as strokes (with a label) find their baseline differently from keys with
+// a letter, hence the two vertical-align values; both centre the key on the text like the buttons
+function Key({ children, label }: { children: React.ReactNode; label?: string }) {
   return (
-    <kbd className="inline-flex h-6 min-w-6 items-center justify-center rounded border border-zinc-300 bg-zinc-50 px-1 align-[-0.08px] font-sans text-sm font-semibold text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200">
+    <kbd aria-label={label} className={`inline-flex h-6 min-w-6 items-center justify-center rounded border border-zinc-300 bg-zinc-50 px-1 ${label ? "align-[-1.08px]" : "align-[-0.08px]"} font-sans text-sm font-semibold text-zinc-700 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200`}>
       {children}
     </kbd>
   );
@@ -147,7 +162,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
       sends us your feedback or a bug report by email.
     </>,
     <>
-      On a keyboard, <Key>+</Key> and <Key>−</Key> zoom, <Key>0</Key> shows the whole world, the left and right arrow keys
+      On a keyboard, <Key label="+">{PLUS_KEY}</Key> and <Key label="−">{MINUS_KEY}</Key> zoom, <Key>0</Key> shows the whole world, the left and right arrow keys
       step between countries, and <Key>Esc</Key> closes what is open.
     </>,
     <>The page address includes the open country or comparison, so you can bookmark it or send it to someone.</>,

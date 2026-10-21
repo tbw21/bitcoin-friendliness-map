@@ -20,7 +20,7 @@ export default function FirstPlaceCard({
 }) {
   return (
     // On phones it sits under the search bar and leaves room for the zoom buttons at the right edge
-    <div className="flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
+    <div className="pointer-events-auto flex max-w-[calc(100%-3.25rem)] sm:max-w-full">
       <button
         type="button"
         onClick={onOpen}
