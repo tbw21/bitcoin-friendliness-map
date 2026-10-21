@@ -32,7 +32,7 @@ export default function SiteNavbar() {
   }, []);
 
   return (
-    <div ref={ref} className="relative z-[60] shrink-0">
+    <div ref={ref} className="site-navbar relative z-[60] shrink-0">
       <DevLinkProvider>
         <Navbar bannerWebinarVisibility={false} />
       </DevLinkProvider>

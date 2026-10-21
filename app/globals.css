@@ -64,6 +64,19 @@ body {
   overflow: hidden;
 }
 
-* {
+/* The app's own typeface, everywhere except inside the site navbar (that keeps the Webflow site's) */
+*:not(.site-navbar, .site-navbar *) {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* The site navbar (exported from Webflow with DevLink) inherits from the page what the Webflow
+   site's own <body> gives it there: DevLink scopes the site's styles to the component, so its body
+   rule cannot reach it. These are the values of that rule (webflow/css/tags.css), so the navbar
+   looks exactly as it does on thebitcoinway.com. */
+.site-navbar {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-color--text-primary);
+  text-wrap: wrap;
 }
