@@ -258,18 +258,18 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none dock:items-stretch dock:justify-end"
+      className="fixed inset-x-0 bottom-0 top-[var(--nav-h,0px)] z-50 flex items-end justify-center pointer-events-none dock:items-stretch dock:justify-end"
       role="dialog"
       aria-label={`Details for ${formattedName}`}
     >
       {/* Fixed height on small screens so the sheet's top edge stays put whatever the content length;
           only the section under the header scrolls. The top edge sits 8px below the search bar,
           where the first-place card and the zoom buttons start, so the sheet covers them:
-          16px + 40px bar + 8px = 64px (4rem). Keep in step with the search bar's position and
-          height in WorldMap.tsx. */}
+          16px + 40px bar + 8px = 64px (4rem) below the site navbar (--nav-h, set by SiteNavbar.tsx).
+          Keep in step with the search bar's position and height in WorldMap.tsx. */}
       <div
         ref={panelRef}
-        className={`ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter dock:h-auto dock:w-[var(--panel-w)] dock:rounded-none dock:border-y-0 dock:border-l ${closing ? "country-panel-exit" : ""}`}
+        className={`ui-grain flex flex-col w-full h-[calc(100dvh-var(--nav-h,0px)-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter dock:h-auto dock:w-[var(--panel-w)] dock:rounded-none dock:border-y-0 dock:border-l ${closing ? "country-panel-exit" : ""}`}
         onClick={(event) => event.stopPropagation()}
         data-country-panel
         data-sheet-state={sheetState}

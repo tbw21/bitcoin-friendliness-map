@@ -81,13 +81,13 @@ export const SidePanel: React.FC<SidePanelProps> = ({ label, title, onClose, clo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none dock:items-stretch dock:justify-end"
+      className="fixed inset-x-0 bottom-0 top-[var(--nav-h,0px)] z-50 flex items-end justify-center pointer-events-none dock:items-stretch dock:justify-end"
       role="dialog"
       aria-label={label}
     >
       <div
         ref={panelRef}
-        className={`ui-grain flex flex-col w-full h-[calc(100dvh-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter dock:h-auto dock:w-[var(--panel-w)] dock:rounded-none dock:border-y-0 dock:border-l ${
+        className={`ui-grain flex flex-col w-full h-[calc(100dvh-var(--nav-h,0px)-4rem)] rounded-t-2xl border border-b-0 border-x-0 border-zinc-200/80 dark:border-zinc-700/55 bg-white dark:bg-zinc-900 shadow-xl overflow-hidden relative pointer-events-auto country-panel-enter dock:h-auto dock:w-[var(--panel-w)] dock:rounded-none dock:border-y-0 dock:border-l ${
           closing ? "country-panel-exit" : ""
         }`}
         onClick={(event) => event.stopPropagation()}

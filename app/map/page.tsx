@@ -6,6 +6,7 @@ import WorldMap from "./WorldMap";
 import Modal from "./Modal";
 import ComparePanel, { MAX_COMPARE } from "./ComparePanel";
 import InfoPanel from "./InfoPanel";
+import SiteNavbar from "./SiteNavbar";
 import { paletteVars } from "@/data/palettes";
 
 // Film grain: fine specks in many colours, drawn as their own dots laid straight on top (no
@@ -183,7 +184,8 @@ export default function MapPage() {
         ["--ui-grain-opacity" as string]: GRAIN_STRENGTH,
       }}
     >
-      <main className="map-stage flex flex-1 flex-col overflow-hidden">
+      <SiteNavbar />
+      <main className="map-stage relative flex min-h-0 flex-1 flex-col overflow-hidden">
         <WorldMap
           selectedCode={selectedCode}
           onSelectCountry={handleSelectCountry}

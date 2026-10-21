@@ -1,0 +1,151 @@
+:root {
+  --background-color--background-primary: var(
+    --base-color-brand--blue-max-dark
+  );
+  --text-color--text-primary: var(--base-color-neutral--neutral-lighter);
+  --link-color--link-primary: var(--text-color--text-primary);
+  --base-color-brand--blue-darkest: #001524;
+  --text-color--text-secondary: var(--base-color-neutral--neutral-dark);
+  --text-color--text-alternate: var(--base-color-neutral--neutral-darker);
+  --base-color-brand--orange: #eb8500;
+  --base-color-neutral--white: var(--base-color-brand--white);
+  --border-color--border-alternate: var(--base-color-neutral--neutral-darker);
+  --background-color--background-alternate: var(
+    --base-color-neutral--neutral-light
+  );
+  --border-color--border-primary: var(--base-color-neutral--neutral-light);
+  --link-color--link-alternate: var(--base-color-neutral--neutral-darker);
+  --base-color-brand--black: var(--base-color-neutral--neutral-darkest);
+  --base-color-neutral--black: var(--base-color-brand--black);
+  --border-radius--8: 0.5rem;
+  --4: 0.25rem;
+  --base-color-neutral--neutral-light: #ebe5db;
+  --base-color-neutral--neutral-darker: #2f2e2c;
+  --text-color--text-success: var(--base-color-system--success-green);
+  --background-color--background-success: var(
+    --base-color-system--success-green-light
+  );
+  --background-color--background-error: var(
+    --base-color-system--error-red-light
+  );
+  --text-color--text-error: var(--base-color-system--error-red);
+  --navbar-height: 5rem;
+  --background-color--navbar-background: var(
+    --background-color--background-secondary
+  );
+  --background-color--background-secondary: var(
+    --base-color-brand--blue-darkest
+  );
+  --base-color-brand--blue-grey: #b9bec2;
+  --border-color--border-blue: hsla(213.46153846153845, 42.86%, 16.1%, 1);
+  --base-color-brand--blue-max-dark: #000f1a;
+  --background-color--background-tertiary: var(--base-color-brand--blue-darker);
+  --base-color-neutral--neutral-lightest: #f7f5f0;
+  --base-color-brand--blue-dark: #0b2545;
+  --base-color-brand--blue-darker: #001e33;
+  --background-color--navbar-background-hover: var(
+    --base-color-brand--blue-darker
+  );
+  --base-color-brand--white: var(--base-color-neutral--neutral-lighter);
+  --_apps---sizes--radius: 0.5rem;
+  --border-color--border-secondary: var(--base-color-brand--blue-grey);
+  --background-color--background-tertiary-50: hsla(
+    204.70588235294122,
+    100%,
+    10%,
+    0.5
+  );
+  --graphics--graphics-dark: #141515;
+  --transparent: hsla(37.50000000000008, 0%, 100%, 0);
+  --button-icon-spacing: 0.5rem;
+  --_comparison-colors---comparison-color: var(--base-color-system--error-red);
+  --text-color--text-inactive: #4e5255;
+  --spacing--gutter: 2rem;
+  --base-color-system--error-red: #741313;
+  --base-color-neutral--neutral-lighter: #f2eee6;
+  --base-color-neutral--neutral-dark: #8c8a85;
+  --base-color-system--error-orange: hsla(29, 90.27%, 38.89%, 1);
+  --graphics--graphics-light: #eee8dd;
+  --2: 0.125rem;
+  --base-color-brand--blue-lighter: #8da9c4;
+  --base-color-brand--blue-light: #134074;
+  --base-color-brand--blue: #13315c;
+  --base-color-neutral--neutral: #c2bfb9;
+  --base-color-neutral--neutral-dark-darker: hsla(
+    42.857142857142684,
+    2.56%,
+    39%,
+    1
+  );
+  --base-color-neutral--neutral-darkest: #0f0f0e;
+  --base-color-system--success-green: #217413;
+  --base-color-system--success-green-light: #e3f0e0;
+  --base-color-system--error-red-light: #f3e9e9;
+  --link-color--link-secondary: var(--text-color--text-secondary);
+  --border-radius--16: 1rem;
+  --_apps---charts--chart-1: #d57100;
+  --_apps---charts--chart-2: #e39c5e;
+  --_apps---charts--chart-3: #ca5d00;
+  --_apps---charts--chart-4: #c06c06;
+  --_apps---charts--chart-5: #a24c00;
+  --_apps---charts--chart-1-dark: #eb8500;
+  --_apps---charts--chart-2-dark: #ffc081;
+  --_apps---charts--chart-3-dark: #cf6100;
+  --_apps---charts--chart-4-dark: #ffac63;
+  --_apps---charts--chart-5-dark: #b25b00;
+  --_apps---colors--background: #e2e5e6;
+  --_apps---colors--foreground: #0c0a05;
+  --_apps---colors--card: #ffffff;
+  --_apps---colors--card-foreground: #060606;
+  --_apps---colors--popover: #d7d7d7;
+  --_apps---colors--popover-foreground: #060606;
+  --_apps---colors--primary: #eb8500;
+  --_apps---colors--primary-foreground: #140b05;
+  --_apps---colors--secondary: #fcd1af;
+  --_apps---colors--secondary-foreground: #120c08;
+  --_apps---colors--muted: #dedede;
+  --_apps---colors--muted-foreground: #666263;
+  --_apps---colors--accent: #cacaca;
+  --_apps---colors--accent-foreground: #0d0d0d;
+  --_apps---colors--destructive: #d5455f;
+  --_apps---colors--border: #d1d1d1;
+  --_apps---colors--input: #d4d4d4;
+  --_apps---colors--ring: #da8f4a;
+  --_apps---colors--background-dark: #000f19;
+  --_apps---colors--foreground-dark: #f4f9fc;
+  --_apps---colors--card-dark: #10242f;
+  --_apps---colors--card-foreground-dark: #f4f9fc;
+  --_apps---colors--popover-dark: #10242f;
+  --_apps---colors--popover-foreground-dark: #f4f9fc;
+  --_apps---colors--primary-dark: #eb8500;
+  --_apps---colors--primary-foreground-dark: #140b05;
+  --_apps---colors--secondary-dark: #3f1600;
+  --_apps---colors--secondary-foreground-dark: #fef7f2;
+  --_apps---colors--muted-dark: #000710;
+  --_apps---colors--muted-foreground-dark: #95989b;
+  --_apps---colors--accent-dark: #373737;
+  --_apps---colors--accent-foreground-dark: #f8f8f8;
+  --_apps---colors--destructive-dark: #ff6d82;
+  --_apps---colors--border-dark: #ebe5db;
+  --_apps---colors--input-dark: #ffffff;
+  --_apps---colors--ring-dark: #da8f4a;
+  --_apps---sidebar--sidebar: #dedede;
+  --_apps---sidebar--sidebar-foreground: #060606;
+  --_apps---sidebar--sidebar-primary: #eb8500;
+  --_apps---sidebar--sidebar-primary-foreground: #140b05;
+  --_apps---sidebar--sidebar-accent: #cacaca;
+  --_apps---sidebar--sidebar-accent-foreground: #0d0d0d;
+  --_apps---sidebar--sidebar-border: #d1d1d1;
+  --_apps---sidebar--sidebar-ring: #da8f4a;
+  --_apps---sidebar--sidebar-dark: #031621;
+  --_apps---sidebar--sidebar-foreground-dark: #f4f9fc;
+  --_apps---sidebar--sidebar-primary-dark: #eb8500;
+  --_apps---sidebar--sidebar-primary-foreground-dark: #140b05;
+  --_apps---sidebar--sidebar-accent-dark: #373737;
+  --_apps---sidebar--sidebar-accent-foreground-dark: #f8f8f8;
+  --_apps---sidebar--sidebar-border-dark: #ffffff;
+  --_apps---sidebar--sidebar-ring-dark: #da8f4a;
+  --_apps---typography--heading-font: Kepler-Std-Condensed-Display, sans-serif;
+  --_apps---typography--body-font: Helvetica, Arial, sans-serif;
+  --_apps---typography--button-font: Kepler-Std-Condensed-Display, sans-serif;
+}
