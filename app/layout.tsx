@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { BASE_PATH } from "@/lib/basePath";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,11 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 // Where the map lives for search engines and link previews: SITE_URL is set where the app is
-// hosted (on Webflow Cloud https://www.thebitcoinway.com) and BASE_URL is the mount path Webflow
-// Cloud builds with (/tools/map). Without SITE_URL (locally, on Vercel) Next.js falls back to the
-// deployment's own address and no canonical link is given.
+// hosted (on Webflow Cloud https://www.thebitcoinway.com), and the mount path (/tools/map) is the
+// basePath Next.js builds in (BASE_PATH; Webflow Cloud's build does not hand BASE_URL to the app's
+// own code). Without SITE_URL (locally, on Vercel) Next.js falls back to the deployment's own
+// address and no canonical link is given.
 const siteUrl = process.env.SITE_URL?.replace(/\/$/, "");
-const canonicalUrl = siteUrl ? `${siteUrl}${process.env.BASE_URL || ""}` : undefined;
+const canonicalUrl = siteUrl ? `${siteUrl}${BASE_PATH}` : undefined;
 
 const title = "Bitcoin Friendliness Map | The Bitcoin Way";
 const description =
