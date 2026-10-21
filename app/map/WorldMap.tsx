@@ -872,8 +872,49 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       };
     };
 
+    // Momentum after a one-finger drag: when the finger lifts while still moving, the map glides on
+    // at the finger's speed and slows down, as a trackpad slide does (the browser gives trackpads
+    // this on its own; for touch the app does it). Speed is measured over the last 100ms of the
+    // drag; a finger that came to rest before lifting gives no glide.
+    let panSamples: Array<{ x: number; y: number; t: number }> = [];
+    let inertiaFrame: number | null = null;
+    const stopInertia = () => {
+      if (inertiaFrame !== null) cancelAnimationFrame(inertiaFrame);
+      inertiaFrame = null;
+    };
+    const startInertia = () => {
+      const now = performance.now();
+      const recent = panSamples.filter((sample) => now - sample.t <= 100);
+      panSamples = [];
+      if (recent.length < 2 || now - recent[recent.length - 1].t > 50) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const first = recent[0];
+      const last = recent[recent.length - 1];
+      const span = Math.max(1, last.t - first.t);
+      let vx = (last.x - first.x) / span; // px per ms
+      let vy = (last.y - first.y) / span;
+      if (Math.hypot(vx, vy) < 0.1) return;
+      let previous = now;
+      const step = (time: number) => {
+        const dt = Math.min(32, time - previous);
+        previous = time;
+        const dx = vx * dt;
+        const dy = vy * dt;
+        setPanX((prev) => prev + dx);
+        setPanY((prev) => prev + dy);
+        // Friction close to iOS scrolling: the speed halves about every 230ms
+        const friction = Math.pow(0.997, dt);
+        vx *= friction;
+        vy *= friction;
+        inertiaFrame = Math.hypot(vx, vy) > 0.02 ? requestAnimationFrame(step) : null;
+      };
+      inertiaFrame = requestAnimationFrame(step);
+    };
+
     const handleTouchStart = (event: TouchEvent) => {
       stopAnimation();
+      stopInertia();
+      panSamples = [];
       lastTouchTimeRef.current = Date.now();
       if (hoveredCountryRef.current !== null) setHoveredCountry(null);
       root.removeAttribute("data-hovering");
@@ -970,6 +1011,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         setPanX((prev) => prev + deltaX);
         setPanY((prev) => prev + deltaY);
         lastPanPointRef.current = { x: touch.clientX, y: touch.clientY };
+        panSamples.push({ x: touch.clientX, y: touch.clientY, t: performance.now() });
+        if (panSamples.length > 20) panSamples.shift();
       }
     };
 
@@ -982,10 +1025,12 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         if (event.touches.length === 1) {
           const touch = event.touches[0];
           lastPanPointRef.current = { x: touch.clientX, y: touch.clientY };
+          panSamples = []; // the speed of a pinch is not a drag speed
         }
       }
       if (event.touches.length === 0) {
         isPanningRef.current = false;
+        startInertia();
       }
     };
 
@@ -1009,6 +1054,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       window.removeEventListener("mouseup", handleMouseUp);
       root.removeEventListener("wheel", handleWheel);
       root.removeEventListener("dblclick", handleDoubleClick);
+      stopInertia();
       root.removeEventListener("touchstart", handleTouchStart);
       root.removeEventListener("touchmove", handleTouchMove);
       root.removeEventListener("touchend", handleTouchEnd);
