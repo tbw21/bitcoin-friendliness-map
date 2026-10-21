@@ -1458,6 +1458,21 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     </svg>
   );
 
+  // The feedback button of the bottom row (from sm up): icon and word, or the bare icon when the
+  // row is narrow
+  const renderFeedbackButton = () => (
+    <a
+      href={`mailto:${FEEDBACK_EMAIL}`}
+      onClick={prepareFeedbackLink}
+      className="ui-grain flex h-10 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/90 pl-2 pr-3 text-base text-zinc-900 shadow-sm transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 @max-[41rem]:w-10 @max-[41rem]:justify-center @max-[41rem]:px-0"
+      aria-label="Send feedback or report a bug"
+      title="Feedback"
+    >
+      {feedbackIcon}
+      <span className="@max-[41rem]:sr-only">Feedback</span>
+    </a>
+  );
+
   // The buttons in the right-hand column: whole world, compare (and feedback on phones), and
   // "how it works" at the bottom. Zooming is by pinch, mouse wheel, double-click or the + and -
   // keys, so there are no zoom buttons taking up room.
@@ -1920,21 +1935,30 @@ export const WorldMap: React.FC<WorldMapProps> = ({
 
       </div>
 
-      {/* Feedback and bug reports */}
-      {/* (When even the bare icon has no room beside the legends it takes its own line, on the right) */}
-      <div className="ml-auto hidden shrink-0 pointer-events-auto sm:block">
-        <a
-          href={`mailto:${FEEDBACK_EMAIL}`}
-          onClick={prepareFeedbackLink}
-          className="ui-grain flex h-10 items-center gap-2 rounded-lg border border-zinc-200/80 bg-white/90 pl-2 pr-3 text-base text-zinc-900 shadow-sm transition-colors hover:bg-white dark:border-zinc-700/55 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800 @max-[41rem]:w-10 @max-[41rem]:justify-center @max-[41rem]:px-0"
-          aria-label="Send feedback or report a bug"
-          title="Feedback"
+      {/* Feedback and bug reports. It moves with the docked panel exactly like the button column:
+          re-mounted on dock/undock, it slides in with the panel, and on closing a copy leaves with
+          the panel's slide-out while the real one slides in to the window edge.
+          (When even the bare icon has no room beside the legends it takes its own line, on the right) */}
+      <div
+        key={docked ? "feedback-docked" : "feedback-free"}
+        className={`ml-auto hidden shrink-0 pointer-events-auto sm:block ${
+          docked ? "map-controls-docked" : hasDocked ? "map-controls-free" : "map-controls-load"
+        }`}
+      >
+        {renderFeedbackButton()}
+      </div>
+      </div>
+      {/* The leaving copy, in a row of the same width as the docked one, so the container query
+          gives it the same look (word or bare icon) */}
+      {panelClosing && (
+        <div
+          aria-hidden="true"
+          inert
+          className="@container absolute bottom-4 left-4 right-[calc(var(--panel-w)+1rem)] z-10 hidden justify-end pointer-events-none dock:flex"
         >
-          {feedbackIcon}
-          <span className="@max-[41rem]:sr-only">Feedback</span>
-        </a>
-      </div>
-      </div>
+          <div className="map-controls-exit">{renderFeedbackButton()}</div>
+        </div>
+      )}
 
       {/* Tooltip */}
       {hoveredCountryData && (
