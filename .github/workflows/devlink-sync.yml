@@ -1,0 +1,71 @@
+# Nightly copy of the Webflow site's components (the navbar on the map) into the app.
+#
+# Exports the components from the Webflow site with DevLink into webflow/. When anything changed,
+# it checks that the app still builds and pushes the change to the webflow-cloud branch, which
+# Webflow Cloud deploys to thebitcoinway.com/tools/map. When nothing changed it does nothing.
+#
+# Needs one repository secret, WEBFLOW_DEVLINK_TOKEN: a Webflow site API token with read-only
+# access (Webflow: Site settings > Apps & integrations > API access). It can only read the site.
+#
+# Scheduled workflows only run from the repository's default branch, so this file has to be on
+# main as well; it always works on webflow-cloud. Run it by hand from the Actions tab
+# ("Run workflow") after changing the navbar in Webflow.
+name: Sync navbar from Webflow
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # every night at 03:00 UTC (05:00 Swedish summer time)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: devlink-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: webflow-cloud
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export components from Webflow
+        env:
+          WEBFLOW_API_TOKEN: ${{ secrets.WEBFLOW_DEVLINK_TOKEN }}
+        # The CLI version is pinned: the export format is what the app was built against
+        run: npx --yes @webflow/webflow-cli@2.7.1 devlink export --no-input --skip-update-check --site 66ed44315e6f361d9b343f37
+
+      - name: Anything changed?
+        id: diff
+        run: |
+          git add -A webflow webflow.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "The components are the same as in Webflow; nothing to do."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --cached --stat
+          fi
+
+      - name: Check that the app still builds
+        if: steps.diff.outputs.changed == 'true'
+        run: npx next build
+
+      - name: Commit and push (Webflow Cloud deploys it)
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Navbar: nightly DevLink export from Webflow"
+          git push origin webflow-cloud
