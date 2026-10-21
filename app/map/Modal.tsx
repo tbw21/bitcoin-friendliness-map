@@ -19,17 +19,19 @@ export interface ModalProps {
   onCompare?: () => void;
 }
 
-// The Bitcoin Way's residency service. The link says where the visitor came from (the map, which
-// country, which spot in the panel), so leads can be traced back.
+// The Bitcoin Way's residency service. The link carries no UTM tags on purpose: it goes from one
+// page of the site to another, and the site's attribution code (public/site-scripts/
+// tbw-attribution.js) would record internal UTMs as a new last touch, overwriting where the visitor
+// really came from (the ad or search that brought them to the map). Clicks are counted as events:
+//  - Plausible: custom event "Plan B CTA click" with the props country and placement (tagged-events
+//    classes on the link)
+//  - Google Tag Manager: dataLayer event plan_b_cta_click with cta_country and cta_placement
 const PLAN_B_URL = "https://www.thebitcoinway.com/services/plan-b-residency-programs";
-function planBLink(code: string, placement: string): string {
-  const params = new URLSearchParams({
-    utm_source: "bitcoin-friendliness-map",
-    utm_medium: "cta",
-    utm_campaign: "plan-b",
-    utm_content: `${code.toLowerCase()}-${placement}`,
-  });
-  return `${PLAN_B_URL}?${params}`;
+
+declare global {
+  interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+  }
 }
 
 // Call to action for the Plan B residency service: a short pitch and a link that opens the
@@ -38,7 +40,21 @@ function planBLink(code: string, placement: string): string {
 // the site's own CDN, under the same navy gradient, on the same navy base
 const PLAN_B_PHOTO = "https://cdn.prod.website-files.com/66ed44315e6f361d9b343f37/6ac756354bd6ed04e6960ae7_panama.avif";
 
-function PlanBCta({ title, text, label, href, className = "" }: { title: string; text: string; label: string; href: string; className?: string }) {
+function PlanBCta({
+  title,
+  text,
+  label,
+  country,
+  placement,
+  className = "",
+}: {
+  title: string;
+  text: string;
+  label: string;
+  country: string;
+  placement: "after-residency" | "end";
+  className?: string;
+}) {
   return (
     // Plain line breaking here: every line runs to the full width of the box (the app-wide
     // text-wrap: pretty evens out the last lines, which in a short pitch reads as cut off)
@@ -53,10 +69,14 @@ function PlanBCta({ title, text, label, href, className = "" }: { title: string;
       <h3 className="mb-1 text-base font-semibold">{title}</h3>
       <p className="mb-3 text-base leading-6 opacity-80">{text}</p>
       <a
-        href={href}
+        href={PLAN_B_URL}
+        onClick={() => {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: "plan_b_cta_click", cta_country: country, cta_placement: placement });
+        }}
         target="_blank"
         rel="noopener"
-        className="inline-flex h-10 items-center gap-2 rounded-full bg-[#eb8500] px-5 text-base text-[#000f1a] transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#001524]"
+        className={`plausible-event-name=Plan+B+CTA+click plausible-event-country=${country} plausible-event-placement=${placement} inline-flex h-10 items-center gap-2 rounded-full bg-[#eb8500] px-5 text-base text-[#000f1a] transition-colors hover:bg-[#f59a1f] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#eb8500] focus-visible:ring-offset-2 focus-visible:ring-offset-[#001524]`}
       >
         {label}
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
@@ -461,7 +481,8 @@ export const Modal: React.FC<ModalProps> = ({
                     title="Make Panama your Plan B"
                     text="We take care of your Panama residency from start to finish. You only send us the documents."
                     label="See how it works"
-                    href={planBLink(country.code, "after-residency")}
+                    country={country.code}
+                    placement="after-residency"
                   />
                 )}
                 </React.Fragment>
@@ -486,7 +507,8 @@ export const Modal: React.FC<ModalProps> = ({
               title="Thinking about a second residency?"
               text="We guide you through the whole process, one step at a time. You only provide the documents, and we handle the rest."
               label="Explore Plan B residency"
-              href={planBLink(country.code, "end")}
+              country={country.code}
+              placement="end"
             />
           )}
         </div>

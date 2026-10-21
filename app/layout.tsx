@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BASE_PATH } from "@/lib/basePath";
+import SiteTracking from "./SiteTracking";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -62,6 +63,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
+        {/* The site's analytics and attribution (live site only) */}
+        <SiteTracking />
       </body>
     </html>
   );
