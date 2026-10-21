@@ -1343,6 +1343,57 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     return () => cancelAnimationFrame(rafId);
   }, [stepToCountryCode, onStepToCountryDone, zoomToPath]);
 
+  const handleZoomIn = () => {
+    if (!containerRef.current || !svgRef.current) {
+      return;
+    }
+    
+    const currentZoom = zoomRef.current;
+    const currentPanX = panXRef.current;
+    const currentPanY = panYRef.current;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const svgX = (centerX - currentPanX) / currentZoom;
+    const svgY = (centerY - currentPanY) / currentZoom;
+    
+    const newZoom = Math.min(getMaxZoom(containerRef.current), currentZoom * ZOOM_STEP);
+    const newPanX = centerX - svgX * newZoom;
+    const newPanY = centerY - svgY * newZoom;
+    
+    
+    startAnimation();
+    setZoom(newZoom);
+    setPanX(newPanX);
+    setPanY(newPanY);
+  };
+
+  const handleZoomOut = () => {
+    if (!containerRef.current || !svgRef.current) return;
+    
+    const currentZoom = zoomRef.current;
+    const currentPanX = panXRef.current;
+    const currentPanY = panYRef.current;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    const svgX = (centerX - currentPanX) / currentZoom;
+    const svgY = (centerY - currentPanY) / currentZoom;
+    
+    const newZoom = Math.max(1, currentZoom / ZOOM_STEP);
+    const newPanX = centerX - svgX * newZoom;
+    const newPanY = centerY - svgY * newZoom;
+    
+    startAnimation();
+    setZoom(newZoom);
+    setPanX(newPanX);
+    setPanY(newPanY);
+  };
+
   const handleReset = () => {
     // Back to the whole world also ends the "only this country" highlight left by the locate button
     onClearHighlightOnly?.();
@@ -1536,11 +1587,30 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     </a>
   );
 
-  // The buttons in the right-hand column: whole world, compare, "how it works", and on phones
-  // feedback at the bottom. Zooming is by pinch, mouse wheel, double-click or the + and -
-  // keys, so there are no zoom buttons taking up room.
+  // The buttons in the right-hand column: zoom in, zoom out (for anyone whose scrolling or pinching
+  // does not zoom), whole world, compare, "how it works", and on phones feedback at the bottom
   const renderControlButtons = (withFeedback: boolean) => (
     <>
+        <button
+          onClick={handleZoomIn}
+          className={controlButtonClass}
+          aria-label="Zoom in (or press +)"
+          title="Zoom in"
+        >
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className={controlButtonClass}
+          aria-label="Zoom out (or press -)"
+          title="Zoom out"
+        >
+          <svg className="h-6 w-6 text-zinc-700 dark:text-zinc-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+          </svg>
+        </button>
         <button
           onClick={handleReset}
           disabled={isDefaultView}
