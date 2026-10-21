@@ -477,7 +477,9 @@
 }
 
 .map-container {
-  --chart-frame: 12;
+  /* 12 units out to the middle of the outer frame line, plus half its 1.4-unit width, so the line's
+     outer edge (not its middle) sits on the margin, flush with the search bar and buttons */
+  --chart-frame: 12.7;
   --chart-margin: 16px;
   padding: min(
     calc((var(--chart-margin) + var(--chart-frame) * 0.1cqw) / (1 + var(--chart-frame) * 0.002)),
