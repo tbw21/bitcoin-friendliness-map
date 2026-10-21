@@ -1475,8 +1475,8 @@ export const WorldMap: React.FC<WorldMapProps> = ({
     </a>
   );
 
-  // The buttons in the right-hand column: whole world, compare (and feedback on phones), and
-  // "how it works" at the bottom. Zooming is by pinch, mouse wheel, double-click or the + and -
+  // The buttons in the right-hand column: whole world, compare, "how it works", and on phones
+  // feedback at the bottom. Zooming is by pinch, mouse wheel, double-click or the + and -
   // keys, so there are no zoom buttons taking up room.
   const renderControlButtons = (withFeedback: boolean) => (
     <>
@@ -1507,18 +1507,6 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             <rect x="16" y="13" width="4" height="7" rx="1" />
           </svg>
         </button>
-        {/* On phones the feedback button joins this column (the legends fill the bottom edge) */}
-        {withFeedback && (
-          <a
-            href={`mailto:${FEEDBACK_EMAIL}`}
-            onClick={prepareFeedbackLink}
-            className={`${controlButtonClass} sm:hidden`}
-            aria-label="Send feedback or report a bug"
-            title="Feedback"
-          >
-            {feedbackIcon}
-          </a>
-        )}
         <button
           onClick={onOpenInfo}
           className={`${controlButtonClass} ${infoOpen ? "ring-2 ring-zinc-400 dark:ring-zinc-500" : ""}`}
@@ -1533,6 +1521,18 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             <circle cx="12" cy="7.75" r="0.6" fill="currentColor" />
           </svg>
         </button>
+        {/* On phones the feedback button joins this column (the legends fill the bottom edge) */}
+        {withFeedback && (
+          <a
+            href={`mailto:${FEEDBACK_EMAIL}`}
+            onClick={prepareFeedbackLink}
+            className={`${controlButtonClass} sm:hidden`}
+            aria-label="Send feedback or report a bug"
+            title="Feedback"
+          >
+            {feedbackIcon}
+          </a>
+        )}
     </>
   );
 
@@ -1638,9 +1638,19 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
 
         {topCountries[0] && (
+          // A first click opens the leader and zooms to it; clicking again while its details are
+          // open closes them and goes back to the whole world
           <FirstPlaceCard
             name={topCountries[0].name}
-            onOpen={() => handleSelectCountry(topCountries[0].code)}
+            isOpen={selectedCode === topCountries[0].code}
+            onOpen={() => {
+              if (selectedCode === topCountries[0].code) {
+                onClearSelection?.();
+                handleReset();
+              } else {
+                handleSelectCountry(topCountries[0].code);
+              }
+            }}
           />
         )}
       </div>
