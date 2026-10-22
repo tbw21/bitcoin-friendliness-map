@@ -4,7 +4,7 @@
   },
   "devlink-export": {
     "rootDir": "./webflow",
-    "components": ".*",
+    "components": "^Navbar$",
     "componentGroups": ".*",
     "ts": false,
     "cssScopes": true,
