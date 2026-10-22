@@ -7,6 +7,7 @@ import Modal from "./Modal";
 import ComparePanel, { MAX_COMPARE } from "./ComparePanel";
 import InfoPanel from "./InfoPanel";
 import SiteNavbar from "./SiteNavbar";
+import ButtonTooltips from "./ButtonTooltips";
 import { paletteVars } from "@/data/palettes";
 
 // Film grain: fine specks in many colours, drawn as their own dots laid straight on top (no
@@ -185,6 +186,7 @@ export default function MapPage() {
       }}
     >
       <SiteNavbar />
+      <ButtonTooltips />
       <main className="map-stage relative flex min-h-0 flex-1 flex-col overflow-hidden">
         <WorldMap
           selectedCode={selectedCode}

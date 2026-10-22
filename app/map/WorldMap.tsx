@@ -1810,6 +1810,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           (1rem from the top + 2.5rem search bar + 0.5rem); from sm up they line up with the bar */}
       <div
         key={docked ? "docked" : "free"}
+        data-tip-side="left"
         className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
           docked
             ? "dock:right-[calc(var(--panel-w)+1rem)] map-controls-docked"

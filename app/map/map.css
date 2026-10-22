@@ -154,6 +154,37 @@
   }
 }
 
+/* Button labels (ButtonTooltips.tsx): the same look as the country hover label */
+.button-tooltip {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  max-width: 16rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgb(0 0 0 / 0.8);
+  color: #fff;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.button-tooltip[data-open] {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 120ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .button-tooltip[data-open] {
+    transition: none;
+  }
+}
+
 /* ---- Motion ---- */
 
 /* Registered so the zoom factor can be interpolated: keeps border widths steady during animated zooms */
