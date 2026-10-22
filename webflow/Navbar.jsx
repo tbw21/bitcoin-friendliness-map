@@ -323,43 +323,16 @@ export function Navbar({
                             </Paragraph>
                           </Block>
                         </Link>
-                        <Link
-                          block={"inline"}
-                          button={false}
-                          className={"nav_dropdown-link"}
-                          id={
-                            "w-node-bf0140f6-6af5-a5b8-245d-acb025c48bc1-b4e86f40"
-                          }
-                          options={{
+                        <NavDropdownLink
+                          headingText={"Bitcoin Wallet Recovery"}
+                          iconEmbedSmall={<IconsSeedPhrase />}
+                          link={{
                             href: "/services/bitcoin-wallet-recovery",
                           }}
-                        >
-                          <Block className={"nav_icon-wrapper"} tag={"div"}>
-                            <DOM
-                              className={"icon-embed-small"}
-                              fill={"none"}
-                              tag={"svg"}
-                              viewBox={"0 0 30 30"}
-                              width={"100%"}
-                              xmlns={"http://www.w3.org/2000/svg"}
-                            >
-                              <IconsSeedPhrase />
-                            </DOM>
-                          </Block>
-                          <Block className={"nav_text-wrapper"} tag={"div"}>
-                            <Block
-                              className={"nav_dropdown-link-header"}
-                              tag={"div"}
-                            >
-                              {"Bitcoin Wallet Recovery"}
-                            </Block>
-                            <Paragraph className={"menu-items-subheader"}>
-                              {
-                                "Can't access your Bitcoin wallet? Don't worry, we'll help you."
-                              }
-                            </Paragraph>
-                          </Block>
-                        </Link>
+                          subheaderText={
+                            "Can't access your Bitcoin wallet? Don't worry, we'll help you."
+                          }
+                        />
                         <Link
                           block={"inline"}
                           button={false}
