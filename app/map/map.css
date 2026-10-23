@@ -425,17 +425,11 @@
    section styles it. Line widths divide by --map-zoom so they stay hairlines at any zoom.
    ===================================================================================== */
 
-/* Brand typeface: Kepler (Adobe). Five cuts, each used at the size it was drawn for.
+/* Brand typeface: Kepler (Adobe). Four cuts, each used at the size it was drawn for.
    The files are in /public/fonts. */
 @font-face {
   font-family: "Kepler Display Semicondensed";
   src: url("../../public/fonts/KeplerStd-ScnDisp.otf") format("opentype");
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Kepler Subhead Semicondensed";
-  src: url("../../public/fonts/KeplerStd-MediumScnSubh.otf") format("opentype");
   font-display: swap;
 }
 
@@ -480,13 +474,6 @@
 
 .font-chart-title {
   font-family: "Kepler Subhead Extended", "Kepler Subhead", "Kepler Std", Georgia, "Times New Roman", serif;
-  font-weight: 400;
-}
-
-/* Small headings (legend titles): the subhead cut (drawn for this size), semicondensed. Kepler has no regular
-   weight in this width, so it is the medium one */
-.font-chart-legend {
-  font-family: "Kepler Subhead Semicondensed", "Kepler Std", Georgia, "Times New Roman", serif;
   font-weight: 400;
 }
 
