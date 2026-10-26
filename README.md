@@ -34,8 +34,8 @@ smaller screens they open as a bottom sheet that can be dragged down to close.
 | 4 | Friendly | Clear rules and an overall supportive stance toward Bitcoin. |
 | 5 | Very Friendly | Highly supportive environment with strong industry presence. |
 
-A country's colour follows the whole-number part of its score: 1.8 is shown as band 1 and
-4.9 as band 4, so only a clean 5 gets the "Very Friendly" colour. The exact score is shown
+A country's colour follows the whole-number part of its score (1.8 is shown as band 1 and
+4.3 as band 4), except that "Very Friendly" starts at 4.5, so 4.6 is band 5. The exact score is shown
 in the country details, and countries are ranked by it.
 
 ## Getting started

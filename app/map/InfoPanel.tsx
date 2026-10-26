@@ -191,7 +191,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
           The averages are then scaled so that the best country{best ? ` (${best.name})` : ""} scores 5.0, and every other
           country is shown relative to it.
         </p>
-        <p className="mb-2 text-zinc-700 dark:text-zinc-300">The colour on the map is the whole-number part of the overall score:</p>
+        <p className="mb-2 text-zinc-700 dark:text-zinc-300">The colour on the map is the whole-number part of the overall score, except that Very Friendly starts at 4.5:</p>
         <ul className="mb-3 space-y-2">
           {legendEntries.map((entry) => (
             <li key={entry.score} className="flex items-start gap-3">

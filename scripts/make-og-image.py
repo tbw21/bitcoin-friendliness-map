@@ -31,11 +31,11 @@ scores = re.findall(r'"(#[0-9A-Fa-f]{6})"', palette[palette.index("SCORE_COLORS"
 no_data = re.search(r'NO_DATA_COLOR = "(#[0-9A-Fa-f]{6})"', palette).group(1)
 map_bg = re.search(r'MAP_BACKGROUND = "(#[0-9A-Fa-f]{6})"', palette).group(1)
 
-# ---- each country's band: whole-number part of the overall score, as on the map
+# ---- each country's band: whole-number part of the overall score, and 5 from 4.5 up, as on the map
 band = {}
 for row in csv.DictReader(open(os.path.join(root, "public", "bitcoin-living-index.csv"), encoding="utf-8"), delimiter=";"):
     s = row["overall_score"].strip()
-    band[row["alpha_2"].strip().upper()] = min(5, max(1, math.floor(float(s)))) if s else None
+    band[row["alpha_2"].strip().upper()] = (5 if float(s) >= 4.5 else min(5, max(1, math.floor(float(s))))) if s else None
 
 svg = read("public", "world_equal_earth_nautical.svg")
 svg = svg[svg.index("<svg"):]

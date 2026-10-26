@@ -31,7 +31,7 @@ export const AREAS: Array<{ key: string; label: string }> = [
 export interface CountryData {
   code: string;
   name: string;
-  /** Colour band: the whole-number part of the overall score (below 1 counts as band 1) */
+  /** Colour band: the whole-number part of the overall score (below 1 counts as band 1), and 5 from 4.5 up */
   score: BitcoinScore;
   /** Overall score from the CSV (e.g. 3.42); null when the CSV value is missing or not numeric */
   scoreExact: number | null;
@@ -91,6 +91,9 @@ function optionalText(raw: string | null | undefined): string | null {
   const trimmed = (raw ?? "").trim();
   return trimmed === "" || trimmed === "—" ? null : trimmed;
 }
+
+/** Lowest overall score in band 5, Very Friendly (the other bands start at whole numbers) */
+export const VERY_FRIENDLY_FROM = 4.5;
 
 function clampBand(n: number): BitcoinScore {
   if (n <= 1) return 1;
@@ -176,8 +179,9 @@ async function initializeCountries(): Promise<void> {
         const scoreExact = parseDecimal(cols[iScore]);
         const capital = optionalText(cols[iCapital]);
 
-        // Colour band is the whole-number part of the score: 1.8 is band 1, and only a clean 5 is band 5
-        const band = clampBand(scoreExact !== null ? Math.floor(scoreExact) : 3);
+        // Colour band is the whole-number part of the score (1.8 is band 1), except that Very
+        // Friendly starts at 4.5
+        const band = clampBand(scoreExact !== null ? (scoreExact >= VERY_FRIENDLY_FROM ? 5 : Math.floor(scoreExact)) : 3);
 
         out[code] = {
           code,
