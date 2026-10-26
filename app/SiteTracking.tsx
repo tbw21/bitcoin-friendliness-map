@@ -15,10 +15,10 @@ import Script from "next/script";
  *  - The Bitcoin Way's attribution: first and last touch kept 90 days in __tbw_attrib_v1
  *  - Typeform links get the attribution added when clicked
  *  - Referral programme: ?ref= is kept as referrer_id
- *  - Meta Pixel 1203203501666278 (the site has it on its marketing pages)
  *
  * Left out, because the map has nothing for them to act on: the exit-intent popup scripts, the
- * Zapier form-submit forwarder and the Cal booking reader (contact page only).
+ * Zapier form-submit forwarder and the Cal booking reader (contact page only). The Meta Pixel on
+ * some of the site's pages is left out too: The Bitcoin Way does not use Meta's tools.
  *
  * Only rendered on the live site (SITE_URL is https://www.thebitcoinway.com), so local builds and
  * previews do not send data to these services.
@@ -73,24 +73,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <Script id="tbw-plausible-queue" strategy="afterInteractive">
         {`window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }`}
       </Script>
-
-      {/* Meta Pixel */}
-      <Script id="tbw-meta-pixel" strategy="afterInteractive">
-        {`!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1203203501666278');
-fbq('track', 'PageView');`}
-      </Script>
-      <noscript>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img height="1" width="1" style={{ display: "none" }} alt="" src="https://www.facebook.com/tr?id=1203203501666278&ev=PageView&noscript=1" />
-      </noscript>
 
       {/* ActiveCampaign site tracking */}
       <Script id="tbw-activecampaign" strategy="afterInteractive">
