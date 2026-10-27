@@ -30,7 +30,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: Helvetica, Arial, sans-serif;
   --font-mono: var(--font-geist-mono);
 }
 
@@ -55,7 +55,7 @@ body {
   color: var(--foreground);
   /* No lone words on the last line of a paragraph or list item */
   text-wrap: pretty;
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 #__next {
@@ -66,7 +66,7 @@ body {
 
 /* The app's own typeface, everywhere except inside the site navbar (that keeps the Webflow site's) */
 *:not(.site-navbar, .site-navbar *) {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 /* The site navbar (exported from Webflow with DevLink) inherits from the page what the Webflow

@@ -48,7 +48,7 @@ function Key({ children, label }: { children: React.ReactNode; label?: string })
 }
 
 /* Small copies of the real buttons, for the tips. Each is centred on the text's letters (halfway
-   between the cap height and the x-height, 4.9px above the baseline for 16px Helvetica Neue); the
+   between the cap height and the x-height, about 4.9px above the baseline for 16px Helvetica); the
    vertical-align values differ because each kind of box finds its baseline differently. */
 /* Small copies of the real buttons, for the tips. The icons are the very same drawings (paths and
    stroke widths) as in WorldMap.tsx and Modal.tsx, in the same colours; only the size is smaller.
@@ -218,7 +218,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
         <ul className="space-y-2">
           {tips.map((tip, i) => (
             <li key={i} className="flex gap-3 text-zinc-700 dark:text-zinc-300">
-              <span className="mt-[10px] h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-500" aria-hidden="true" />
+              <span className="mt-[9.5px] h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-400 dark:bg-zinc-500" aria-hidden="true" />
               <span>{tip}</span>
             </li>
           ))}
