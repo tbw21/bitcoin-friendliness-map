@@ -1610,12 +1610,12 @@ var Tn = O((vn) => {
           if (k?.reuse && E.has(b(R)) && !I(k)) return;
         }
         if (Ms(T, e, (R) => t(R, {}, n), v)) return;
-        let C = new Map(T.map((R) => [R, tu(e.get(R), r, v)])),
+        let M = new Map(T.map((R) => [R, tu(e.get(R), r, v)])),
           P = new Map();
-        for (let R of i) for (let [k, F] of C.get(R) ?? []) P.set(k, F);
+        for (let R of i) for (let [k, F] of M.get(R) ?? []) P.set(k, F);
         if (P.size > 0) {
           let R = T.find((F) => {
-            let H = C.get(F);
+            let H = M.get(F);
             if (H.size !== P.size) return !1;
             for (let [Q, V] of H) if (P.get(Q) !== V) return !1;
             return !0;
@@ -3100,7 +3100,7 @@ var ti = O((Gn) => {
             let A = v.filter((R) => !y.has(R));
             if (A.length === 0) return;
             let I = [],
-              C = 1 / 0,
+              M = 1 / 0,
               P = c ? a.utils.distribute(c) : void 0;
             A.forEach((R, k) => {
               if ((g(R), E === "none")) return;
@@ -3109,10 +3109,10 @@ var ti = O((Gn) => {
                 return;
               }
               let F = P ? P(k, R, A) : 0;
-              F < C && (C = F), I.push({ el: R, offset: F });
+              F < M && (M = F), I.push({ el: R, offset: F });
             });
             for (let { el: R, offset: k } of I) {
-              let F = k - C;
+              let F = k - M;
               if (F > 0) {
                 let H = a.delayedCall(F, () => {
                   if ((h.delete(R), E === "play" && S?.isCrossAxisClipped(R))) {
@@ -3147,11 +3147,11 @@ var ti = O((Gn) => {
           for (let A of v) {
             let I = A.trigger;
             if (!I) continue;
-            let C = p.get(I);
-            if (!C) continue;
-            this.scrollTriggers.set(C, A);
+            let M = p.get(I);
+            if (!M) continue;
+            this.scrollTriggers.set(M, A);
             let P = this.host.getSub(e, I);
-            P && Bn(P, C);
+            P && Bn(P, M);
           }
           let E = o[0],
             _ = E ? p.get(E) : void 0;
@@ -3165,11 +3165,11 @@ var ti = O((Gn) => {
                 markers: !0,
                 id: A,
               },
-              C = i.create(I);
-            this.scrollTriggers.set(A, C),
+              M = i.create(I);
+            this.scrollTriggers.set(A, M),
               this.markerFocus.register(A, t),
               this.addDisposer(_, () => {
-                C.kill(),
+                M.kill(),
                   this.scrollTriggers.delete(A),
                   this.markerFocus.unregister(A);
               });
@@ -4085,12 +4085,12 @@ var oi = O((qn) => {
                   (E.modifiers = { ...E.modifiers, ...A.modifiers }),
                 ri(l, A);
               let I = Object.keys(A.from || {}).length > 0,
-                C = Object.keys(A.to || {}).length > 0,
+                M = Object.keys(A.to || {}).length > 0,
                 P = e.tt ?? 0;
-              if (P === 0 && !C) continue;
+              if (P === 0 && !M) continue;
               if (P === 1 && !I) continue;
-              if (P === 2 && !I && !C) continue;
-              if (P === 3 && !C) continue;
+              if (P === 2 && !I && !M) continue;
+              if (P === 3 && !M) continue;
               (f?.length && t.length === 0) ||
                 (P === 1
                   ? r.from(t, { ...E, ...A.from }, m)
@@ -4115,8 +4115,8 @@ var oi = O((qn) => {
               let A = S.createCustomTween(r, e, b, E, _, m || 0, {
                 triggerElement: a ?? null,
                 timelineRole: c,
-                subscribeChannel: (I, C) =>
-                  this.subscribeChannel(o, I, a ?? null, C),
+                subscribeChannel: (I, M) =>
+                  this.subscribeChannel(o, I, a ?? null, M),
                 flagVolatileValues: (I) => ri(l, I),
                 animation: this.animation,
               });
@@ -4748,8 +4748,8 @@ var ui = O((nr) => {
             if (li(b))
               (v = b.role), (E = this.getTimelineIdsForRole(t, b.role));
             else {
-              let { assignedGroupId: I, assignedTimelineRole: C } = e[1];
-              (v = I === null || I ? void 0 : C),
+              let { assignedGroupId: I, assignedTimelineRole: M } = e[1];
+              (v = I === null || I ? void 0 : M),
                 (E = this.resolveAssignedTimelineIds(e, t));
             }
             let _ = () =>
@@ -4763,10 +4763,10 @@ var ui = O((nr) => {
                   t.triggers.some(
                     (P) => P !== e && (0, Jn.hasPageLevelTriggerWon)(P)
                   ),
-                C =
+                M =
                   (E?.length === 0 && v === void 0) ||
                   c?.behavior === "dont-animate";
-              if ((!I && !C && (0, Jn.claimPageLevelTriggerWin)(e), I || _())) {
+              if ((!I && !M && (0, Jn.claimPageLevelTriggerWin)(e), I || _())) {
                 y(T);
                 return;
               }
@@ -4783,11 +4783,11 @@ var ui = O((nr) => {
             if (c !== null) {
               if (c.behavior === "skip-to-end") {
                 let I = [],
-                  C = !1,
+                  M = !1,
                   P = () => {
-                    C ||
+                    M ||
                       !v ||
-                      ((C = !0),
+                      ((M = !0),
                       this.notifyRoleActivationObservers(t, v, I, e, m));
                   };
                 this.skipToEndState(t, m, f, E, w, P);
@@ -4806,8 +4806,8 @@ var ui = O((nr) => {
             }
             let A = (I) => {
               this.runTrigger(e, m, o, E, w, { onComplete: I, role: v }).catch(
-                (C) => {
-                  console.error("Error in trigger execution:", C), I?.();
+                (M) => {
+                  console.error("Error in trigger execution:", M), I?.();
                 }
               );
             };
@@ -4817,19 +4817,19 @@ var ui = O((nr) => {
               if (I && w === I.control && v === I.role) T && I.settles.push(T);
               else {
                 I && (clearTimeout(I.timer), g(I)?.(), h.delete(m));
-                let C = {
+                let M = {
                   control: w,
                   role: v,
                   settles: T ? [T] : [],
                   timer: setTimeout(() => {
                     if ((h.delete(m), _())) {
-                      g(C)?.();
+                      g(M)?.();
                       return;
                     }
-                    A(g(C));
+                    A(g(M));
                   }, u * 1e3),
                 };
-                h.set(m, C);
+                h.set(m, M);
               }
             }
           });
@@ -6698,7 +6698,7 @@ var Si = O((gr) => {
       return Ye;
     },
     adminRequired: function () {
-      return M;
+      return C;
     },
     betaFeaturesTestingLib: function () {
       return Nf;
@@ -6710,75 +6710,73 @@ var Si = O((gr) => {
       return Lf;
     },
   });
-  var M = [],
+  var C = [],
     Ei = [],
     Ye = {
-      figma: { shortcut: M, scope: ["user"] },
+      figma: { shortcut: C, scope: ["user"] },
       rssUrl: { shortcut: ["* r s s u r l"], scope: ["user"] },
       disableBlockers: { shortcut: ["* z o o m"], scope: ["user"] },
       peek: { shortcut: Ei, scope: ["user"] },
-      ecShipStation: { shortcut: M, scope: ["user"] },
+      ecShipStation: { shortcut: C, scope: ["user"] },
       betaception: { shortcut: Ei, scope: ["user"] },
-      fileUpload: { shortcut: M, scope: ["user"] },
+      fileUpload: { shortcut: C, scope: ["user"] },
       customClassInRichText: { shortcut: ["* c c c"], scope: ["user"] },
-      allowCustomSiteHeader: { shortcut: M, scope: ["site"] },
-      showFastlyAsEdgeIPs: { shortcut: M, scope: ["site"] },
-      useNewBillingSystem: { shortcut: M, scope: ["user"] },
-      useUserTaxCollection: { shortcut: M, scope: ["user"] },
-      useTeamTaxCollection: { shortcut: M, scope: ["workspace"] },
+      allowCustomSiteHeader: { shortcut: C, scope: ["site"] },
+      showFastlyAsEdgeIPs: { shortcut: C, scope: ["site"] },
+      useNewBillingSystem: { shortcut: C, scope: ["user"] },
+      useUserTaxCollection: { shortcut: C, scope: ["user"] },
+      useTeamTaxCollection: { shortcut: C, scope: ["workspace"] },
       auditCorruptedCheckout: { shortcut: ["* a e c o m"], scope: ["user"] },
       auditLazyImage: { shortcut: ["* a l a z y"], scope: ["user"] },
       lab: { shortcut: ["* l a b"], scope: ["user"] },
-      logicFlowsV2: { shortcut: M, scope: ["user"] },
-      logicDev: { shortcut: M, scope: ["user"] },
-      logicEventTriggers: { shortcut: M, scope: ["site"] },
+      logicFlowsV2: { shortcut: C, scope: ["user"] },
+      logicDev: { shortcut: C, scope: ["user"] },
+      logicEventTriggers: { shortcut: C, scope: ["site"] },
       disableWorkspaceAnnotationEmailNotifications: {
-        shortcut: M,
+        shortcut: C,
         scope: ["workspace"],
       },
-      hasEnterpriseSite: { shortcut: M, scope: ["workspace"] },
-      isEnterprisePartner: { shortcut: M, scope: ["workspace"] },
-      isEnterprise: { shortcut: M, scope: ["workspace"] },
-      isEnterprisePro: { shortcut: M, scope: ["workspace"] },
-      isEnterpriseLite: { shortcut: M, scope: ["workspace"] },
-      isEnterpriseSite: { shortcut: M, scope: ["site"] },
+      hasEnterpriseSite: { shortcut: C, scope: ["workspace"] },
+      isEnterprisePartner: { shortcut: C, scope: ["workspace"] },
+      isEnterprise: { shortcut: C, scope: ["workspace"] },
+      isEnterprisePro: { shortcut: C, scope: ["workspace"] },
+      isEnterpriseLite: { shortcut: C, scope: ["workspace"] },
+      isEnterpriseSite: { shortcut: C, scope: ["site"] },
       disableWorkspaceReviewEmailNotifications: {
-        shortcut: M,
+        shortcut: C,
         scope: ["workspace"],
       },
-      enableUnlimitedWorkspaceLibraries: { shortcut: M, scope: ["workspace"] },
-      isEnterpriseLiteSite: { shortcut: M, scope: ["site"] },
-      enterpriseCustomSslCert: { shortcut: M, scope: ["site"] },
-      enterpriseMarketingIntegrations: { shortcut: M, scope: ["workspace"] },
-      hubspotMarketingIntegration: { shortcut: M, scope: ["workspace"] },
-      pageBuilderRole: { shortcut: M, scope: ["workspace"] },
+      enableUnlimitedWorkspaceLibraries: { shortcut: C, scope: ["workspace"] },
+      isEnterpriseLiteSite: { shortcut: C, scope: ["site"] },
+      enterpriseCustomSslCert: { shortcut: C, scope: ["site"] },
+      pageBuilderRole: { shortcut: C, scope: ["workspace"] },
       testSiteBeta: { shortcut: ["* t s"], scope: ["site"] },
-      testWorkspaceBeta: { shortcut: M, scope: ["workspace"] },
-      testUserAndWorkspaceBeta: { shortcut: M, scope: ["user", "workspace"] },
-      dl: { shortcut: M, scope: ["user", "workspace"], open: !0 },
-      rolesNWorkspaces: { shortcut: M, scope: ["user"] },
-      reactQueryDevtools: { shortcut: M, scope: ["user"] },
+      testWorkspaceBeta: { shortcut: C, scope: ["workspace"] },
+      testUserAndWorkspaceBeta: { shortcut: C, scope: ["user", "workspace"] },
+      dl: { shortcut: C, scope: ["user", "workspace"], open: !0 },
+      rolesNWorkspaces: { shortcut: C, scope: ["user"] },
+      reactQueryDevtools: { shortcut: C, scope: ["user"] },
       auditInputLabels: { shortcut: ["* l a b e l"], scope: ["user"] },
       auditFocusStyles: { shortcut: ["* f o c u s"], scope: ["user"] },
-      dns01CertValidation: { shortcut: M, scope: ["site"] },
-      enableReactDashboard: { shortcut: M, scope: ["user"] },
+      dns01CertValidation: { shortcut: C, scope: ["site"] },
+      enableReactDashboard: { shortcut: C, scope: ["user"] },
       focusWithin: { shortcut: ["* w i t h i n"], scope: ["user"] },
-      trialSubscription: { shortcut: M, scope: ["site"] },
-      pluginComponents: { shortcut: M, scope: ["site"] },
-      thirdPartyLibrariesAuthoring: { shortcut: M, scope: ["site"] },
-      localization: { shortcut: M, scope: ["site"] },
-      localizationCanPublishLocales: { shortcut: M, scope: ["site"] },
+      trialSubscription: { shortcut: C, scope: ["site"] },
+      pluginComponents: { shortcut: C, scope: ["site"] },
+      thirdPartyLibrariesAuthoring: { shortcut: C, scope: ["site"] },
+      localization: { shortcut: C, scope: ["site"] },
+      localizationCanPublishLocales: { shortcut: C, scope: ["site"] },
       jank: { shortcut: ["* j a n k"], scope: ["user"] },
-      aiHelpFollowUps: { shortcut: M, scope: ["workspace"] },
-      enterpriseSiteActivityLogBeta: { shortcut: M, scope: ["workspace"] },
-      marketplacePaymentsCreator: { shortcut: M, scope: ["workspace"] },
+      aiHelpFollowUps: { shortcut: C, scope: ["workspace"] },
+      enterpriseSiteActivityLogBeta: { shortcut: C, scope: ["workspace"] },
+      marketplacePaymentsCreator: { shortcut: C, scope: ["workspace"] },
       disableBS: { shortcut: ["* d b s"], scope: ["user"] },
-      optimize: { shortcut: M, scope: ["site"] },
-      optimizeStandalone: { shortcut: M, scope: ["workspace"] },
-      analyze: { shortcut: M, scope: ["site"] },
-      testUserBeta: { shortcut: M, scope: ["user"] },
-      testUserBeta2: { shortcut: M, scope: ["user"] },
-      testOAuthAppBeta: { shortcut: M, scope: ["oauthApplication"] },
+      optimize: { shortcut: C, scope: ["site"] },
+      optimizeStandalone: { shortcut: C, scope: ["workspace"] },
+      analyze: { shortcut: C, scope: ["site"] },
+      testUserBeta: { shortcut: C, scope: ["user"] },
+      testUserBeta2: { shortcut: C, scope: ["user"] },
+      testOAuthAppBeta: { shortcut: C, scope: ["oauthApplication"] },
     },
     kf = (n) => Ye[n];
   function Lf(n) {
@@ -8875,12 +8873,12 @@ var Sa = O((oo) => {
       Ta(A), ba(u, e, y);
       return;
     }
-    let C = null,
+    let M = null,
       P = !1,
       R = (k) => {
-        P || ((P = !0), C?.(), k && I.kill(), Ta(A), ba(u, e, y));
+        P || ((P = !0), M?.(), k && I.kill(), Ta(A), ba(u, e, y));
       };
-    (C = a.registerCleanup(() => R(!0))),
+    (M = a.registerCleanup(() => R(!0))),
       I.eventCallback("onComplete", () => {
         R(!1);
       }),
@@ -9080,9 +9078,9 @@ var Ia = O((ao) => {
                 Aa(c, T, V, z), Aa(c, v, X, z);
               },
               I = Jp(),
-              C = i ? document.documentElement : t,
+              M = i ? document.documentElement : t,
               P = null;
-            I && (P = new Yp.TouchScrollGuard(C, y));
+            I && (P = new Yp.TouchScrollGuard(M, y));
             let R = null,
               k = () => {
                 R = null;
@@ -9106,7 +9104,7 @@ var Ia = O((ao) => {
             try {
               if (
                 ((H = c.createObserver({
-                  target: C,
+                  target: M,
                   type: I ? "pointer,touch" : "pointer",
                   tolerance: 0,
                   onMove: (V) => {
@@ -9156,11 +9154,11 @@ var Ia = O((ao) => {
             };
             return (
               i
-                ? (C.addEventListener("mouseleave", Q, { signal: y }),
+                ? (M.addEventListener("mouseleave", Q, { signal: y }),
                   window.addEventListener("blur", Q, { signal: y }))
                 : t.addEventListener("mouseleave", Q, { signal: y }),
-              C.addEventListener("touchend", Q, { signal: y, passive: !0 }),
-              C.addEventListener("touchcancel", Q, { signal: y, passive: !0 }),
+              M.addEventListener("touchend", Q, { signal: y, passive: !0 }),
+              M.addEventListener("touchcancel", Q, { signal: y, passive: !0 }),
               () => {
                 H.kill(),
                   g.abort(),
@@ -10074,8 +10072,8 @@ var qa = O((mo) => {
       );
     if (A.length === 0) return;
     let I = new Float64Array(T),
-      C = A[0],
-      P = { value: m[C] ?? 0 },
+      M = A[0],
+      P = { value: m[M] ?? 0 },
       R = null,
       k = !1,
       F = 0,
@@ -10119,7 +10117,7 @@ var qa = O((mo) => {
         ce();
       },
       Kc = () => {
-        R?.kill(), (R = null), (z = 0), (P.value = m[C] ?? 0);
+        R?.kill(), (R = null), (z = 0), (P.value = m[M] ?? 0);
         for (let x = 0; x < A.length; x++) {
           let L = A[x];
           (I[L] = 0), S[L](0);
@@ -10199,7 +10197,7 @@ var qa = O((mo) => {
           Kc();
           return;
         }
-        let x = m[C] ?? 0,
+        let x = m[M] ?? 0,
           L = Math.abs(P.value - x),
           U = 0.1 + Math.min(L / (F || 1), 1) * 0.5;
         R?.kill();
@@ -10238,7 +10236,7 @@ var qa = O((mo) => {
                 (I[x] = $);
             }
             if (!k) {
-              let x = m[C];
+              let x = m[M];
               x !== void 0 &&
                 (R?.isActive() && (R.kill(), (R = null)), (P.value = x));
             }
