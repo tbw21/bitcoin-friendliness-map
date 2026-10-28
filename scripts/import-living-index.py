@@ -40,6 +40,9 @@ rows = list(openpyxl.load_workbook(src).worksheets[0].iter_rows(values_only=True
 header = [str(h).strip() if h is not None else "" for h in rows[1]]
 col = lambda name: header.index(name)
 text = lambda v: "" if v is None else str(v).strip()
+# Area texts and summaries are shown as paragraphs, so they start with a capital letter
+# (some Stability texts in the workbook begin "the global rule-of-law index …")
+sentence = lambda v: text(v)[:1].upper() + text(v)[1:]
 
 out_header = ["name", "alpha_2", "alpha_3", "numeric"]
 for key, _, _ in AREAS:
@@ -81,12 +84,12 @@ for r in rows[2:]:
     for key, name, _ in AREAS:
         score = r[col(name) + 1]          # the score column follows its text column
         scores.append(score)
-        line += [text(r[col(name)]), "" if score is None else str(int(score))]
+        line += [sentence(r[col(name)]), "" if score is None else str(int(score))]
     if all(s is not None for s in scores):
         weighted[len(out)] = round(sum(s * w for s, (_, _, w) in zip(scores, AREAS)) + 1e-9, 2)
     # overall score filled in below, once the best country is known; empty means no data
     line += [text(r[col("Capital city")]), short_population(r[col("Population")]), "",
-             text(r[col("Summary")]), text(r[col("Level of detail")])]
+             sentence(r[col("Summary")]), text(r[col("Level of detail")])]
     out.append(line)
 
 # Gaps in capital or population: keep what the previous file had
