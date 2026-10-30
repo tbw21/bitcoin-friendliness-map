@@ -315,8 +315,10 @@ export const Modal: React.FC<ModalProps> = ({
             <span className="h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-600" aria-hidden="true" />
           </button>
 
-          {/* Row 1: flag on the left, buttons on the right, centred on one line */}
-          <div className="mb-3 flex items-center justify-between gap-3">
+          {/* Row 1: flag on the left, buttons on the right, centred on one line. The margin puts the
+              score pill as far below the buttons as the tops of the letters in the rank line are
+              below the pill (measured; it allows for the pill's nudge in row 2). */}
+          <div className="mb-[20.3px] sm:mb-[22.4px] flex items-center justify-between gap-3">
             {/* Flag with fixed dimensions to prevent layout shift */}
             <div className="h-7 w-11 shrink-0 flex items-center justify-center rounded border border-zinc-200/80 dark:border-zinc-700/55 overflow-hidden bg-zinc-100 dark:bg-zinc-800">
               {!flagError ? (
