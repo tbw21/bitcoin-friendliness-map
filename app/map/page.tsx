@@ -174,7 +174,7 @@ export default function MapPage() {
 
   return (
     <div
-      className="flex h-screen w-screen flex-col overflow-hidden"
+      className="flex h-dvh w-screen flex-col overflow-hidden"
       style={{
         ...paletteVars(),
         backgroundColor: "var(--map-bg)",
