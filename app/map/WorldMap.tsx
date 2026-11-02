@@ -227,6 +227,9 @@ function buildSvgMarkupWithClasses(
       path.setAttribute("class", className);
       // Remove any inline fill
       path.removeAttribute("fill");
+      // The map file names each country in a title; the map's own hover tooltip shows the name
+      // (with flag and score), so drop it, or the button tooltips would add a second one
+      path.removeAttribute("title");
       // Set accessibility attributes
       path.setAttribute("role", "button");
       path.setAttribute("tabindex", "0");
