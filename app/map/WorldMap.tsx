@@ -1673,16 +1673,16 @@ export const WorldMap: React.FC<WorldMapProps> = ({
   return (
     <>
       {/* Search bar, with the first-place card beside it where there is room and under it where
-          there is not. The row stops short of the zoom buttons (and, with a country open on wide
-          screens, of the docked buttons left of the details panel). */}
+          there is not. The row stops short of the button column at every width, so on phones the
+          buttons start at the top beside it (and, with a country open on wide screens, it stops
+          short of the docked buttons left of the details panel). */}
       <div
         data-map-search
-        className={`absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center gap-2 pointer-events-none sm:right-[4.5rem] ${
+        className={`absolute top-4 left-4 right-[4.5rem] z-20 flex flex-wrap items-center gap-2 pointer-events-none ${
           docked ? "dock:right-[calc(var(--panel-w)+4.5rem)]" : ""
         }`}
       >
-        {/* The row itself lets taps through (on phones it spans the width and would cover the
-            button column under the search bar); only the search field and the card take them */}
+        {/* The row itself lets taps through; only the search field and the card take them */}
         <div className="ui-grain pointer-events-auto relative w-full rounded-lg sm:w-[38ch] sm:max-w-full">
           <input
             ref={searchInputRef}
@@ -1809,12 +1809,11 @@ export const WorldMap: React.FC<WorldMapProps> = ({
           (same distance, duration and easing) instead of travelling across the map behind it.
           On closing they slide in from the left to the window edge while a copy leaves with the
           panel's slide-out. */}
-      {/* On phones the buttons sit under the search bar, 0.5rem below it like the first-place card
-          (1rem from the top + 2.5rem search bar + 0.5rem); from sm up they line up with the bar */}
+      {/* The buttons line up with the search bar at the top, at every width */}
       <div
         key={docked ? "docked" : "free"}
         data-tip-side="left"
-        className={`absolute top-16 right-4 flex flex-col gap-2 z-10 sm:top-4 ${
+        className={`absolute top-4 right-4 flex flex-col gap-2 z-10 ${
           docked
             ? "dock:right-[calc(var(--panel-w)+1rem)] map-controls-docked"
             : hasDocked
@@ -1952,7 +1951,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
         </div>
       ) : (
         <div
-          className="relative ui-grain pointer-events-auto min-w-max flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding"
+          className={`relative ui-grain pointer-events-auto min-w-max ${topCountriesLegendOpen ? "flex-none" : "flex-[1_1_0%]"} sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-[7px] shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 cursor-pointer hover:bg-white dark:hover:bg-zinc-900 legend-expanding`}
           onClick={() => setLegendOpen(true)}
           role="button"
           tabIndex={0}
@@ -1996,7 +1995,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
       {topCountriesLegendOpen ? (
         <div
           ref={topCountriesLegendRef}
-          className="ui-grain pointer-events-auto min-w-[192px] flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
+          className="ui-grain pointer-events-auto min-w-[136px] flex-[1_1_0%] sm:flex-none sm:w-[256px] rounded-lg border border-zinc-200/80 bg-white/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-700/55 dark:bg-zinc-900/95 legend-expanding"
           role="region"
           aria-label="Top countries legend"
         >
@@ -2031,7 +2030,7 @@ export const WorldMap: React.FC<WorldMapProps> = ({
             {topCountries.map((country) => (
               <li
                 key={country.code}
-                className="flex items-center gap-2 cursor-pointer rounded px-1 py-1 transition-colors duration-150 bg-transparent ring-0 hover:bg-zinc-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-0"
+                className="flex items-center gap-2 cursor-pointer rounded px-1 py-0 sm:py-1 transition-colors duration-150 bg-transparent ring-0 hover:bg-zinc-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-0"
                 onClick={(e) => {
                   handleSelectCountry(country.code);
                   const el = e.currentTarget as HTMLElement;
