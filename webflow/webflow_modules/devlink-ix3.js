@@ -6828,7 +6828,6 @@ var Oi = O((yr) => {
   });
   var jf = Object.freeze({
     DESIGNER: "designer",
-    EDITOR: "editor",
     SSR: "ssr",
     EXPORT: "export",
     LLM: "llm",

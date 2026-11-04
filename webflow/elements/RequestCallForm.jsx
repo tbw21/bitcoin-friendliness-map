@@ -50,6 +50,7 @@ export function RequestCallForm({}) {
             data={"load-fade"}
             data-name={"Request Phone Call"}
             data-redirect={"/success/book-a-call-success"}
+            data-wf-close-modal={false}
             id={"wf-form-Request-Phone-Call"}
             method={"get"}
             name={"wf-form-Request-Phone-Call"}
