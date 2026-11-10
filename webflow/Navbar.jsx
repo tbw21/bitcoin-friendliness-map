@@ -369,7 +369,7 @@ export function Navbar({
                   </DropdownList>
                 </DropdownWrapper>
                 <DropdownWrapper
-                  className={"nav_menu-dropdown hide"}
+                  className={"nav_menu-dropdown"}
                   data-w-id={"5a3d7890-d24d-fb7a-59f8-cec49147ad21"}
                   delay={100}
                   hover={true}
@@ -377,7 +377,7 @@ export function Navbar({
                 >
                   <DropdownToggle className={"nav_dropdown-toggle"} tag={"div"}>
                     <Block className={"menu-link"} tag={"div"}>
-                      {"Apps"}
+                      {"Tools"}
                     </Block>
                     <HtmlEmbed
                       className={"dropdown-chevron"}
