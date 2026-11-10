@@ -3,6 +3,7 @@
 import React from "react";
 import { getCountriesByRank } from "@/data/countriesCsv";
 import { legendEntries } from "@/data/legend";
+import { DATA_UPDATED } from "@/data/dataUpdated";
 import SidePanel from "./SidePanel";
 import { scoreTint } from "./Modal";
 
@@ -23,6 +24,13 @@ const WEIGHTS: Array<[string, number]> = [
   ["Bitcoin community", 8],
   ["Stability", 8],
 ];
+
+// "2026-10-19" -> "October 19 2026" (spelled out, so it reads the same everywhere)
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function formatUpdated(iso: string) {
+  const [y, m, d] = iso.split("-").map(Number);
+  return `${MONTHS[m - 1]} ${d} ${y}`;
+}
 
 // The + and - glyphs sit below the middle of the line in Helvetica, so on the keys they are drawn
 // as strokes, centred in the key
@@ -173,6 +181,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
 
   return (
     <SidePanel label="How it works" title="How it works" onClose={onClose} closing={closing}>
+      <p className="mb-6 italic text-zinc-600 dark:text-zinc-400">Last updated {formatUpdated(DATA_UPDATED)}</p>
       <section className="mb-6">
         <h3 className="mb-2 text-[1.125rem] font-semibold leading-6">How the countries were scored</h3>
         <p className="mb-3 text-zinc-700 dark:text-zinc-300">
@@ -209,7 +218,7 @@ export const InfoPanel: React.FC<InfoPanelProps> = ({ onClose, closing }) => {
           ))}
         </ul>
         <p className="text-zinc-700 dark:text-zinc-300">
-          Each area text names its sources. The data was last reviewed in October 2026.
+          Each area text names its sources.
         </p>
       </section>
 

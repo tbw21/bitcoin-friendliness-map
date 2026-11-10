@@ -116,3 +116,13 @@ with open(dst, "w", encoding="utf-8", newline="") as fh:
     w.writerow(out_header)
     w.writerows(out)
 print("wrote", dst, "-", len(out), "countries,", scored, "with a score")
+
+# The date shown as "Last updated" in "How it works": today, the day the data was imported
+import datetime, os
+stamp = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "dataUpdated.ts")
+with open(stamp, encoding="utf-8") as fh:
+    ts = fh.read()
+ts = re.sub(r'DATA_UPDATED = "[0-9-]*"', 'DATA_UPDATED = "%s"' % datetime.date.today().isoformat(), ts)
+with open(stamp, "w", encoding="utf-8") as fh:
+    fh.write(ts)
+print("data/dataUpdated.ts set to", datetime.date.today().isoformat())
